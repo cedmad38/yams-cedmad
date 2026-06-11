@@ -33,7 +33,7 @@
       border-radius:5px;
     }
     .yw.ywkept {
-      box-shadow:0 0 0 3px rgba(186,117,23,.6),2px 4px 7px rgba(0,0,0,.38);
+      box-shadow:0 0 0 3px rgba(220,38,38,.65),2px 4px 7px rgba(0,0,0,.38);
     }
     .dcu {
       position:relative;width:100%;height:100%;
@@ -53,9 +53,7 @@
     .dcf.left   { transform:rotateY(-90deg)  translateZ(15px); background:#ffffff }
     .dcf.top    { transform:rotateX(90deg)   translateZ(15px); background:#ffffff }
     .dcf.bottom { transform:rotateX(-90deg)  translateZ(15px); background:#ffffff }
-    .yw.ywkept .dcf { border-color:#BA7517 }
-    .yw.ywkept-dlm { box-shadow:0 0 0 3px rgba(220,38,38,.65),2px 4px 7px rgba(0,0,0,.38) }
-    .yw.ywkept-dlm .dcf { border-color:#dc2626 }
+    .yw.ywkept .dcf { border-color:#dc2626 }
     .ydot {
       position:absolute;width:5px;height:5px;
       background:#1c1c1c;border-radius:50%;
@@ -684,7 +682,7 @@ function makeCube(i){
   const v=G.dice[i],{x,y}=G.pos[i];
 
   const wrap=document.createElement('div');
-  wrap.className='yw'+(G.kept[i]?' ywkept'+(GAME_MODE==='dlm'?' ywkept-dlm':''):'');
+  wrap.className='yw'+(G.kept[i]?' ywkept':'');
   wrap.id='yw'+i;
   wrap.style.left=x+'px';wrap.style.top=y+'px';wrap.style.zIndex=y;
   wrap.onclick=()=>tk(i);
