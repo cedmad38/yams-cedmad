@@ -871,6 +871,7 @@ async function yRoll(){
   }
   G.rollsLeft--;G.rollsUsed++;G.fresh=false;
   rdice();
+  if(ONLINE)netPush();
   await throwDice(rolled);
 
   if(G.rollsLeft===0){
@@ -1167,6 +1168,10 @@ function applyNetState(data){
     p.scores=pd.scores||{};
     p.dlmSheet=pd.dlmSheet||null;p.dlmDI=pd.dlmDI||0;p.dlmUI=pd.dlmUI!==undefined?pd.dlmUI:12;
     p.d12Sheet=pd.d12Sheet||null;p.d12DI=pd.d12DI||0;p.d12UI=pd.d12UI!==undefined?pd.d12UI:12;
+    if(!p.fresh){
+      const ps=[];
+      p.pos=[...Array(5)].map(()=>{const pos=randomPos(ps);ps.push(pos);return pos;});
+    }
     return p;
   });
   NUM_PLAYERS=PLAYERS.length;CURRENT_PLAYER=data.cp||0;G=PLAYERS[CURRENT_PLAYER];
