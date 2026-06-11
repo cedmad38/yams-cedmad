@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yams Par Cedmad</title>
+  <style>
+    :root {
+      --color-background-primary: #ffffff;
+      --color-background-secondary: #f5f5f5;
+      --color-background-success: #e8f5e9;
+      --color-border-secondary: #cccccc;
+      --color-border-tertiary: #e0e0e0;
+      --color-text-primary: #111111;
+      --color-text-secondary: #666666;
+      --color-text-tertiary: #999999;
+      --color-text-success: #2e7d32;
+      --color-text-danger: #c62828;
+      --border-radius-md: 8px;
+      --border-radius-lg: 12px;
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    body { margin:0;padding:0;font-family:var(--font-sans);background:#f0f0f0;display:flex;justify-content:center;min-height:100vh }
+    #yg { padding:16px 20px }
+    #yfelt, .yw { user-select:none; -webkit-user-select:none; }
+
+    /* ── Dés 3D ── */
+    .yw {
+      position:absolute;width:30px;height:30px;cursor:pointer;
+      perspective:400px;
+      box-shadow:2px 4px 7px rgba(0,0,0,.38);
+      transition:box-shadow .18s;
+      border-radius:5px;
+    }
+    .yw.ywkept {
+      box-shadow:0 0 0 3px rgba(186,117,23,.6),2px 4px 7px rgba(0,0,0,.38);
+    }
+    .dcu {
+      position:relative;width:100%;height:100%;
+      transform-style:preserve-3d;
+    }
+    .yw:hover .dcu { filter:brightness(1.06) }
+    /* The filter only applies on non-3d context — we accept slight flatten on hover */
+    .dcf {
+      position:absolute;width:30px;height:30px;
+      border:1px solid rgba(0,0,0,.15);border-radius:5px;
+      box-sizing:border-box;backface-visibility:hidden;
+    }
+    /* face positions — half size = 15px */
+    .dcf.front  { transform:translateZ(15px);                  background:#ffffff }
+    .dcf.back   { transform:rotateY(180deg)  translateZ(15px); background:#ffffff }
+    .dcf.right  { transform:rotateY(90deg)   translateZ(15px); background:#ffffff }
+    .dcf.left   { transform:rotateY(-90deg)  translateZ(15px); background:#ffffff }
+    .dcf.top    { transform:rotateX(90deg)   translateZ(15px); background:#ffffff }
+    .dcf.bottom { transform:rotateX(-90deg)  translateZ(15px); background:#ffffff }
+    .yw.ywkept .dcf { border-color:#BA7517 }
+    .ydot {
+      position:absolute;width:5px;height:5px;
+      background:#1c1c1c;border-radius:50%;
+      transform:translate(-50%,-50%);
+      box-shadow:0 1px 2px rgba(0,0,0,.4);
+    }
+
+    /* ── Feuille de score ── */
+    .ysr { display:flex;justify-content:space-between;align-items:center;padding:4px 9px;border-bottom:.5px solid var(--color-border-tertiary);cursor:pointer;transition:background .1s;font-size:11px;color:var(--color-text-primary) }
+    .ysr:hover:not(.ysf) { background:var(--color-background-secondary) }
+    .ysr.ysav { background:var(--color-background-success) }
+    .ysr.ysav .ysv { color:var(--color-text-success);font-weight:500 }
+    .ysr.ysf { cursor:default;opacity:.65 }
+    .ysr.ysf .ysv { color:#BA7517;font-weight:500 }
+    .ysr.ysz .ysv { color:var(--color-text-danger)!important }
+
+    /* ── Écran de départ ── */
+    .ypbtn { width:60px;height:60px;font-size:22px;font-weight:500;background:var(--color-background-primary);border:1.5px solid var(--color-border-secondary);border-radius:var(--border-radius-lg);cursor:pointer;font-family:var(--font-sans);transition:background .12s,border-color .12s }
+    .ypbtn:hover { background:#BA7517;color:#FAE8C4;border-color:#BA7517 }
+    .yninput { padding:8px 12px;border:1.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:13px;font-family:var(--font-sans);outline:none;width:160px;text-align:center;background:var(--color-background-primary);color:var(--color-text-primary) }
+    .yninput:focus { border-color:#BA7517 }
+    .ymbtn { width:200px;padding:13px 18px;display:flex;align-items:center;gap:14px;background:var(--color-background-primary);border:1.5px solid var(--color-border-secondary);border-radius:var(--border-radius-lg);cursor:pointer;font-family:var(--font-sans);transition:background .12s,border-color .12s;text-align:left }
+    .ymbtn:hover { background:#BA7517;border-color:#BA7517 }
+    .ymbtn:hover .ymbn,.ymbtn:hover .ymbs { color:#FAE8C4 }
+    .ymbn { font-size:14px;font-weight:500;color:var(--color-text-primary) }
+    .ymbs { font-size:11px;color:var(--color-text-tertiary);margin-top:2px }
+
+    /* ── Résultats ── */
+    .yrow { display:flex;align-items:center;gap:14px;padding:10px 18px;border-bottom:.5px solid var(--color-border-tertiary) }
+    .yrow:last-child { border-bottom:none }
+    /* ── Modal règles ── */
+    #yrmod{display:none;position:fixed;inset:0;background:rgba(0,0,0,.46);z-index:9999;align-items:center;justify-content:center;padding:16px;box-sizing:border-box}
+    #yrmod.vis{display:flex}
+    .yrmbx{background:#fff;border-radius:12px;max-width:480px;width:100%;max-height:83vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.3);font-family:var(--font-sans)}
+    .yrmbx h2{margin:0;padding:14px 18px 10px;font-size:13px;letter-spacing:2px;border-bottom:.5px solid #eee;text-align:center;font-weight:600}
+    .yrmbx .rs{padding:9px 18px;border-bottom:.5px solid #f4f4f4}
+    .yrmbx .rs h4{margin:0 0 5px;font-size:10px;color:#BA7517;text-transform:uppercase;letter-spacing:.6px;font-weight:700}
+    .yrmbx .rs p{font-size:11px;color:#333;line-height:1.55;margin:0 0 3px}
+    .yrmbx .rs ul{margin:2px 0;padding-left:14px}
+    .yrmbx .rs li{font-size:11px;color:#333;line-height:1.6;margin-bottom:1px}
+    .yrmbx .rscls{display:block;margin:14px auto;padding:7px 22px;background:#BA7517;color:#FAE8C4;border:none;border-radius:8px;font-size:12px;cursor:pointer;font-family:var(--font-sans)}
+    /* ── Table DLM12 ── */
+    .d12t{width:100%;border-collapse:collapse;font-size:9px;table-layout:fixed;border:2.5px solid #2c2c2c}
+    .d12t td,.d12t th{
+      padding:3px 1px;text-align:center;overflow:hidden;white-space:nowrap;
+      border-top:.5px solid #bbb;border-bottom:.5px solid #bbb;
+      border-left:1.5px solid #888;border-right:1.5px solid #888
+    }
+    .d12t th{
+      background:#3d5fa0;color:#fff;font-weight:600;padding:4px 1px;
+      border-left:1.5px solid #2d4f90;border-right:1.5px solid #2d4f90;
+      border-top:1px solid #2d4f90;border-bottom:2px solid #2c2c2c
+    }
+    .d12t .d12c{text-align:left;padding-left:5px}
+    .d12t .d12bn td{background:#e6efe0;color:#2e7d32;font-weight:600}
+    .d12t .d12sf{background:#f9f9f9;color:#aaa}
+    .d12t .d12av{background:#e8f5e9;cursor:pointer;color:#1b5e20}
+    .d12t .d12av:hover{background:#BA7517;color:#FAE8C4}
+    .d12t .d12pr{color:#BA7517}
+    .d12t .d12sep td{border-top:2px solid #2c2c2c}
+    .d12t td:nth-child(5),.d12t th:nth-child(5){border-left:2.5px solid #2c2c2c!important}
+  /* ── Touch : supprime le délai 300ms ── */
+  button, [onclick], .ysr, .yw, .d12av, .d12t td { touch-action: manipulation; }
+
+  /* ── Mobile : layout vertical ── */
+  @media (max-width: 560px) {
+    body { align-items: flex-start }
+    #yg { padding: 8px 0 !important; width: 100% }
+    #ygrow { flex-direction: column !important; align-items: stretch !important; gap: 8px !important }
+    #ycard { width: 100% !important; max-height: 185px; overflow-y: auto !important; overflow-x: hidden !important; order: 2 }
+    #ygrow > div:not(#ycard) { order: 1 }
+    #yfelt { margin: 0 auto }
+    .ymbtn { width: 85vw; max-width: 300px }
+    .ypbtn { width: 68px; height: 68px; font-size: 24px }
+    .ysr { font-size: 12px; padding: 5px 9px }
+  }
+  </style>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+</head>
+<body>
+<div id="yg" style="padding:.5rem 0">
+
+  <!-- ── Écran de départ ── -->
+  <div id="ystart" style="text-align:center;padding:50px 30px">
+    <div style="font-size:22px;font-weight:500;letter-spacing:1px;color:var(--color-text-primary)">Yams Par Cedmad</div>
+    <div id="yjsok" style="font-size:10px;color:#bbb;margin-top:4px">JS...</div>
+
+    <div id="ystep0">
+      <div style="font-size:13px;color:var(--color-text-secondary);margin:24px 0 18px">Mode de jeu</div>
+      <div style="display:flex;flex-direction:column;gap:12px;align-items:center">
+        <button class="ymbtn" onclick="selectMode('standard')">
+          <div>
+            <div class="ymbn">Yams Standard</div>
+            <div class="ymbs">Règles classiques</div>
+          </div>
+        </button>
+        <button class="ymbtn" onclick="selectMode('dlm')">
+          <div>
+            <div class="ymbn">Yams DLMS</div>
+            <div class="ymbs">Variante DLMS</div>
+          </div>
+        </button>
+        <button class="ymbtn" onclick="selectMode('dlm12')">
+          <div>
+            <div class="ymbn">Yams DLM12</div>
+            <div class="ymbs">Variante DLM 12</div>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <div id="ystep1" style="display:none">
+      <div style="font-size:13px;color:var(--color-text-secondary);margin:24px 0 18px">Nombre de joueurs</div>
+      <div style="display:flex;gap:14px;justify-content:center">
+        <button class="ypbtn" onclick="selectPlayers(1)">1</button>
+        <button class="ypbtn" onclick="selectPlayers(2)">2</button>
+        <button class="ypbtn" onclick="selectPlayers(3)">3</button>
+        <button class="ypbtn" onclick="selectPlayers(4)">4</button>
+      </div>
+      <div style="margin-top:18px;display:flex;flex-direction:column;align-items:center;gap:10px">
+        <button onclick="backToMode()" style="padding:9px 18px;background:transparent;color:var(--color-text-secondary);border:1.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:13px;cursor:pointer;font-family:var(--font-sans)">← Retour</button>
+        <div style="font-size:11px;color:var(--color-text-tertiary);margin-top:4px">— ou —</div>
+        <button onclick="showNetStep()" style="padding:9px 20px;background:transparent;color:#3b82f6;border:1.5px solid #3b82f6;border-radius:var(--border-radius-md);font-size:13px;cursor:pointer;font-family:var(--font-sans)">🌐 Jouer en ligne</button>
+      </div>
+    </div>
+
+    <div id="ystep2" style="display:none">
+      <div style="font-size:13px;color:var(--color-text-secondary);margin:24px 0 16px">Noms des joueurs</div>
+      <div id="ynames" style="display:flex;flex-direction:column;gap:10px;align-items:center;margin-bottom:22px"></div>
+      <div style="display:flex;gap:10px;justify-content:center">
+        <button onclick="backStep()" style="padding:9px 18px;background:transparent;color:var(--color-text-secondary);border:1.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:13px;cursor:pointer;font-family:var(--font-sans)">← Retour</button>
+        <button onclick="startGame()" style="padding:9px 28px;background:#BA7517;color:#FAE8C4;border:none;border-radius:var(--border-radius-md);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-sans)">Jouer</button>
+      </div>
+    </div>
+
+    <!-- ── Écran online ── -->
+    <div id="ystep_net" style="display:none">
+      <div style="font-size:13px;color:var(--color-text-secondary);margin:24px 0 16px">Multijoueur en ligne</div>
+      <div style="display:flex;flex-direction:column;gap:12px;align-items:center">
+        <input id="ynetname" class="yninput" type="text" placeholder="Votre prénom" maxlength="14" value="">
+        <button onclick="netCreate()" class="ymbtn" style="justify-content:center">
+          <div><div class="ymbn">Créer une partie</div><div class="ymbs">Obtenir un code à partager</div></div>
+        </button>
+        <div style="font-size:11px;color:var(--color-text-tertiary)">— ou rejoindre —</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input id="ynetcode" class="yninput" type="text" placeholder="Code (ex: ROSE-42)" maxlength="8" style="width:140px;text-transform:uppercase">
+          <button onclick="netJoin()" style="padding:9px 16px;background:#BA7517;color:#FAE8C4;border:none;border-radius:var(--border-radius-md);font-size:13px;cursor:pointer;font-family:var(--font-sans)">Rejoindre</button>
+        </div>
+        <div id="ynetmsg" style="font-size:12px;color:var(--color-text-secondary);min-height:18px"></div>
+        <button onclick="backToMode()" style="padding:9px 18px;background:transparent;color:var(--color-text-secondary);border:1.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:13px;cursor:pointer;font-family:var(--font-sans)">← Retour</button>
+      </div>
+    </div>
+
+    <!-- ── Lobby ── -->
+    <div id="ylobby" style="display:none">
+      <div style="font-size:13px;color:var(--color-text-secondary);margin:24px 0 10px">Code de la partie</div>
+      <div id="ynrcode" style="font-size:28px;font-weight:700;letter-spacing:4px;color:#BA7517;margin-bottom:18px"></div>
+      <div style="font-size:11px;color:var(--color-text-tertiary);margin-bottom:14px">Partagez ce code avec vos amis</div>
+      <div id="ynrlist" style="min-height:60px;margin-bottom:18px"></div>
+      <button id="ynrstart" onclick="netStartGame()" style="padding:10px 30px;background:#BA7517;color:#FAE8C4;border:none;border-radius:var(--border-radius-md);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-sans)">Démarrer la partie</button>
+      <div id="ynrwait" style="font-size:13px;color:var(--color-text-secondary)">En attente que l'hôte démarre…</div>
+    </div>
+  </div>
+
+  <!-- ── Jeu ── -->
+  <div id="ygame" style="display:none">
+    <div style="text-align:center;margin-bottom:10px;position:relative">
+      <div style="font-size:16px;font-weight:500;letter-spacing:1px;color:var(--color-text-primary)">Yams Par Cedmad</div>
+      <div id="yti" style="font-size:12px;color:var(--color-text-secondary);margin-top:2px"></div>
+      <button id="yrbtn" onclick="showRules()" style="display:none;position:absolute;right:0;top:2px;padding:4px 10px;background:transparent;border:1px solid #BA7517;border-radius:6px;font-size:10px;color:#BA7517;cursor:pointer;font-family:var(--font-sans)">? Règles</button>
+    </div>
+    <div id="ygrow" style="display:flex;gap:12px;align-items:flex-start">
+      <div id="ycard" style="width:182px;flex-shrink:0;border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;background:var(--color-background-primary)"></div>
+      <div style="flex:1;min-width:0">
+        <div id="yfelt" style="background:#1a6b31;border:10px solid #0d3a1a;border-radius:50%;width:320px;height:320px;position:relative;overflow:hidden;margin:0 auto">
+          <svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none" viewBox="0 0 320 320">
+            <circle cx="160" cy="160" r="5" fill="rgba(255,255,255,.12)"/>
+          </svg>
+          <div id="yctr" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:12px;font-weight:500;color:rgba(255,255,255,.55);pointer-events:none;z-index:1;white-space:nowrap;letter-spacing:2px"></div>
+          <!-- Main horizontale : paume à droite, doigts pointant vers la gauche -->
+          <svg id="yhd" viewBox="0 0 80 56" width="96" height="67"
+            style="position:absolute;opacity:0;z-index:10;pointer-events:none;left:0;top:0;transition:left .46s ease,top .43s ease,opacity .24s">
+            <defs>
+              <linearGradient id="hg1" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#F4A678"/>
+                <stop offset="100%" stop-color="#D46830"/>
+              </linearGradient>
+            </defs>
+            <rect x="56" y="0" width="22" height="11" rx="5" fill="url(#hg1)"/>
+            <rect x="34" y="7" width="42" height="43" rx="10" fill="url(#hg1)"/>
+            <rect x="2" y="9" width="42" height="9.5" rx="4.75" fill="url(#hg1)"/>
+            <rect x="0" y="20.5" width="52" height="9.5" rx="4.75" fill="url(#hg1)"/>
+            <rect x="2" y="32" width="46" height="9.5" rx="4.75" fill="url(#hg1)"/>
+            <rect x="8" y="43" width="34" height="8" rx="4" fill="url(#hg1)"/>
+            <line x1="34" y1="10" x2="34" y2="18" stroke="#B06030" stroke-width="1.6" stroke-linecap="round"/>
+            <line x1="34" y1="21.5" x2="34" y2="29.5" stroke="#B06030" stroke-width="1.6" stroke-linecap="round"/>
+            <line x1="34" y1="33" x2="34" y2="41" stroke="#B06030" stroke-width="1.6" stroke-linecap="round"/>
+            <line x1="36" y1="44" x2="36" y2="50.5" stroke="#B06030" stroke-width="1.6" stroke-linecap="round"/>
+            <line x1="19" y1="10" x2="19" y2="18" stroke="#B06030" stroke-width="1" stroke-linecap="round" opacity=".4"/>
+            <line x1="19" y1="21.5" x2="19" y2="29.5" stroke="#B06030" stroke-width="1" stroke-linecap="round" opacity=".4"/>
+            <line x1="19" y1="33" x2="19" y2="41" stroke="#B06030" stroke-width="1" stroke-linecap="round" opacity=".4"/>
+            <line x1="21" y1="44" x2="21" y2="50.5" stroke="#B06030" stroke-width="1" stroke-linecap="round" opacity=".4"/>
+            <rect x="58" y="1" width="9" height="7" rx="2.5" fill="#B06030" opacity=".45"/>
+            <line x1="58" y1="8" x2="58" y2="17" stroke="#B06030" stroke-width="1.2" stroke-linecap="round" opacity=".5"/>
+          </svg>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;margin-top:10px;justify-content:center">
+          <button id="yrb" onclick="yRoll()" style="padding:9px 24px;background:#BA7517;color:#FAE8C4;border:none;border-radius:var(--border-radius-md);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-sans)">Lancer</button>
+          <span id="yrlc" style="font-size:12px;color:var(--color-text-secondary)"></span>
+        </div>
+        <div id="ymsg" style="margin-top:8px;padding:7px 12px;border:.5px solid var(--color-border-tertiary);border-left:3px solid #BA7517;border-radius:var(--border-radius-md);font-size:12px;color:var(--color-text-primary);min-height:32px;background:var(--color-background-secondary)"></div>
+        <button onclick="yNew()" style="margin-top:7px;padding:5px 13px;background:transparent;color:var(--color-text-secondary);border:.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:11px;cursor:pointer;font-family:var(--font-sans)">&#8635; Nouvelle partie</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Résultats ── -->
+  <div id="yend" style="display:none;text-align:center;padding:40px 20px;min-width:320px">
+    <div style="font-size:20px;font-weight:500;letter-spacing:5px;color:var(--color-text-primary);margin-bottom:24px">R É S U L T A T S</div>
+    <div id="yranks" style="border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;background:var(--color-background-primary);margin-bottom:20px;text-align:left"></div>
+    <button onclick="yNew()" style="padding:9px 24px;background:#BA7517;color:#FAE8C4;border:none;border-radius:var(--border-radius-md);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-sans)">Nouvelle partie</button>
+  </div>
+
+  <!-- ── Overlay attente multijoueur ── -->
+  <div id="ynetw" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;align-items:center;justify-content:center">
+    <div style="background:#fff;padding:22px 34px;border-radius:14px;text-align:center;box-shadow:0 6px 28px rgba(0,0,0,.3)">
+      <div id="ynetwm" style="font-size:15px;font-weight:500;color:var(--color-text-primary)"></div>
+    </div>
+  </div>
+
+  <!-- ── Modal règles DLM12 ── -->
+  <div id="yrmod" onclick="if(event.target===this)hideRules()">
+    <div class="yrmbx">
+      <h2>JEU DE DÉS — RÈGLES COMPLÈTES</h2>
+      <div class="rs"><h4>Colonnes ↓, L et ↑</h4><ul>
+        <li>Jusqu'à 3 lancers maximum.</li>
+        <li><strong>↓</strong> : remplissage de haut en bas.</li>
+        <li><strong>↑</strong> : remplissage de bas en haut.</li>
+        <li><strong>L</strong> : remplissage libre.</li>
+      </ul></div>
+      <div class="rs"><h4>Colonnes En 1 et En 2</h4><ul>
+        <li><strong>En 1</strong> : combinaison obtenue dès le premier lancer.</li>
+        <li><strong>En 2</strong> : combinaison obtenue en 2 lancers maximum.</li>
+        <li>Le premier joueur qui inscrit un score dans une case fixe une référence.</li>
+        <li>L'autre joueur doit obtenir un score identique ou supérieur pour remplir la même case.</li>
+        <li>Un score inférieur ne permet pas de remplir la case.</li>
+      </ul></div>
+      <div class="rs"><h4>Multiplicateurs</h4><ul>
+        <li><strong>En 1</strong> : total final de la colonne × 3.</li>
+        <li><strong>En 2</strong> : total final de la colonne × 2.</li>
+      </ul></div>
+      <div class="rs"><h4>Lignes 1 à 6</h4>
+        <p>Addition des dés correspondant au chiffre de la ligne.</p>
+        <p>Bonus : +30 points si le total atteint au moins 63 points.</p>
+      </div>
+      <div class="rs"><h4>Cases − et +</h4><ul>
+        <li>Score = total des 5 dés.</li>
+        <li>Les deux cases doivent être remplies.</li>
+        <li>La case − doit être strictement inférieure à la case +.</li>
+        <li>Sinon les deux cases valent 0 point.</li>
+      </ul></div>
+      <div class="rs"><h4>Full</h4><p>20 + total des 5 dés.</p></div>
+      <div class="rs"><h4>Suite</h4><ul>
+        <li>Petite suite (4 nombres consécutifs) : 30 points.</li>
+        <li>Grande suite (5 nombres consécutifs) : 40 points.</li>
+      </ul></div>
+      <div class="rs"><h4>Carré</h4><p>40 + total des 5 dés.</p></div>
+      <div class="rs"><h4>Yams</h4>
+        <p>100 points.</p>
+        <p>Un Yams peut être utilisé comme Full ou Carré, mais jamais comme Suite.</p>
+      </div>
+      <div class="rs"><h4>Défi 8</h4><ul>
+        <li>Total exact de 8 : 60 points.</li>
+        <li>Total exact de 7 : 65 points.</li>
+        <li>Total exact de 6 : 70 points.</li>
+        <li>Exception : un Yams de 1 peut être inscrit dans cette case (compte comme un total de 6).</li>
+      </ul></div>
+      <button class="rscls" onclick="hideRules()">Fermer</button>
+    </div>
+  </div>
+
+</div>
+<script>
+/* Positions des points sur chaque face (% l, % t) */
+const DPOS={1:[[50,50]],2:[[30,30],[70,70]],3:[[30,30],[50,50],[70,70]],4:[[30,30],[70,30],[30,70],[70,70]],5:[[30,30],[70,30],[50,50],[30,70],[70,70]],6:[[30,25],[70,25],[30,50],[70,50],[30,75],[70,75]]};
+
+/*
+ * Orientation 3D du cube pour montrer la face V vers le joueur.
+ * Convention standard : front=1, back=6, right=2, left=5, top=3, bottom=4
+ * Valeurs normalisées 0-360 pour des animations continues (pas de saut à -90°).
+ */
+const FACE_XY={1:[0,0],2:[0,270],3:[270,0],4:[90,0],5:[0,90],6:[0,180]};
+/* Correspondance face CSS → valeur du dé */
+const FACE_VALS={front:1,back:6,right:2,left:5,top:3,bottom:4};
+
+function faceCSS(v){const[x,y]=FACE_XY[v];return`rotateX(${x}deg) rotateY(${y}deg)`}
+
+const CATS=[
+  {id:'c1',n:'As (1)',s:'u',f:d=>d.filter(x=>x===1).reduce((a,b)=>a+b,0)},
+  {id:'c2',n:'Deux (2)',s:'u',f:d=>d.filter(x=>x===2).reduce((a,b)=>a+b,0)},
+  {id:'c3',n:'Trois (3)',s:'u',f:d=>d.filter(x=>x===3).reduce((a,b)=>a+b,0)},
+  {id:'c4',n:'Quatre (4)',s:'u',f:d=>d.filter(x=>x===4).reduce((a,b)=>a+b,0)},
+  {id:'c5',n:'Cinq (5)',s:'u',f:d=>d.filter(x=>x===5).reduce((a,b)=>a+b,0)},
+  {id:'c6',n:'Six (6)',s:'u',f:d=>d.filter(x=>x===6).reduce((a,b)=>a+b,0)},
+  {id:'brl',n:'Brelan',s:'l',f:d=>cv(d).some(c=>c>=3)?ds(d):0},
+  {id:'car',n:'Carré',s:'l',f:d=>cv(d).some(c=>c>=4)?ds(d):0},
+  {id:'ful',n:'Full House',s:'l',f:d=>isFH(d)?25:0},
+  {id:'pst',n:'Petite Suite',s:'l',f:d=>isSS(d)?30:0},
+  {id:'gst',n:'Grande Suite',s:'l',f:d=>isLS(d)?40:0},
+  {id:'yam',n:'YAMS !',s:'l',f:d=>cv(d).some(c=>c>=5)?50:0},
+  {id:'cha',n:'Chance',s:'l',f:d=>ds(d)},
+];
+
+// ── DLM12 ──
+const D12_ROWS=[
+  {id:'d1',n:'1',f:d=>d.filter(x=>x===1).reduce((a,b)=>a+b,0)},
+  {id:'d2',n:'2',f:d=>d.filter(x=>x===2).reduce((a,b)=>a+b,0)},
+  {id:'d3',n:'3',f:d=>d.filter(x=>x===3).reduce((a,b)=>a+b,0)},
+  {id:'d4',n:'4',f:d=>d.filter(x=>x===4).reduce((a,b)=>a+b,0)},
+  {id:'d5',n:'5',f:d=>d.filter(x=>x===5).reduce((a,b)=>a+b,0)},
+  {id:'d6',n:'6',f:d=>d.filter(x=>x===6).reduce((a,b)=>a+b,0)},
+  {id:'dm',n:'−',f:d=>ds(d)},
+  {id:'dp',n:'+',f:d=>ds(d)},
+  {id:'dfu',n:'Full',f:d=>(isFH(d)||cv(d).some(c=>c>=5))?20+ds(d):0},
+  {id:'dsu',n:'Suite',f:d=>isLS(d)?40:isSS(d)?30:0},
+  {id:'dca',n:'Carré',f:d=>cv(d).some(c=>c>=4)?40+ds(d):0},
+  {id:'dd8',n:'Défi 8',f:d=>{const t=ds(d);if(cv(d).some(c=>c>=5)&&d.every(x=>x===1))return 70;return t===6?70:t===7?65:t===8?60:0;}},
+  {id:'dya',n:'Yams',f:d=>cv(d).some(c=>c>=5)?100:0},
+];
+const D12_COLS=['d','l','u','e1','e2'];
+const D12_CN={d:'↓',l:'L',u:'↑',e1:'En 1',e2:'En 2'};
+const D12_MX={d:1,l:1,u:1,e1:3,e2:2};
+// D12 state est per-player (d12Sheet, d12DI, d12UI sur chaque objet joueur)
+let D12_REFS={d:{},l:{},u:{},e1:{},e2:{}};
+
+// ── DLM ──
+const DLM_ROWS=[
+  {id:'c1',n:'As',   f:d=>d.filter(x=>x===1).reduce((a,b)=>a+b,0)},
+  {id:'c2',n:'Deux', f:d=>d.filter(x=>x===2).reduce((a,b)=>a+b,0)},
+  {id:'c3',n:'Trois',f:d=>d.filter(x=>x===3).reduce((a,b)=>a+b,0)},
+  {id:'c4',n:'Quatre',f:d=>d.filter(x=>x===4).reduce((a,b)=>a+b,0)},
+  {id:'c5',n:'Cinq', f:d=>d.filter(x=>x===5).reduce((a,b)=>a+b,0)},
+  {id:'c6',n:'Six',  f:d=>d.filter(x=>x===6).reduce((a,b)=>a+b,0)},
+  {id:'brl',n:'Brelan',   f:d=>cv(d).some(c=>c>=3)?ds(d):0},
+  {id:'car',n:'Carré',    f:d=>cv(d).some(c=>c>=4)?ds(d):0},
+  {id:'ful',n:'Full House',f:d=>isFH(d)?25:0},
+  {id:'pst',n:'Pte Suite',f:d=>isSS(d)?30:0},
+  {id:'gst',n:'Gde Suite',f:d=>isLS(d)?40:0},
+  {id:'yam',n:'YAMS !',   f:d=>cv(d).some(c=>c>=5)?50:0},
+  {id:'cha',n:'Chance',   f:d=>ds(d)},
+];
+const DLM_COLS=['d','l','u','s'];
+const DLM_CN={d:'↓',l:'L',u:'↑',s:'Sec'};
+// DLM state est per-player (dlmSheet, dlmDI, dlmUI sur chaque objet joueur)
+
+function dlmBonus(col,sh){
+  sh=sh||G.dlmSheet;
+  const s=DLM_ROWS.slice(0,6).reduce((a,r)=>a+(sh[col][r.id]||0),0);
+  return s>=63?35:0;
+}
+function dlmSub(col,sh){
+  sh=sh||G.dlmSheet;
+  return DLM_ROWS.reduce((a,r)=>a+(sh[col][r.id]||0),0)+dlmBonus(col,sh);
+}
+function dlmPlayerTotal(p){
+  if(!p.dlmSheet)return 0;
+  return DLM_COLS.reduce((a,col)=>a+dlmSub(col,p.dlmSheet),0);
+}
+function dlmPlayerFilled(p){
+  if(!p.dlmSheet)return 0;
+  return DLM_COLS.reduce((a,col)=>a+Object.keys(p.dlmSheet[col]).length,0);
+}
+function dlmCanFill(col,ri){
+  if(!G.dlmSheet||G.fresh)return false;
+  if(col==='d'&&(ri!==G.dlmDI||ri>12))return false;
+  if(col==='u'&&(ri!==G.dlmUI||ri<0))return false;
+  if(col==='s'&&G.rollsUsed!==1)return false;
+  return!(DLM_ROWS[ri].id in G.dlmSheet[col]);
+}
+
+function rcardDLM(){
+  const el=document.getElementById('ycard');
+  if(!G.dlmSheet){el.innerHTML='';return;}
+  const s=G.dlmSheet;
+  let h='';
+  if(NUM_PLAYERS>1){
+    const row=PLAYERS.map((p,i)=>{
+      const tot=dlmPlayerTotal(p),done=dlmPlayerFilled(p)>=52;
+      const active=i===CURRENT_PLAYER;
+      return`<span style="font-size:10px;${active?'font-weight:600;color:#BA7517':'color:var(--color-text-tertiary)'}">${p.name}${done?' ✓':''}&nbsp;${tot}</span>`;
+    }).join('<span style="color:var(--color-border-secondary);margin:0 4px">·</span>');
+    h+=`<div style="padding:5px 9px;background:var(--color-background-secondary);border-bottom:.5px solid var(--color-border-tertiary);display:flex;gap:4px;flex-wrap:wrap">${row}</div>`;
+  }
+  h+=`<table class="d12t" style="width:100%">`;
+  h+=`<tr><th class="d12c" style="width:64px">Catégorie</th>`;
+  DLM_COLS.forEach(c=>h+=`<th style="width:30px">${DLM_CN[c]}</th>`);
+  h+=`</tr>`;
+  for(let ri=0;ri<6;ri++){
+    const row=DLM_ROWS[ri];
+    h+=`<tr><td class="d12c">${row.n}</td>`;
+    DLM_COLS.forEach(col=>{
+      const v=s[col][row.id];
+      if(v!==undefined){h+=`<td class="d12sf">${v}</td>`;}
+      else if(dlmCanFill(col,ri)){h+=`<td class="d12av d12pr" onclick="yscoreDLM('${col}','${row.id}',${ri})">${row.f(G.dice)}</td>`;}
+      else{h+=`<td></td>`;}
+    });
+    h+=`</tr>`;
+  }
+  h+=`<tr class="d12bn d12sep"><td class="d12c">Bonus +35</td>`;
+  DLM_COLS.forEach(col=>{const b=dlmBonus(col);h+=`<td>${b||''}</td>`;});
+  h+=`</tr>`;
+  for(let ri=6;ri<13;ri++){
+    const row=DLM_ROWS[ri];
+    h+=`<tr${ri===6?' class="d12sep"':''}><td class="d12c">${row.n}</td>`;
+    DLM_COLS.forEach(col=>{
+      const v=s[col][row.id];
+      if(v!==undefined){h+=`<td class="d12sf">${v}</td>`;}
+      else if(dlmCanFill(col,ri)){h+=`<td class="d12av d12pr" onclick="yscoreDLM('${col}','${row.id}',${ri})">${row.f(G.dice)}</td>`;}
+      else{h+=`<td></td>`;}
+    });
+    h+=`</tr>`;
+  }
+  h+=`<tr class="d12bn d12sep" style="font-weight:800"><td class="d12c">TOTAL</td>`;
+  DLM_COLS.forEach(col=>{const tf=dlmSub(col);h+=`<td style="color:#BA7517">${tf||''}</td>`;});
+  h+=`</tr></table>`;
+  el.innerHTML=h;
+}
+
+function yscoreDLM(col,catId,ri){
+  if(ONLINE&&MY_SLOT!==CURRENT_PLAYER)return;
+  if(!G.dlmSheet||G.fresh||G.busy)return;
+  if(!dlmCanFill(col,ri))return;
+  G.dlmSheet[col][catId]=DLM_ROWS[ri].f(G.dice);
+  if(col==='d')G.dlmDI++;
+  if(col==='u')G.dlmUI--;
+  if(PLAYERS.every(p=>dlmPlayerFilled(p)>=52)){if(ONLINE)netPush('ended');endGameDLM();return;}
+  CURRENT_PLAYER=(CURRENT_PLAYER+1)%NUM_PLAYERS;
+  G=PLAYERS[CURRENT_PLAYER];
+  G.dice=[1,1,1,1,1];G.kept=[false,false,false,false,false];
+  G.pos=[0,1,2,3,4].map(()=>({...C0}));
+  G.rollsLeft=3;G.rollsUsed=0;G.phase='roll';G.fresh=true;G.busy=false;G.atTop=[false,false,false,false,false];
+  rdice();rcard();uctrl();updTi();
+  if(ONLINE)netPush();
+  msg((NUM_PLAYERS>1?G.name+' — ':'')+'Lancez les dés !');
+}
+
+function endGameDLM(){
+  document.getElementById('ygame').style.display='none';
+  const sorted=PLAYERS.map(p=>({name:p.name,tot:dlmPlayerTotal(p)})).sort((a,b)=>b.tot-a.tot);
+  const medals=['🥇','🥈','🥉','4.'];
+  let h='';
+  sorted.forEach((r,i)=>{
+    h+=`<div class="yrow"><span style="font-size:18px;width:28px">${i<3?medals[i]:(i+1)+'.'}</span><span style="flex:1;font-size:13px;font-weight:${i===0?600:400};color:var(--color-text-primary)">${r.name}</span><span style="font-size:13px;color:#BA7517;font-weight:500">${r.tot} pts</span></div>`;
+  });
+  document.getElementById('yranks').innerHTML=h;
+  document.getElementById('yend').style.display='';
+}
+
+const DSIZE=30,CX=160,CY=160,TABLE_R=122,HDW=96,HDH=67;
+const TX=252,TY=CY-DSIZE/2;
+const C0={x:CX-DSIZE/2,y:CY-DSIZE/2};
+
+/* Position la plus haute disponible dans le cercle, sans chevauchement.
+   Scan y de haut en bas (cercle complet), à chaque y essaie x depuis le centre vers les bords. */
+function highestPos(existing){
+  const R=TABLE_R-1;
+  function inCircle(x,y){
+    return[[x,y],[x+DSIZE,y],[x,y+DSIZE],[x+DSIZE,y+DSIZE]]
+      .every(([cx,cy])=>(cx-CX)*(cx-CX)+(cy-CY)*(cy-CY)<=R*R);
+  }
+  function noOvlp(x,y){
+    return existing.every(p=>Math.abs(x-p.x)>=DSIZE+6||Math.abs(y-p.y)>=DSIZE+4);
+  }
+  const cx0=Math.round(CX-DSIZE/2);
+  for(let y=Math.round(CY-R+2);y<=Math.round(CY+R-DSIZE);y+=DSIZE){
+    for(let dx=0;dx<=R;dx++){
+      for(const x of[cx0+dx,cx0-dx]){
+        if(inCircle(x,y)&&noOvlp(x,y))return{x,y};
+      }
+    }
+  }
+  return randomPos(existing);
+}
+
+function randomPos(ex){
+  for(let t=0;t<55;t++){
+    const a=(Math.PI*7/18)+Math.random()*(Math.PI*12/9);
+    const r=(0.18+Math.random()*0.82)*TABLE_R;
+    const x=Math.round(CX+r*Math.cos(a)-DSIZE/2);
+    const y=Math.round(CY+r*Math.sin(a)-DSIZE/2);
+    if(ex.every(p=>Math.abs(x-p.x)>=DSIZE||Math.abs(y-p.y)>=DSIZE))return{x,y};
+  }
+  const a=Math.PI/2+Math.random()*Math.PI;
+  const r=(0.2+Math.random()*0.65)*TABLE_R;
+  return{x:Math.round(CX+r*Math.cos(a)-DSIZE/2),y:Math.round(CY+r*Math.sin(a)-DSIZE/2)};
+}
+
+const ds=d=>d.reduce((a,b)=>a+b,0);
+const cv=d=>{const c={};d.forEach(x=>c[x]=(c[x]||0)+1);return Object.values(c)};
+const cm=d=>{const c={};d.forEach(x=>c[x]=(c[x]||0)+1);return c};
+const isFH=d=>{const c=cv(d);return c.includes(3)&&c.includes(2)};
+const isSS=d=>{const u=[...new Set(d)].sort((a,b)=>a-b);return[[1,2,3,4],[2,3,4,5],[3,4,5,6]].some(s=>s.every(n=>u.includes(n)))};
+const isLS=d=>{const u=[...new Set(d)].sort((a,b)=>a-b);return u.length===5&&[[1,2,3,4,5],[2,3,4,5,6]].some(s=>s.every(n=>u.includes(n)))};
+function combo(d){
+  if(cv(d).some(c=>c>=5))return'YAMS !';
+  if(isLS(d))return'Grande Suite';
+  if(isFH(d))return'Full House';
+  if(cv(d).some(c=>c>=4))return'Carré';
+  if(isSS(d))return'Petite Suite';
+  if(cv(d).some(c=>c>=3))return'Brelan';
+  const p=cv(d).filter(c=>c>=2).length;
+  return p>=2?'Double paire':p===1?'Paire':'';
+}
+
+// ── État multi-joueurs ──
+let NUM_PLAYERS=1,CURRENT_PLAYER=0,PLAYERS=[],G,GAME_MODE='standard';
+
+function mkPlayer(num){
+  return{name:'Joueur '+num,dice:[1,1,1,1,1],kept:[false,false,false,false,false],
+         pos:[0,1,2,3,4].map(()=>({...C0})),rollsLeft:3,rollsUsed:0,scores:{},phase:'roll',fresh:true,busy:false,
+         atTop:[false,false,false,false,false],dlmSheet:null,dlmDI:0,dlmUI:12,
+         d12Sheet:null,d12DI:0,d12UI:12};
+}
+
+function selectMode(mode){
+  GAME_MODE=mode;
+  document.getElementById('ystep0').style.display='none';
+  document.getElementById('ystep1').style.display='';
+}
+
+function backToMode(){
+  document.getElementById('ystep1').style.display='none';
+  document.getElementById('ystep0').style.display='';
+}
+
+function selectPlayers(n){
+  NUM_PLAYERS=n;
+  let h='';
+  for(let i=1;i<=n;i++){
+    h+=`<input id="yname${i}" class="yninput" type="text" value="Joueur ${i}" maxlength="14"
+      onkeydown="if(event.key==='Enter'){${i<n?`document.getElementById('yname${i+1}').select()`:'startGame()'}}"
+    >`;
+  }
+  document.getElementById('ynames').innerHTML=h;
+  document.getElementById('ystep1').style.display='none';
+  document.getElementById('ystep2').style.display='';
+  document.getElementById('yname1').select();
+}
+
+function backStep(){
+  document.getElementById('ystep2').style.display='none';
+  document.getElementById('ystep1').style.display='';
+}
+
+function startGame(){
+  CURRENT_PLAYER=0;
+  PLAYERS=Array.from({length:NUM_PLAYERS},(_,i)=>{
+    const inp=document.getElementById('yname'+(i+1));
+    const name=(inp&&inp.value.trim())||'Joueur '+(i+1);
+    return{...mkPlayer(i+1),name};
+  });
+  G=PLAYERS[0];
+  if(GAME_MODE==='dlm'){
+    PLAYERS.forEach(p=>{p.dlmSheet={d:{},l:{},u:{},s:{}};p.dlmDI=0;p.dlmUI=12;});
+    document.getElementById('ycard').style.width='222px';
+    document.getElementById('yrbtn').style.display='none';
+  } else if(GAME_MODE==='dlm12'){
+    PLAYERS.forEach(p=>{p.d12Sheet={d:{},l:{},u:{},e1:{},e2:{}};p.d12DI=0;p.d12UI=12;});
+    D12_REFS={d:{},l:{},u:{},e1:{},e2:{}};
+    document.getElementById('ycard').style.width='242px';
+    document.getElementById('yrbtn').style.display='';
+  } else {
+    document.getElementById('ycard').style.width='182px';
+    document.getElementById('yrbtn').style.display='none';
+  }
+  document.getElementById('ystart').style.display='none';
+  document.getElementById('yend').style.display='none';
+  document.getElementById('ygame').style.display='';
+  rdice();rcard();uctrl();updTi();
+  msg((NUM_PLAYERS>1?G.name+' — ':'')+'Lancez les dés !');
+}
+
+function playerTurn(p){return Object.keys((p||G).scores).length+1;}
+
+function playerTotal(p){
+  const us=CATS.filter(c=>c.s==='u').reduce((a,c)=>a+(p.scores[c.id]||0),0);
+  return Object.values(p.scores).reduce((a,b)=>a+b,0)+(us>=63?35:0);
+}
+
+function updTi(){
+  if(GAME_MODE==='dlm'){
+    const filled=dlmPlayerFilled(G);
+    document.getElementById('yti').textContent=(NUM_PLAYERS>1?G.name+' — ':'')+'Case '+(filled+1)+'/52';
+    return;
+  }
+  if(GAME_MODE==='dlm12'){
+    const filled=d12PlayerFilled(G);
+    document.getElementById('yti').textContent=(NUM_PLAYERS>1?G.name+' — ':'')+'Case '+(filled+1)+'/65';
+    return;
+  }
+  document.getElementById('yti').textContent=(NUM_PLAYERS>1?G.name+' — ':'')+'Tour '+playerTurn()+'/13';
+}
+
+// ── Rendu 3D ──
+function makeDots(faceEl,val){
+  (DPOS[val]||DPOS[1]).forEach(([l,t])=>{
+    const dot=document.createElement('div');
+    dot.className='ydot';dot.style.left=l+'%';dot.style.top=t+'%';
+    faceEl.appendChild(dot);
+  });
+}
+
+function makeCube(i){
+  const v=G.dice[i],{x,y}=G.pos[i];
+
+  const wrap=document.createElement('div');
+  wrap.className='yw'+(G.kept[i]?' ywkept':'');
+  wrap.id='yw'+i;
+  wrap.style.left=x+'px';wrap.style.top=y+'px';wrap.style.zIndex=y;
+  wrap.onclick=()=>tk(i);
+
+  const cube=document.createElement('div');
+  cube.className='dcu';cube.id='yd'+i;
+  cube.style.transform=faceCSS(v);
+
+  for(const[face,fv] of Object.entries(FACE_VALS)){
+    const f=document.createElement('div');
+    f.className='dcf '+face;
+    makeDots(f,fv);
+    cube.appendChild(f);
+  }
+  wrap.appendChild(cube);
+  return wrap;
+}
+
+function rdice(){
+  const felt=document.getElementById('yfelt');
+  felt.querySelectorAll('.yw').forEach(e=>e.remove());
+  if(G.fresh){document.getElementById('yctr').textContent='';return;}
+  G.dice.forEach((_,i)=>felt.appendChild(makeCube(i)));
+  document.getElementById('yctr').textContent=(G.phase!=='done')?combo(G.dice):'';
+}
+
+function rcard(){
+  if(GAME_MODE==='dlm'){rcardDLM();return;}
+  if(GAME_MODE==='dlm12'){rcardDLM12();return;}
+  const el=document.getElementById('ycard');
+  const usc=CATS.filter(c=>c.s==='u').reduce((a,c)=>a+(G.scores[c.id]||0),0);
+  const bon=usc>=63?35:0,tot=Object.values(G.scores).reduce((a,b)=>a+b,0)+bon;
+  let h='';
+
+  if(NUM_PLAYERS>1){
+    const row=PLAYERS.map((p,i)=>{
+      const pt=playerTotal(p),done=Object.keys(p.scores).length===13;
+      const active=i===CURRENT_PLAYER;
+      return`<span style="font-size:10px;${active?'font-weight:600;color:#BA7517':'color:var(--color-text-tertiary)'}">${p.name}${done?' ✓':''}&nbsp;${pt}</span>`;
+    }).join('<span style="color:var(--color-border-secondary);margin:0 4px">·</span>');
+    h+=`<div style="padding:5px 9px;background:var(--color-background-secondary);border-bottom:.5px solid var(--color-border-tertiary);display:flex;gap:4px;flex-wrap:wrap">${row}</div>`;
+  }
+
+  h+=`<div style="background:var(--color-background-secondary);padding:4px 9px;font-size:10px;font-weight:500;color:var(--color-text-secondary);letter-spacing:1px;border-bottom:.5px solid var(--color-border-tertiary)">SECTION HAUTE</div>`;
+  CATS.filter(c=>c.s==='u').forEach(cat=>{
+    const fil=cat.id in G.scores,prev=!fil&&G.phase==='score'?cat.f(G.dice):null;
+    const val=fil?G.scores[cat.id]:(prev!==null?prev:'');
+    const cls=fil?'ysf'+(G.scores[cat.id]===0?' ysz':''):(prev!==null?'ysav':'');
+    h+=`<div class="ysr ${cls}" onclick="yscore('${cat.id}')"><span>${cat.n}</span><span class="ysv">${val}</span></div>`;
+  });
+  h+=`<div style="display:flex;justify-content:space-between;padding:3px 9px;font-size:10px;color:var(--color-text-secondary);border-bottom:.5px solid var(--color-border-tertiary)"><span>Bonus (≥63)</span><span style="color:${bon?'#BA7517':'var(--color-text-tertiary)'};font-weight:${bon?500:400}">${bon?'+35 ✓':usc+'/63'}</span></div>`;
+  h+=`<div style="background:var(--color-background-secondary);padding:4px 9px;font-size:10px;font-weight:500;color:var(--color-text-secondary);letter-spacing:1px;border-bottom:.5px solid var(--color-border-tertiary)">SECTION BASSE</div>`;
+  CATS.filter(c=>c.s==='l').forEach(cat=>{
+    const fil=cat.id in G.scores,prev=!fil&&G.phase==='score'?cat.f(G.dice):null;
+    const val=fil?G.scores[cat.id]:(prev!==null?prev:'');
+    const cls=fil?'ysf'+(G.scores[cat.id]===0?' ysz':''):(prev!==null?'ysav':'');
+    h+=`<div class="ysr ${cls}" onclick="yscore('${cat.id}')"><span>${cat.n}</span><span class="ysv">${val}</span></div>`;
+  });
+  h+=`<div style="display:flex;justify-content:space-between;padding:5px 9px;font-size:12px;font-weight:500;color:var(--color-text-primary);background:var(--color-background-secondary)"><span>TOTAL</span><span style="color:#BA7517">${tot}</span></div>`;
+  el.innerHTML=h;
+}
+
+function tk(i){if(G.phase!=='roll'||G.fresh||G.rollsLeft<=0||G.busy)return;G.kept[i]=!G.kept[i];rdice()}
+
+// ── Animation 3D ──
+async function throwDice(ids){
+  let maxEnd=0;
+  const cubeAnims=[];
+
+  // Pendant le vol, z-index élevé pour passer devant les dés gardés
+  ids.forEach(i=>{const el=document.getElementById('yw'+i);if(el)el.style.zIndex=500;});
+
+  ids.forEach((i,idx)=>{
+    const{x,y}=G.pos[i];
+    const wrapEl=document.getElementById('yw'+i);
+    const cubeEl=document.getElementById('yd'+i);
+    const fx=TX-x,fy=TY-y;
+    const dist=Math.sqrt(fx*fx+fy*fy);
+    const lift=Math.max(28,Math.min(58,dist*0.28));
+    const dur=460+Math.round(dist*0.48),delay=idx*70;
+
+    // Arc parabolique sur le wrapper (position + scale + opacité)
+    wrapEl.animate([
+      {transform:`translate(${fx}px,${fy}px) scale(0.44)`,opacity:0.82},
+      {transform:`translate(${fx*.5}px,${fy*.5-lift}px) scale(1.05)`,offset:.40},
+      {transform:`translate(0px,-9px) scale(1.07)`,offset:.83},
+      {transform:`translate(0px,4px) scale(0.96)`,offset:.93},
+      {transform:`translate(0px,0px) scale(1)`,opacity:1}
+    ],{duration:dur,delay,easing:'ease-out',fill:'backwards'});
+
+    // Rotation 3D tumbling sur le cube
+    // Départ à (0,0), tumbling vers >720° + offset final, atterrissage sur faceCSS(v)
+    const[ex,ey]=FACE_XY[G.dice[i]];
+    const spins=2;
+    const midX=spins*360+ex+Math.round((Math.random()-.5)*90);
+    const midY=spins*360+ey+Math.round((Math.random()-.5)*90);
+    const finalT=`rotateX(${ex}deg) rotateY(${ey}deg)`;
+    const anim=cubeEl.animate([
+      {transform:'rotateX(0deg) rotateY(0deg)'},
+      {transform:`rotateX(${midX}deg) rotateY(${midY}deg)`,offset:.62},
+      {transform:finalT}
+    ],{duration:dur,delay,easing:'ease-out',fill:'both'});
+    cubeAnims.push({el:cubeEl,anim,finalT});
+
+    maxEnd=Math.max(maxEnd,delay+dur);
+  });
+  await sl(maxEnd+90);
+  // Commit transform inline puis annule l'animation (pattern standard)
+  cubeAnims.forEach(({el,anim,finalT})=>{el.style.transform=finalT;anim.cancel()});
+  // Restaure z-index selon position finale
+  ids.forEach(i=>{const el=document.getElementById('yw'+i);if(el)el.style.zIndex=G.pos[i].y;});
+}
+
+async function animHd(keptIds,pickupIds){
+  const hd=document.getElementById('yhd');
+  hd.style.transition='none';
+  hd.style.left='334px';hd.style.top=(CY-HDH/2)+'px';hd.style.opacity='0';
+  await sl(30);
+  hd.style.transition='left .40s ease,top .38s ease,opacity .22s';
+  hd.style.opacity='1';await sl(80);
+
+  // ── Phase 1 : déposer uniquement les dés gardés pas encore en haut ──
+  const toMove=keptIds.filter(i=>!G.atTop[i]);
+  if(toMove.length>0){
+    // Bloqué = positions des dés ramassés + positions des dés déjà en haut (à respecter)
+    const blocked=[
+      ...pickupIds.map(j=>G.pos[j]),
+      ...keptIds.filter(i=>G.atTop[i]).map(i=>G.pos[i])
+    ];
+    const targets=[];
+    for(let idx=0;idx<toMove.length;idx++){
+      // Bloquer aussi les positions actuelles des dés pas encore ramassés (encore visibles)
+      const futurePos=toMove.slice(idx+1).map(j=>G.pos[j]);
+      const t=highestPos([...blocked,...targets,...futurePos]);
+      targets.push(t);
+    }
+    for(let idx=0;idx<toMove.length;idx++){
+      const i=toMove[idx];
+      const{x,y}=G.pos[i];
+      const hx=x+DSIZE+8,hy=y+DSIZE/2-HDH/2;
+      hd.style.left=hx+'px';hd.style.top=hy+'px';await sl(420);
+      hd.style.left=(x+2)+'px';await sl(130);
+      const el=document.getElementById('yw'+i);
+      if(el){el.style.transition='opacity .10s';el.style.opacity='0';el.style.pointerEvents='none';}
+      await sl(100);
+      hd.style.left=(hx-5)+'px';await sl(150);
+      const{x:nx,y:ny}=targets[idx];
+      const dhx=nx+DSIZE+8,dhy=ny+DSIZE/2-HDH/2;
+      hd.style.left=dhx+'px';hd.style.top=dhy+'px';await sl(420);
+      hd.style.left=(nx+2)+'px';await sl(100);
+      if(el){el.style.left=nx+'px';el.style.top=ny+'px';el.style.zIndex=500;el.style.opacity='1';}
+      G.pos[i]={x:nx,y:ny};
+      G.atTop[i]=true;
+      await sl(80);
+      if(el)el.style.zIndex=ny;
+      hd.style.left=(dhx-5)+'px';await sl(140);
+    }
+  }
+
+  // ── Phase 2 : ramasser les dés à relancer ──
+  for(const i of pickupIds){
+    G.atTop[i]=false;
+    const{x,y}=G.pos[i];
+    const hx=x+DSIZE+8,hy=y+DSIZE/2-HDH/2;
+    hd.style.left=hx+'px';hd.style.top=hy+'px';await sl(420);
+    hd.style.left=(x+2)+'px';await sl(130);
+    const el=document.getElementById('yw'+i);
+    if(el){el.style.transition='opacity .10s';el.style.opacity='0';el.style.pointerEvents='none';}
+    await sl(100);
+    hd.style.left=(hx-5)+'px';await sl(150);
+  }
+
+  hd.style.left='334px';hd.style.top=(CY-HDH/2)+'px';await sl(320);
+  hd.style.opacity='0';
+}
+
+// ── Logique de jeu ──
+async function yRoll(){
+  if(ONLINE&&MY_SLOT!==CURRENT_PLAYER)return;
+  if(G.phase!=='roll'||G.rollsLeft<=0||G.busy)return;
+  G.busy=true;document.getElementById('yrb').disabled=true;
+
+  if(!G.fresh){
+    const keptIds=G.kept.map((k,i)=>k?i:-1).filter(i=>i>=0);
+    const toPickup=G.kept.map((k,i)=>k?-1:i).filter(i=>i>=0);
+    if(toPickup.length>0)await animHd(keptIds,toPickup);
+  }
+
+  const fixed=G.pos.filter((_,i)=>G.kept[i]);
+  const newps=[],rolled=[];
+  for(let i=0;i<5;i++){
+    if(!G.kept[i]){
+      G.dice[i]=Math.ceil(Math.random()*6);
+      G.pos[i]=randomPos([...fixed,...newps]);
+      newps.push(G.pos[i]);rolled.push(i);
+    }
+  }
+  G.rollsLeft--;G.rollsUsed++;G.fresh=false;
+  rdice();
+  await throwDice(rolled);
+
+  if(G.rollsLeft===0){
+    G.phase='score';rcard();uctrl();
+    msg((NUM_PLAYERS>1?G.name+' — ':'')+'Choisissez une case pour marquer vos points !');
+    if(ONLINE)netPush();
+    G.busy=false;document.getElementById('yrb').disabled=false;return;
+  }
+  const sug=aiSug(G.dice,G.scores);G.kept=sug;
+  rdice();rcard();uctrl();
+  const kc=sug.filter(Boolean).length;
+  if(kc===5){
+    G.phase='score';rcard();uctrl();
+    msg((NUM_PLAYERS>1?G.name+' — ':'')+'Tout garder — choisissez une case !');
+    if(ONLINE)netPush();
+    G.busy=false;document.getElementById('yrb').disabled=false;return;
+  }
+  msg((NUM_PLAYERS>1?G.name+' — ':'')+'Garder '+kc+' dé'+(kc>1?'s':'')+' — modifiez si besoin, puis relancez.');
+  if(ONLINE)netPush();
+  G.busy=false;document.getElementById('yrb').disabled=false;
+}
+
+function aiSug(d,sc){
+  const c=cm(d),mx=Math.max(...Object.values(c)),vs=Object.keys(c).map(Number).sort((a,b)=>b-a);
+  if(mx===5)return[true,true,true,true,true];
+  if(mx===4){const v=vs.find(v=>c[v]>=4);return d.map(x=>x===v)}
+  if(isLS(d)&&!('gst'in sc))return[true,true,true,true,true];
+  if(isFH(d)&&!('ful'in sc))return[true,true,true,true,true];
+  if(mx===3){const v=vs.find(v=>c[v]===3);if(vs.some(w=>w!==v&&c[w]>=2))return[true,true,true,true,true];const k=[false,false,false,false,false];let ct=0;d.forEach((x,i)=>{if(x===v&&ct<3){k[i]=true;ct++}});return k}
+  const u=[...new Set(d)].sort((a,b)=>a-b);
+  for(const s of[[1,2,3,4],[2,3,4,5],[3,4,5,6]]){if(s.every(n=>u.includes(n))){const k=[false,false,false,false,false],us={};d.forEach((x,i)=>{if(s.includes(x)&&!us[x]){k[i]=true;us[x]=true}});return k}}
+  const ps=vs.filter(v=>c[v]>=2);
+  if(ps.length>=2){const t2=ps.slice(0,2),k=[false,false,false,false,false],ct={};d.forEach((x,i)=>{if(t2.includes(x)&&(ct[x]||0)<2){k[i]=true;ct[x]=(ct[x]||0)+1}});return k}
+  if(ps.length===1){const v=ps[0],k=[false,false,false,false,false];let ct=0;d.forEach((x,i)=>{if(x===v&&ct<2){k[i]=true;ct++}});return k}
+  const k=[false,false,false,false,false];k[d.indexOf(Math.max(...d))]=true;return k;
+}
+
+// ── DLM12 helpers ──
+function d12CanFill(col,ri){
+  if(!G.d12Sheet||G.fresh)return false;
+  const ru=G.rollsUsed;
+  if(col==='e1'&&ru!==1)return false;
+  if(col==='e2'&&ru>2)return false;
+  if(col==='d'&&(ri!==G.d12DI||ri>12))return false;
+  if(col==='u'&&(ri!==G.d12UI||ri<0))return false;
+  return!(D12_ROWS[ri].id in G.d12Sheet[col]);
+}
+function d12Bonus(col,sh){
+  sh=sh||G.d12Sheet;
+  return D12_ROWS.slice(0,6).reduce((a,r)=>a+(sh[col][r.id]!==undefined?sh[col][r.id]:0),0)>=63?30:0;
+}
+function d12Sub(col,sh){
+  sh=sh||G.d12Sheet;
+  return D12_ROWS.reduce((a,r)=>a+(sh[col][r.id]!==undefined?sh[col][r.id]:0),0)+d12Bonus(col,sh);
+}
+function d12PlayerTotal(p){
+  if(!p.d12Sheet)return 0;
+  return D12_COLS.reduce((a,col)=>a+d12Sub(col,p.d12Sheet)*D12_MX[col],0);
+}
+function d12PlayerFilled(p){
+  if(!p.d12Sheet)return 0;
+  return D12_COLS.reduce((a,col)=>a+Object.keys(p.d12Sheet[col]).length,0);
+}
+
+function rcardDLM12(){
+  const el=document.getElementById('ycard');
+  if(!G.d12Sheet){el.innerHTML='';return;}
+  const s=G.d12Sheet;
+  let h='';
+  if(NUM_PLAYERS>1){
+    const row=PLAYERS.map((p,i)=>{
+      const tot=d12PlayerTotal(p),done=d12PlayerFilled(p)>=65;
+      const active=i===CURRENT_PLAYER;
+      return`<span style="font-size:10px;${active?'font-weight:600;color:#BA7517':'color:var(--color-text-tertiary)'}">${p.name}${done?' ✓':''}&nbsp;${tot}</span>`;
+    }).join('<span style="color:var(--color-border-secondary);margin:0 4px">·</span>');
+    h+=`<div style="padding:5px 9px;background:var(--color-background-secondary);border-bottom:.5px solid var(--color-border-tertiary);display:flex;gap:4px;flex-wrap:wrap">${row}</div>`;
+  }
+  h+=`<table class="d12t" style="width:100%">`;
+  h+=`<tr><th class="d12c" style="width:72px">Catégorie</th>`;
+  D12_COLS.forEach(c=>h+=`<th style="width:31px">${D12_CN[c]}</th>`);
+  h+=`</tr>`;
+  const cellHtml=(col,row,ri)=>{
+    const v=s[col][row.id];
+    if(v!==undefined)return`<td class="d12sf">${v}</td>`;
+    if(!d12CanFill(col,ri))return`<td></td>`;
+    const pv=row.f(G.dice);
+    const ref=NUM_PLAYERS>1?D12_REFS[col][row.id]:undefined;
+    if(ref!==undefined&&pv<ref)
+      return`<td style="background:#fff3e0;cursor:pointer;color:#c84b00;font-size:8px" onclick="yscoreDLM12('${col}','${row.id}',${ri})">${pv}<br><span style="color:#bbb">≥${ref}</span></td>`;
+    return`<td class="d12av d12pr" onclick="yscoreDLM12('${col}','${row.id}',${ri})">${pv}</td>`;
+  };
+  for(let ri=0;ri<6;ri++){
+    const row=D12_ROWS[ri];
+    h+=`<tr><td class="d12c">${row.n}</td>`;
+    D12_COLS.forEach(col=>{h+=cellHtml(col,row,ri);});
+    h+=`</tr>`;
+  }
+  h+=`<tr class="d12bn d12sep"><td class="d12c">Bonus +30</td>`;
+  D12_COLS.forEach(col=>{const b=d12Bonus(col);h+=`<td>${b||''}</td>`;});
+  h+=`</tr>`;
+  for(let ri=6;ri<13;ri++){
+    const row=D12_ROWS[ri];
+    h+=`<tr${ri===6?' class="d12sep"':''}><td class="d12c">${row.n}</td>`;
+    D12_COLS.forEach(col=>{h+=cellHtml(col,row,ri);});
+    h+=`</tr>`;
+  }
+  h+=`<tr class="d12bn d12sep"><td class="d12c" style="font-weight:700">Sous-total</td>`;
+  D12_COLS.forEach(col=>{const st=d12Sub(col);h+=`<td>${st||''}</td>`;});
+  h+=`</tr>`;
+  h+=`<tr class="d12bn"><td class="d12c">Mult.</td>`;
+  D12_COLS.forEach(col=>h+=`<td>×${D12_MX[col]}</td>`);
+  h+=`</tr>`;
+  h+=`<tr class="d12bn d12sep" style="font-weight:800"><td class="d12c">TOTAL</td>`;
+  D12_COLS.forEach(col=>{const tf=d12Sub(col)*D12_MX[col];h+=`<td style="color:#BA7517">${tf||''}</td>`;});
+  h+=`</tr></table>`;
+  const gt=D12_COLS.reduce((a,col)=>a+d12Sub(col)*D12_MX[col],0);
+  h+=`<div style="padding:5px 8px;font-size:10px;font-weight:700;display:flex;justify-content:space-between;border-top:1px solid #eee"><span>GRAND TOTAL</span><span style="color:#BA7517">${gt||''}</span></div>`;
+  el.innerHTML=h;
+}
+
+function yscoreDLM12(col,catId,ri){
+  if(ONLINE&&MY_SLOT!==CURRENT_PLAYER)return;
+  if(!G.d12Sheet||G.fresh||G.busy)return;
+  if(!d12CanFill(col,ri))return;
+  const score=D12_ROWS[ri].f(G.dice);
+  if(NUM_PLAYERS>1){
+    const ref=D12_REFS[col][catId];
+    if(ref!==undefined&&score<ref){msg('Score insuffisant — il faut au moins '+ref+' pour cette case.');return;}
+    if(ref===undefined)D12_REFS[col][catId]=score;
+  }
+  G.d12Sheet[col][catId]=score;
+  if(col==='d')G.d12DI++;
+  if(col==='u')G.d12UI--;
+  if(catId==='dm'||catId==='dp'){
+    const m=G.d12Sheet[col]['dm'],p=G.d12Sheet[col]['dp'];
+    if(m!==undefined&&p!==undefined&&m>=p){
+      G.d12Sheet[col]['dm']=0;G.d12Sheet[col]['dp']=0;
+      msg('Case − ≥ case + : les deux cases valent 0 point.');
+    }
+  }
+  if(PLAYERS.every(p=>d12PlayerFilled(p)>=65)){if(ONLINE)netPush('ended');endGameDLM12();return;}
+  CURRENT_PLAYER=(CURRENT_PLAYER+1)%NUM_PLAYERS;
+  G=PLAYERS[CURRENT_PLAYER];
+  G.dice=[1,1,1,1,1];G.kept=[false,false,false,false,false];
+  G.pos=[0,1,2,3,4].map(()=>({...C0}));
+  G.rollsLeft=3;G.rollsUsed=0;G.phase='roll';G.fresh=true;G.busy=false;G.atTop=[false,false,false,false,false];
+  rdice();rcard();uctrl();updTi();
+  if(ONLINE)netPush();
+  msg((NUM_PLAYERS>1?G.name+' — ':'')+'Lancez les dés !');
+}
+
+function endGameDLM12(){
+  document.getElementById('ygame').style.display='none';
+  const sorted=PLAYERS.map(p=>({name:p.name,tot:d12PlayerTotal(p)})).sort((a,b)=>b.tot-a.tot);
+  const medals=['🥇','🥈','🥉','4.'];
+  let h='';
+  sorted.forEach((r,i)=>{
+    h+=`<div class="yrow"><span style="font-size:18px;width:28px">${i<3?medals[i]:(i+1)+'.'}</span><span style="flex:1;font-size:13px;font-weight:${i===0?600:400};color:var(--color-text-primary)">${r.name}</span><span style="font-size:13px;color:#BA7517;font-weight:500">${r.tot} pts</span></div>`;
+  });
+  document.getElementById('yranks').innerHTML=h;
+  document.getElementById('yend').style.display='';
+}
+
+function showRules(){document.getElementById('yrmod').classList.add('vis');}
+function hideRules(){document.getElementById('yrmod').classList.remove('vis');}
+
+function yscore(id){
+  if(ONLINE&&MY_SLOT!==CURRENT_PLAYER)return;
+  if(G.phase!=='score'||id in G.scores)return;
+  const cat=CATS.find(c=>c.id===id);if(!cat)return;
+  G.scores[id]=cat.f(G.dice);
+
+  if(PLAYERS.every(p=>Object.keys(p.scores).length===13)){if(ONLINE)netPush('ended');endGame();return;}
+
+  CURRENT_PLAYER=(CURRENT_PLAYER+1)%NUM_PLAYERS;
+  G=PLAYERS[CURRENT_PLAYER];
+  G.dice=[1,1,1,1,1];G.kept=[false,false,false,false,false];
+  G.pos=[0,1,2,3,4].map(()=>({...C0}));
+  G.rollsLeft=3;G.phase='roll';G.fresh=true;G.busy=false;G.atTop=[false,false,false,false,false];
+  rdice();rcard();uctrl();updTi();
+  if(ONLINE)netPush();
+  msg((NUM_PLAYERS>1?G.name+' — ':'')+'Tour '+playerTurn()+'/13 — Lancez les dés !');
+}
+
+function endGame(){
+  document.getElementById('ygame').style.display='none';
+  const sorted=PLAYERS.map(p=>({name:p.name,tot:playerTotal(p)})).sort((a,b)=>b.tot-a.tot);
+  const medals=['🥇','🥈','🥉','4.'];
+  let h='';
+  sorted.forEach((r,i)=>{
+    const medal=i<3?medals[i]:(i+1)+'.';
+    const comment=i===0?(r.tot>=300?'Exceptionnel !':r.tot>=200?'Bien joué !':''):'';
+    h+=`<div class="yrow">
+      <span style="font-size:18px;width:28px">${medal}</span>
+      <span style="flex:1;font-size:13px;font-weight:${i===0?600:400};color:var(--color-text-primary)">${r.name}</span>
+      <span style="font-size:13px;color:#BA7517;font-weight:500">${r.tot} pts</span>
+      ${comment?`<span style="font-size:11px;color:var(--color-text-secondary)">${comment}</span>`:''}
+    </div>`;
+  });
+  document.getElementById('yranks').innerHTML=h;
+  document.getElementById('yend').style.display='';
+}
+
+function yNew(){
+  if(ONLINE&&FBDB&&ROOM_CODE){
+    try{FBDB.ref('rooms/'+ROOM_CODE+'/state').off();}catch(e){}
+  }
+  ONLINE=false;MY_SLOT=-1;NET_SEQ=-1;ROOM_CODE=null;
+  document.getElementById('ynetw').style.display='none';
+  document.getElementById('ylobby').style.display='none';
+  document.getElementById('ystep_net').style.display='none';
+  document.getElementById('ygame').style.display='none';
+  document.getElementById('yend').style.display='none';
+  document.getElementById('ystep2').style.display='none';
+  document.getElementById('ystep1').style.display='none';
+  document.getElementById('ystep0').style.display='';
+  document.getElementById('ystart').style.display='';
+}
+
+function uctrl(){
+  const btn=document.getElementById('yrb'),rl=document.getElementById('yrlc');
+  if(G.phase==='score'||G.phase==='done'){btn.disabled=true;rl.textContent='Choisissez une case !'}
+  else{btn.disabled=false;rl.textContent=G.rollsLeft===1?'Dernier lancer !':G.rollsLeft+' lancers restants'}
+}
+function msg(t){document.getElementById('ymsg').textContent=t}
+function sl(ms){return new Promise(r=>setTimeout(r,ms))}
+
+// Mise à l'échelle desktop uniquement (écrans sans touch)
+function scaleGame(){
+  const el=document.getElementById('yg');
+  if(!window.matchMedia('(pointer:fine)').matches){el.style.zoom='';return;}
+  const REF_W=GAME_MODE==='dlm12'?668:620,REF_H=570;
+  el.style.zoom=Math.min(window.innerWidth/REF_W,window.innerHeight/REF_H)*0.97;
+}
+window.addEventListener('resize',scaleGame);
+scaleGame();
+document.getElementById('yjsok').textContent='JS ✓';
+
+// ─── MULTIJOUEUR EN LIGNE ───
+let ONLINE=false,MY_SLOT=-1,NET_SEQ=-1,ROOM_CODE=null,FBDB=null;
+const FB_CFG={
+  apiKey:'AIzaSyBpAG_EN7FK6pD7Lh-2AwNVjAUZJIgsg0s',
+  authDomain:'yams-cedmad.firebaseapp.com',
+  databaseURL:'https://yams-cedmad-default-rtdb.europe-west1.firebasedatabase.app',
+  projectId:'yams-cedmad',
+  storageBucket:'yams-cedmad.firebasestorage.app',
+  messagingSenderId:'963006567688',
+  appId:'1:963006567688:web:dca71a6bf1b3de99abc8bd'
+};
+try{firebase.initializeApp(FB_CFG);FBDB=firebase.database();}catch(e){console.warn('Firebase',e);}
+
+const NET_WORDS=['ROSE','BLEU','LUNE','FEUX','VENT','BOIS','CHAT','POIS','DAME','TOUR'];
+function genCode(){return NET_WORDS[Math.floor(Math.random()*NET_WORDS.length)]+'-'+(10+Math.floor(Math.random()*90));}
+
+function showNetStep(){
+  document.getElementById('ystep1').style.display='none';
+  document.getElementById('ystep_net').style.display='';
+}
+function netMsg(t,err){
+  const el=document.getElementById('ynetmsg');
+  if(el){el.textContent=t;el.style.color=err?'var(--color-text-danger)':'var(--color-text-secondary)';}
+}
+
+function netSerialize(phase){
+  return{
+    seq:NET_SEQ,phase:phase||'playing',mode:GAME_MODE,cp:CURRENT_PLAYER,
+    d12Refs:D12_REFS,
+    players:PLAYERS.map(p=>({
+      name:p.name,dice:p.dice,kept:p.kept,
+      rollsLeft:p.rollsLeft,rollsUsed:p.rollsUsed||0,
+      phase:p.phase,fresh:p.fresh,scores:p.scores||{},
+      dlmSheet:p.dlmSheet||null,dlmDI:p.dlmDI||0,dlmUI:p.dlmUI!==undefined?p.dlmUI:12,
+      d12Sheet:p.d12Sheet||null,d12DI:p.d12DI||0,d12UI:p.d12UI!==undefined?p.d12UI:12
+    }))
+  };
+}
+
+function netPush(phase){
+  if(!FBDB||!ROOM_CODE)return;
+  NET_SEQ++;
+  FBDB.ref('rooms/'+ROOM_CODE+'/state').set(netSerialize(phase));
+}
+
+function applyNetState(data){
+  if(!data)return;
+  if(data.seq!==undefined&&data.seq<=NET_SEQ)return;
+  NET_SEQ=data.seq!==undefined?data.seq:NET_SEQ;
+  GAME_MODE=data.mode||GAME_MODE;
+  PLAYERS=data.players.map((pd,i)=>{
+    const p=mkPlayer(i+1);
+    p.name=pd.name;p.dice=pd.dice||[1,1,1,1,1];p.kept=pd.kept||[false,false,false,false,false];
+    p.rollsLeft=pd.rollsLeft!==undefined?pd.rollsLeft:3;p.rollsUsed=pd.rollsUsed||0;
+    p.phase=pd.phase||'roll';p.fresh=pd.fresh!==undefined?pd.fresh:true;
+    p.scores=pd.scores||{};
+    p.dlmSheet=pd.dlmSheet||null;p.dlmDI=pd.dlmDI||0;p.dlmUI=pd.dlmUI!==undefined?pd.dlmUI:12;
+    p.d12Sheet=pd.d12Sheet||null;p.d12DI=pd.d12DI||0;p.d12UI=pd.d12UI!==undefined?pd.d12UI:12;
+    return p;
+  });
+  NUM_PLAYERS=PLAYERS.length;CURRENT_PLAYER=data.cp||0;G=PLAYERS[CURRENT_PLAYER];
+  if(data.d12Refs)D12_REFS=data.d12Refs;
+  document.getElementById('ylobby').style.display='none';
+  document.getElementById('ystart').style.display='none';
+  if(GAME_MODE==='dlm'){document.getElementById('ycard').style.width='222px';document.getElementById('yrbtn').style.display='none';}
+  else if(GAME_MODE==='dlm12'){document.getElementById('ycard').style.width='242px';document.getElementById('yrbtn').style.display='';}
+  else{document.getElementById('ycard').style.width='182px';document.getElementById('yrbtn').style.display='none';}
+  document.getElementById('ygame').style.display='';
+  rdice();rcard();uctrl();updTi();
+  if(data.phase==='ended'){document.getElementById('ynetw').style.display='none';return;}
+  const myTurn=(MY_SLOT===CURRENT_PLAYER);
+  const wdiv=document.getElementById('ynetw');
+  wdiv.style.display=myTurn?'none':'flex';
+  if(!myTurn)document.getElementById('ynetwm').textContent='En attente de '+G.name+' …';
+  msg((NUM_PLAYERS>1?G.name+' — ':'')+(G.fresh?'Lancez les dés !':G.phase==='score'?'Choisissez une case !':'Relancez ou choisissez !'));
+}
+
+function netWatchState(ref){
+  ref.on('value',snap=>{if(snap.val())applyNetState(snap.val());});
+}
+
+async function netCreate(){
+  if(!FBDB){netMsg('Connexion Firebase indisponible.',true);return;}
+  const name=(document.getElementById('ynetname').value.trim()||'Joueur 1').slice(0,14);
+  const code=genCode();
+  ROOM_CODE=code;MY_SLOT=0;ONLINE=true;
+  netMsg('Création…');
+  const ref=FBDB.ref('rooms/'+code);
+  await ref.set({status:'lobby',mode:GAME_MODE,host:name,slots:{0:{name}},state:null});
+  showLobby(code,true);
+  ref.child('slots').on('value',s=>updateLobbyList(s.val()));
+}
+
+async function netJoin(){
+  if(!FBDB){netMsg('Connexion Firebase indisponible.',true);return;}
+  const name=(document.getElementById('ynetname').value.trim()||'Joueur').slice(0,14);
+  const code=(document.getElementById('ynetcode').value.trim().toUpperCase());
+  if(!code){netMsg('Entrez un code de partie.',true);return;}
+  netMsg('Connexion…');
+  const ref=FBDB.ref('rooms/'+code);
+  const snap=await ref.once('value');
+  if(!snap.val()){netMsg('Code introuvable : '+code,true);return;}
+  if(snap.val().status!=='lobby'){netMsg('Cette partie a déjà commencé.',true);return;}
+  GAME_MODE=snap.val().mode;
+  const slots=snap.val().slots||{};
+  const myIdx=Object.keys(slots).length;
+  MY_SLOT=myIdx;ROOM_CODE=code;ONLINE=true;
+  await ref.child('slots/'+myIdx).set({name});
+  showLobby(code,false);
+  ref.child('slots').on('value',s=>updateLobbyList(s.val()));
+  ref.child('state').on('value',s=>{
+    if(s.val()&&s.val().phase==='playing'){
+      ref.child('slots').off();ref.child('state').off();
+      netWatchState(ref.child('state'));
+    }
+  });
+}
+
+function showLobby(code,isHost){
+  document.getElementById('ystep_net').style.display='none';
+  document.getElementById('ylobby').style.display='';
+  document.getElementById('ynrcode').textContent=code;
+  document.getElementById('ynrstart').style.display=isHost?'':'none';
+  document.getElementById('ynrwait').style.display=isHost?'none':'';
+  netMsg('');
+}
+function updateLobbyList(slots){
+  if(!slots)return;
+  const names=Object.keys(slots).sort().map(k=>slots[k].name);
+  document.getElementById('ynrlist').innerHTML=names.map((n,i)=>`<div style="padding:6px 0;font-size:13px;color:var(--color-text-primary)">${n}${i===0?' 👑':''}</div>`).join('');
+}
+
+async function netStartGame(){
+  if(!FBDB||!ROOM_CODE)return;
+  const slotsSnap=await FBDB.ref('rooms/'+ROOM_CODE+'/slots').once('value');
+  const slots=slotsSnap.val()||{};
+  const names=Object.keys(slots).sort().map(k=>slots[k].name);
+  NUM_PLAYERS=names.length;
+  PLAYERS=names.map((n,i)=>({...mkPlayer(i+1),name:n}));
+  if(GAME_MODE==='dlm'){PLAYERS.forEach(p=>{p.dlmSheet={d:{},l:{},u:{},s:{}};p.dlmDI=0;p.dlmUI=12;});}
+  else if(GAME_MODE==='dlm12'){PLAYERS.forEach(p=>{p.d12Sheet={d:{},l:{},u:{},e1:{},e2:{}};p.d12DI=0;p.d12UI=12;});D12_REFS={d:{},l:{},u:{},e1:{},e2:{}};}
+  CURRENT_PLAYER=0;G=PLAYERS[0];NET_SEQ=0;
+  const init=netSerialize('playing');
+  await FBDB.ref('rooms/'+ROOM_CODE).update({status:'playing'});
+  FBDB.ref('rooms/'+ROOM_CODE+'/slots').off();
+  await FBDB.ref('rooms/'+ROOM_CODE+'/state').set(init);
+  netWatchState(FBDB.ref('rooms/'+ROOM_CODE+'/state'));
+  netShowGame();
+}
+
+function netShowGame(){
+  document.getElementById('ylobby').style.display='none';
+  document.getElementById('ystart').style.display='none';
+  if(GAME_MODE==='dlm'){document.getElementById('ycard').style.width='222px';document.getElementById('yrbtn').style.display='none';}
+  else if(GAME_MODE==='dlm12'){document.getElementById('ycard').style.width='242px';document.getElementById('yrbtn').style.display='';}
+  else{document.getElementById('ycard').style.width='182px';document.getElementById('yrbtn').style.display='none';}
+  document.getElementById('ygame').style.display='';
+  document.getElementById('ynetw').style.display='none';
+  rdice();rcard();uctrl();updTi();
+  msg((NUM_PLAYERS>1?G.name+' — ':'')+'Lancez les dés !');
+}
+
+// Bridge tactile universel : iOS Safari ne déclenche pas toujours click sur touch
+(function(){
+  let tx=0,ty=0;
+  document.addEventListener('touchstart',function(e){
+    tx=e.touches[0].clientX;ty=e.touches[0].clientY;
+  },{passive:true});
+  document.addEventListener('touchend',function(e){
+    const t=e.changedTouches[0];
+    if(Math.abs(t.clientX-tx)>15||Math.abs(t.clientY-ty)>15)return;
+    const el=e.target.closest('[onclick]');
+    if(!el||el.disabled)return;
+    e.preventDefault();
+    if(typeof el.onclick==='function')el.onclick.call(el,e);
+  },{passive:false});
+})();
+</script>
+</body>
+</html>
