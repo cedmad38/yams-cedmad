@@ -54,6 +54,8 @@
     .dcf.top    { transform:rotateX(90deg)   translateZ(15px); background:#ffffff }
     .dcf.bottom { transform:rotateX(-90deg)  translateZ(15px); background:#ffffff }
     .yw.ywkept .dcf { border-color:#BA7517 }
+    .yw.ywkept-dlm { box-shadow:0 0 0 3px rgba(220,38,38,.65),2px 4px 7px rgba(0,0,0,.38) }
+    .yw.ywkept-dlm .dcf { border-color:#dc2626 }
     .ydot {
       position:absolute;width:5px;height:5px;
       background:#1c1c1c;border-radius:50%;
@@ -113,6 +115,8 @@
     .d12t .d12av{background:#e8f5e9;cursor:pointer;color:#1b5e20}
     .d12t .d12av:hover{background:#BA7517;color:#FAE8C4}
     .d12t .d12pr{color:#BA7517}
+    .d12t .dlm-barrer{cursor:pointer;color:#dc2626;background:#fff5f5;font-size:10px;text-align:center}
+    .d12t .dlm-barrer:hover{background:#fee2e2}
     .d12t .d12sep td{border-top:2px solid #2c2c2c}
     .d12t td:nth-child(5),.d12t th:nth-child(5){border-left:2.5px solid #2c2c2c!important}
   button:disabled { opacity: .45; cursor: default; }
@@ -399,13 +403,14 @@ const DLM_ROWS=[
   {id:'c4',n:'Quatre',f:d=>d.filter(x=>x===4).reduce((a,b)=>a+b,0)},
   {id:'c5',n:'Cinq', f:d=>d.filter(x=>x===5).reduce((a,b)=>a+b,0)},
   {id:'c6',n:'Six',  f:d=>d.filter(x=>x===6).reduce((a,b)=>a+b,0)},
+  {id:'dp2',n:'Double paires',f:d=>{const c=cm(d);const p=Object.entries(c).filter(([,v])=>v>=2);return p.length>=2?p.slice(0,2).reduce((a,[k])=>a+Number(k)*2,0):0;}},
   {id:'brl',n:'Brelan',   f:d=>cv(d).some(c=>c>=3)?ds(d):0},
-  {id:'car',n:'Carré',    f:d=>cv(d).some(c=>c>=4)?ds(d):0},
+  {id:'car',n:'Carré',    f:d=>cv(d).some(c=>c>=4)?40:0},
   {id:'ful',n:'Full House',f:d=>isFH(d)?25:0},
   {id:'pst',n:'Pte Suite',f:d=>isSS(d)?30:0},
   {id:'gst',n:'Gde Suite',f:d=>isLS(d)?40:0},
-  {id:'yam',n:'YAMS !',   f:d=>cv(d).some(c=>c>=5)?50:0},
   {id:'cha',n:'Chance',   f:d=>ds(d)},
+  {id:'yam',n:'YAMS !',   f:d=>cv(d).some(c=>c>=5)?50+ds(d):0},
 ];
 const DLM_COLS=['d','l','u','s'];
 const DLM_CN={d:'↓',l:'L',u:'↑',s:'Sec'};
@@ -430,7 +435,7 @@ function dlmPlayerFilled(p){
 }
 function dlmCanFill(col,ri){
   if(!G.dlmSheet||G.fresh)return false;
-  if(col==='d'&&(ri!==G.dlmDI||ri>12))return false;
+  if(col==='d'&&(ri!==G.dlmDI||ri>13))return false;
   if(col==='u'&&(ri!==G.dlmUI||ri<0))return false;
   if(col==='s'&&G.rollsUsed!==1)return false;
   return!(DLM_ROWS[ri].id in G.dlmSheet[col]);
@@ -443,7 +448,7 @@ function rcardDLM(){
   let h='';
   if(NUM_PLAYERS>1){
     const row=PLAYERS.map((p,i)=>{
-      const tot=dlmPlayerTotal(p),done=dlmPlayerFilled(p)>=52;
+      const tot=dlmPlayerTotal(p),done=dlmPlayerFilled(p)>=56;
       const active=i===CURRENT_PLAYER;
       return`<span style="font-size:10px;${active?'font-weight:600;color:#BA7517':'color:var(--color-text-tertiary)'}">${p.name}${done?' ✓':''}&nbsp;${tot}</span>`;
     }).join('<span style="color:var(--color-border-secondary);margin:0 4px">·</span>');
@@ -458,8 +463,9 @@ function rcardDLM(){
     h+=`<tr><td class="d12c">${row.n}</td>`;
     DLM_COLS.forEach(col=>{
       const v=s[col][row.id];
-      if(v!==undefined){h+=`<td class="d12sf">${v}</td>`;}
+      if(v!==undefined){h+=`<td class="d12sf">${v||'—'}</td>`;}
       else if(dlmCanFill(col,ri)){h+=`<td class="d12av d12pr" onclick="yscoreDLM('${col}','${row.id}',${ri})">${row.f(G.dice)}</td>`;}
+      else if(col==='s'&&!G.fresh&&!(row.id in s['s'])){h+=`<td class="dlm-barrer" onclick="yscoreDLM('s','${row.id}',${ri},1)">✕</td>`;}
       else{h+=`<td></td>`;}
     });
     h+=`</tr>`;
@@ -467,13 +473,14 @@ function rcardDLM(){
   h+=`<tr class="d12bn d12sep"><td class="d12c">Bonus +35</td>`;
   DLM_COLS.forEach(col=>{const b=dlmBonus(col);h+=`<td>${b||''}</td>`;});
   h+=`</tr>`;
-  for(let ri=6;ri<13;ri++){
+  for(let ri=6;ri<14;ri++){
     const row=DLM_ROWS[ri];
     h+=`<tr${ri===6?' class="d12sep"':''}><td class="d12c">${row.n}</td>`;
     DLM_COLS.forEach(col=>{
       const v=s[col][row.id];
-      if(v!==undefined){h+=`<td class="d12sf">${v}</td>`;}
+      if(v!==undefined){h+=`<td class="d12sf">${v||'—'}</td>`;}
       else if(dlmCanFill(col,ri)){h+=`<td class="d12av d12pr" onclick="yscoreDLM('${col}','${row.id}',${ri})">${row.f(G.dice)}</td>`;}
+      else if(col==='s'&&!G.fresh&&!(row.id in s['s'])){h+=`<td class="dlm-barrer" onclick="yscoreDLM('s','${row.id}',${ri},1)">✕</td>`;}
       else{h+=`<td></td>`;}
     });
     h+=`</tr>`;
@@ -484,14 +491,19 @@ function rcardDLM(){
   el.innerHTML=h;
 }
 
-function yscoreDLM(col,catId,ri){
+function yscoreDLM(col,catId,ri,barrer){
   if(ONLINE&&MY_SLOT!==CURRENT_PLAYER)return;
   if(!G.dlmSheet||G.fresh||G.busy)return;
-  if(!dlmCanFill(col,ri))return;
-  G.dlmSheet[col][catId]=DLM_ROWS[ri].f(G.dice);
-  if(col==='d')G.dlmDI++;
-  if(col==='u')G.dlmUI--;
-  if(PLAYERS.every(p=>dlmPlayerFilled(p)>=52)){if(ONLINE)netPush('ended');endGameDLM();return;}
+  if(barrer){
+    if(col!=='s'||G.rollsUsed===1||(catId in G.dlmSheet['s']))return;
+    G.dlmSheet['s'][catId]=0;
+  }else{
+    if(!dlmCanFill(col,ri))return;
+    G.dlmSheet[col][catId]=DLM_ROWS[ri].f(G.dice);
+    if(col==='d')G.dlmDI++;
+    if(col==='u')G.dlmUI--;
+  }
+  if(PLAYERS.every(p=>dlmPlayerFilled(p)>=56)){if(ONLINE)netPush('ended');endGameDLM();return;}
   CURRENT_PLAYER=(CURRENT_PLAYER+1)%NUM_PLAYERS;
   G=PLAYERS[CURRENT_PLAYER];
   G.dice=[1,1,1,1,1];G.kept=[false,false,false,false,false];
@@ -576,7 +588,7 @@ let NUM_PLAYERS=1,CURRENT_PLAYER=0,PLAYERS=[],G,GAME_MODE='standard';
 function mkPlayer(num){
   return{name:'Joueur '+num,dice:[1,1,1,1,1],kept:[false,false,false,false,false],
          pos:[0,1,2,3,4].map(()=>({...C0})),rollsLeft:3,rollsUsed:0,scores:{},phase:'roll',fresh:true,busy:false,
-         atTop:[false,false,false,false,false],dlmSheet:null,dlmDI:0,dlmUI:12,
+         atTop:[false,false,false,false,false],dlmSheet:null,dlmDI:0,dlmUI:13,
          d12Sheet:null,d12DI:0,d12UI:12};
 }
 
@@ -619,7 +631,7 @@ function startGame(){
   });
   G=PLAYERS[0];
   if(GAME_MODE==='dlm'){
-    PLAYERS.forEach(p=>{p.dlmSheet={d:{},l:{},u:{},s:{}};p.dlmDI=0;p.dlmUI=12;});
+    PLAYERS.forEach(p=>{p.dlmSheet={d:{},l:{},u:{},s:{}};p.dlmDI=0;p.dlmUI=13;});
     document.getElementById('ycard').style.width='222px';
     document.getElementById('yrbtn').style.display='none';
   } else if(GAME_MODE==='dlm12'){
@@ -648,7 +660,7 @@ function playerTotal(p){
 function updTi(){
   if(GAME_MODE==='dlm'){
     const filled=dlmPlayerFilled(G);
-    document.getElementById('yti').textContent=(NUM_PLAYERS>1?G.name+' — ':'')+'Case '+(filled+1)+'/52';
+    document.getElementById('yti').textContent=(NUM_PLAYERS>1?G.name+' — ':'')+'Case '+(filled+1)+'/56';
     return;
   }
   if(GAME_MODE==='dlm12'){
@@ -672,7 +684,7 @@ function makeCube(i){
   const v=G.dice[i],{x,y}=G.pos[i];
 
   const wrap=document.createElement('div');
-  wrap.className='yw'+(G.kept[i]?' ywkept':'');
+  wrap.className='yw'+(G.kept[i]?' ywkept'+(GAME_MODE==='dlm'?' ywkept-dlm':''):'');
   wrap.id='yw'+i;
   wrap.style.left=x+'px';wrap.style.top=y+'px';wrap.style.zIndex=y;
   wrap.onclick=()=>tk(i);
@@ -1079,8 +1091,12 @@ function endGame(){
 function yNew(){
   if(ONLINE&&FBDB&&ROOM_CODE){
     try{FBDB.ref('rooms/'+ROOM_CODE+'/state').off();}catch(e){}
+    try{FBDB.ref('rooms/'+ROOM_CODE+'/chat').off();}catch(e){}
   }
   ONLINE=false;MY_SLOT=-1;NET_SEQ=-1;ROOM_CODE=null;
+  CHAT_OPEN=false;CHAT_LISTENING=false;
+  document.getElementById('ychat').style.display='none';
+  const cb=document.getElementById('ychatbtn');if(cb)cb.style.display='none';
   document.getElementById('ynetw').style.display='none';
   document.getElementById('ylobby').style.display='none';
   document.getElementById('ystep_net').style.display='none';
@@ -1157,7 +1173,7 @@ function netSerialize(phase){
       name:p.name,dice:p.dice,kept:p.kept,
       rollsLeft:p.rollsLeft,rollsUsed:p.rollsUsed||0,
       phase:p.phase,fresh:p.fresh,scores:p.scores||{},
-      dlmSheet:p.dlmSheet||null,dlmDI:p.dlmDI||0,dlmUI:p.dlmUI!==undefined?p.dlmUI:12,
+      dlmSheet:p.dlmSheet||null,dlmDI:p.dlmDI||0,dlmUI:p.dlmUI!==undefined?p.dlmUI:13,
       d12Sheet:p.d12Sheet||null,d12DI:p.d12DI||0,d12UI:p.d12UI!==undefined?p.d12UI:12
     }))
   };
@@ -1181,7 +1197,7 @@ function applyNetState(data){
     p.phase=pd.phase||'roll';p.fresh=pd.fresh!==undefined?pd.fresh:true;
     p.scores=pd.scores||{};
     p.dlmSheet=GAME_MODE==='dlm'?normDlmSheet(pd.dlmSheet):null;
-    p.dlmDI=pd.dlmDI||0;p.dlmUI=pd.dlmUI!==undefined?pd.dlmUI:12;
+    p.dlmDI=pd.dlmDI||0;p.dlmUI=pd.dlmUI!==undefined?pd.dlmUI:13;
     p.d12Sheet=GAME_MODE==='dlm12'?normD12Sheet(pd.d12Sheet):null;
     p.d12DI=pd.d12DI||0;p.d12UI=pd.d12UI!==undefined?pd.d12UI:12;
     if(!p.fresh){
@@ -1198,6 +1214,7 @@ function applyNetState(data){
   else if(GAME_MODE==='dlm12'){document.getElementById('ycard').style.width='242px';document.getElementById('yrbtn').style.display='';}
   else{document.getElementById('ycard').style.width='182px';document.getElementById('yrbtn').style.display='none';}
   document.getElementById('ygame').style.display='';
+  chatListen();
   rdice();rcard();uctrl();updTi();
   if(data.phase==='ended')return;
   const myTurn=(MY_SLOT<0||MY_SLOT===CURRENT_PLAYER);
@@ -1271,7 +1288,7 @@ async function netStartGame(){
   const names=Object.keys(slots).sort().map(k=>slots[k].name);
   NUM_PLAYERS=names.length;
   PLAYERS=names.map((n,i)=>({...mkPlayer(i+1),name:n}));
-  if(GAME_MODE==='dlm'){PLAYERS.forEach(p=>{p.dlmSheet={d:{},l:{},u:{},s:{}};p.dlmDI=0;p.dlmUI=12;});}
+  if(GAME_MODE==='dlm'){PLAYERS.forEach(p=>{p.dlmSheet={d:{},l:{},u:{},s:{}};p.dlmDI=0;p.dlmUI=13;});}
   else if(GAME_MODE==='dlm12'){PLAYERS.forEach(p=>{p.d12Sheet={d:{},l:{},u:{},e1:{},e2:{}};p.d12DI=0;p.d12UI=12;});D12_REFS={d:{},l:{},u:{},e1:{},e2:{}};}
   CURRENT_PLAYER=0;G=PLAYERS[0];NET_SEQ=0;
   const init=netSerialize('playing');
@@ -1292,6 +1309,60 @@ function netShowGame(){
   document.getElementById('ynetw').style.display='none';
   rdice();rcard();uctrl();updTi();
   msg((NUM_PLAYERS>1?G.name+' — ':'')+'Lancez les dés !');
+  chatListen();
+}
+
+// ── Chat en ligne ──
+let CHAT_OPEN=false,CHAT_LISTENING=false;
+
+function toggleChat(){
+  CHAT_OPEN=!CHAT_OPEN;
+  const panel=document.getElementById('ychat');
+  panel.style.display=CHAT_OPEN?'flex':'none';
+  const btn=document.getElementById('ychatbtn');
+  if(btn)btn.dataset.unread='0';
+  if(CHAT_OPEN){
+    document.getElementById('ychatin').focus();
+    const ml=document.getElementById('ychatmsgs');
+    ml.scrollTop=ml.scrollHeight;
+  }
+}
+
+function chatSend(){
+  if(!FBDB||!ROOM_CODE)return;
+  const inp=document.getElementById('ychatin');
+  const text=inp.value.trim();
+  if(!text)return;
+  inp.value='';
+  const name=(MY_SLOT>=0&&PLAYERS[MY_SLOT])?PLAYERS[MY_SLOT].name:'?';
+  FBDB.ref('rooms/'+ROOM_CODE+'/chat').push({n:name,t:text,ts:Date.now()});
+}
+
+function chatListen(){
+  if(!FBDB||!ROOM_CODE||CHAT_LISTENING)return;
+  CHAT_LISTENING=true;
+  const btn=document.getElementById('ychatbtn');
+  if(btn)btn.style.display='flex';
+  FBDB.ref('rooms/'+ROOM_CODE+'/chat').limitToLast(50).on('value',snap=>{
+    const data=snap.val();
+    const ml=document.getElementById('ychatmsgs');
+    if(!ml)return;
+    ml.innerHTML='';
+    if(!data)return;
+    const myName=(MY_SLOT>=0&&PLAYERS[MY_SLOT])?PLAYERS[MY_SLOT].name:'';
+    Object.values(data).sort((a,b)=>a.ts-b.ts).forEach(m=>{
+      const div=document.createElement('div');
+      const isMe=m.n===myName;
+      div.style.cssText='font-size:11px;line-height:1.5;word-break:break-word;padding:1px 0';
+      div.innerHTML=`<span style="font-weight:700;color:${isMe?'#BA7517':'#2563eb'}">${m.n} </span><span style="color:var(--color-text-primary)">${m.t}</span>`;
+      ml.appendChild(div);
+    });
+    ml.scrollTop=ml.scrollHeight;
+    if(!CHAT_OPEN&&btn){
+      const cur=parseInt(btn.dataset.unread||'0',10);
+      btn.dataset.unread=String(cur+1);
+    }
+  });
 }
 
 // Bridge tactile universel : iOS Safari ne déclenche pas toujours click sur touch
@@ -1310,5 +1381,19 @@ function netShowGame(){
   },{passive:false});
 })();
 </script>
+
+<!-- Chat en ligne -->
+<button id="ychatbtn" onclick="toggleChat()" data-unread="0" style="display:none;position:fixed;bottom:16px;right:16px;z-index:201;background:#BA7517;color:#FAE8C4;border:none;border-radius:50%;width:48px;height:48px;font-size:22px;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.35);align-items:center;justify-content:center">💬</button>
+<div id="ychat" style="display:none;position:fixed;bottom:0;left:0;right:0;height:240px;background:var(--color-background-primary);border-top:1.5px solid var(--color-border-secondary);z-index:200;flex-direction:column">
+  <div style="padding:5px 12px;background:var(--color-background-secondary);border-bottom:.5px solid var(--color-border-tertiary);display:flex;justify-content:space-between;align-items:center;flex-shrink:0">
+    <span style="font-size:12px;font-weight:600;color:var(--color-text-secondary)">💬 Chat</span>
+    <button onclick="toggleChat()" style="background:none;border:none;cursor:pointer;font-size:18px;line-height:1;color:var(--color-text-tertiary);padding:0 2px">×</button>
+  </div>
+  <div id="ychatmsgs" style="flex:1;overflow-y:auto;padding:6px 12px;display:flex;flex-direction:column;gap:2px"></div>
+  <div style="padding:6px 10px;border-top:.5px solid var(--color-border-tertiary);display:flex;gap:8px;flex-shrink:0">
+    <input id="ychatin" class="yninput" type="text" placeholder="Message…" maxlength="100" style="flex:1;width:auto;text-align:left;padding:6px 10px;font-size:13px" onkeydown="if(event.key==='Enter')chatSend()">
+    <button onclick="chatSend()" style="padding:7px 14px;background:#BA7517;color:#FAE8C4;border:none;border-radius:var(--border-radius-md);font-size:12px;cursor:pointer;font-family:var(--font-sans);white-space:nowrap">Envoyer</button>
+  </div>
+</div>
 </body>
 </html>
