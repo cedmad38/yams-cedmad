@@ -1198,12 +1198,14 @@ function applyNetState(data){
   else{document.getElementById('ycard').style.width='182px';document.getElementById('yrbtn').style.display='none';}
   document.getElementById('ygame').style.display='';
   rdice();rcard();uctrl();updTi();
-  if(data.phase==='ended'){document.getElementById('ynetw').style.display='none';return;}
-  const myTurn=(MY_SLOT===CURRENT_PLAYER);
-  const wdiv=document.getElementById('ynetw');
-  wdiv.style.display=myTurn?'none':'flex';
-  if(!myTurn)document.getElementById('ynetwm').textContent='En attente de '+G.name+' …';
-  msg((NUM_PLAYERS>1?G.name+' — ':'')+(G.fresh?'Lancez les dés !':G.phase==='score'?'Choisissez une case !':'Relancez ou choisissez !'));
+  if(data.phase==='ended')return;
+  const myTurn=(MY_SLOT<0||MY_SLOT===CURRENT_PLAYER);
+  if(!myTurn){
+    document.getElementById('yrb').disabled=true;
+    msg('⏳ En attente de '+G.name+' …');
+  }else{
+    msg((NUM_PLAYERS>1?G.name+' — ':'')+(G.fresh?'Lancez les dés !':G.phase==='score'?'Choisissez une case !':'Relancez ou choisissez !'));
+  }
 }
 
 function netWatchState(ref){
