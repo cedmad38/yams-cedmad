@@ -125,10 +125,7 @@
   @media (max-width: 560px) {
     body { align-items: flex-start }
     #yg { padding: 8px 0 !important; width: 100% }
-    #ygrow { flex-direction: column !important; align-items: stretch !important; gap: 8px !important }
-    #ycard { width: 100% !important; max-height: 185px; overflow-y: auto !important; overflow-x: hidden !important; order: 2 }
-    #ygrow > div:not(#ycard) { order: 1 }
-    #yfelt { margin: 0 auto }
+    #ycard { max-height: 220px; overflow-y: auto !important; overflow-x: hidden !important }
     .ymbtn { width: 85vw; max-width: 300px }
     .ypbtn { width: 68px; height: 68px; font-size: 24px }
     .ysr { font-size: 12px; padding: 5px 9px }
@@ -224,53 +221,23 @@
 
   <!-- ── Jeu ── -->
   <div id="ygame" style="display:none">
-    <div style="text-align:center;margin-bottom:10px;position:relative">
+    <div style="text-align:center;margin-bottom:8px;position:relative">
       <div style="font-size:16px;font-weight:500;letter-spacing:1px;color:var(--color-text-primary)">Yams Par Cedmad</div>
       <div id="yti" style="font-size:12px;color:var(--color-text-secondary);margin-top:2px"></div>
       <button id="yrbtn" onclick="showRules()" style="display:none;position:absolute;right:0;top:2px;padding:4px 10px;background:transparent;border:1px solid #BA7517;border-radius:6px;font-size:10px;color:#BA7517;cursor:pointer;font-family:var(--font-sans)">? Règles</button>
     </div>
-    <div id="ygrow" style="display:flex;gap:12px;align-items:flex-start">
-      <div id="ycard" style="width:182px;flex-shrink:0;border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;background:var(--color-background-primary)"></div>
-      <div style="flex:1;min-width:0">
-        <div id="yfelt" style="background:#1a6b31;border:10px solid #0d3a1a;border-radius:50%;width:320px;height:320px;position:relative;overflow:hidden;margin:0 auto">
-          <svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none" viewBox="0 0 320 320">
-            <circle cx="160" cy="160" r="5" fill="rgba(255,255,255,.12)"/>
-          </svg>
-          <div id="yctr" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:12px;font-weight:500;color:rgba(255,255,255,.55);pointer-events:none;z-index:1;white-space:nowrap;letter-spacing:2px"></div>
-          <!-- Main horizontale : paume à droite, doigts pointant vers la gauche -->
-          <svg id="yhd" viewBox="0 0 80 56" width="96" height="67"
-            style="position:absolute;opacity:0;z-index:10;pointer-events:none;left:0;top:0;transition:left .46s ease,top .43s ease,opacity .24s">
-            <defs>
-              <linearGradient id="hg1" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="#F4A678"/>
-                <stop offset="100%" stop-color="#D46830"/>
-              </linearGradient>
-            </defs>
-            <rect x="56" y="0" width="22" height="11" rx="5" fill="url(#hg1)"/>
-            <rect x="34" y="7" width="42" height="43" rx="10" fill="url(#hg1)"/>
-            <rect x="2" y="9" width="42" height="9.5" rx="4.75" fill="url(#hg1)"/>
-            <rect x="0" y="20.5" width="52" height="9.5" rx="4.75" fill="url(#hg1)"/>
-            <rect x="2" y="32" width="46" height="9.5" rx="4.75" fill="url(#hg1)"/>
-            <rect x="8" y="43" width="34" height="8" rx="4" fill="url(#hg1)"/>
-            <line x1="34" y1="10" x2="34" y2="18" stroke="#B06030" stroke-width="1.6" stroke-linecap="round"/>
-            <line x1="34" y1="21.5" x2="34" y2="29.5" stroke="#B06030" stroke-width="1.6" stroke-linecap="round"/>
-            <line x1="34" y1="33" x2="34" y2="41" stroke="#B06030" stroke-width="1.6" stroke-linecap="round"/>
-            <line x1="36" y1="44" x2="36" y2="50.5" stroke="#B06030" stroke-width="1.6" stroke-linecap="round"/>
-            <line x1="19" y1="10" x2="19" y2="18" stroke="#B06030" stroke-width="1" stroke-linecap="round" opacity=".4"/>
-            <line x1="19" y1="21.5" x2="19" y2="29.5" stroke="#B06030" stroke-width="1" stroke-linecap="round" opacity=".4"/>
-            <line x1="19" y1="33" x2="19" y2="41" stroke="#B06030" stroke-width="1" stroke-linecap="round" opacity=".4"/>
-            <line x1="21" y1="44" x2="21" y2="50.5" stroke="#B06030" stroke-width="1" stroke-linecap="round" opacity=".4"/>
-            <rect x="58" y="1" width="9" height="7" rx="2.5" fill="#B06030" opacity=".45"/>
-            <line x1="58" y1="8" x2="58" y2="17" stroke="#B06030" stroke-width="1.2" stroke-linecap="round" opacity=".5"/>
-          </svg>
-        </div>
-        <div style="display:flex;align-items:center;gap:12px;margin-top:10px;justify-content:center">
-          <button id="yrb" onclick="yRoll()" style="padding:9px 24px;background:#BA7517;color:#FAE8C4;border:none;border-radius:var(--border-radius-md);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-sans)">Lancer</button>
-          <span id="yrlc" style="font-size:12px;color:var(--color-text-secondary)"></span>
-        </div>
-        <div id="ymsg" style="margin-top:8px;padding:7px 12px;border:.5px solid var(--color-border-tertiary);border-left:3px solid #BA7517;border-radius:var(--border-radius-md);font-size:12px;color:var(--color-text-primary);min-height:32px;background:var(--color-background-secondary)"></div>
-        <button onclick="yNew()" style="margin-top:7px;padding:5px 13px;background:transparent;color:var(--color-text-secondary);border:.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:11px;cursor:pointer;font-family:var(--font-sans)">&#8635; Nouvelle partie</button>
+    <!-- Tableau de score pleine largeur -->
+    <div id="ycard" style="border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;background:var(--color-background-primary);margin-bottom:8px"></div>
+    <!-- Dés linéaires -->
+    <div style="text-align:center">
+      <div id="yfelt" style="background:#1a6b31;border:4px solid #0d3a1a;border-radius:10px;width:202px;height:50px;position:relative;display:inline-block;overflow:visible"></div>
+      <div id="yctr" style="font-size:11px;font-weight:500;color:#1a6b31;min-height:16px;margin-top:4px;letter-spacing:2px"></div>
+      <div style="display:flex;align-items:center;gap:12px;margin-top:6px;justify-content:center">
+        <button id="yrb" onclick="yRoll()" style="padding:9px 24px;background:#BA7517;color:#FAE8C4;border:none;border-radius:var(--border-radius-md);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-sans)">Lancer</button>
+        <span id="yrlc" style="font-size:12px;color:var(--color-text-secondary)"></span>
       </div>
+      <div id="ymsg" style="margin-top:8px;padding:7px 12px;border:.5px solid var(--color-border-tertiary);border-left:3px solid #BA7517;border-radius:var(--border-radius-md);font-size:12px;color:var(--color-text-primary);min-height:32px;background:var(--color-background-secondary)"></div>
+      <button onclick="yNew()" style="margin-top:7px;padding:5px 13px;background:transparent;color:var(--color-text-secondary);border:.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:11px;cursor:pointer;font-family:var(--font-sans)">&#8635; Nouvelle partie</button>
     </div>
   </div>
 
@@ -401,12 +368,12 @@ const DLM_ROWS=[
   {id:'c4',n:'Quatre',f:d=>d.filter(x=>x===4).reduce((a,b)=>a+b,0)},
   {id:'c5',n:'Cinq', f:d=>d.filter(x=>x===5).reduce((a,b)=>a+b,0)},
   {id:'c6',n:'Six',  f:d=>d.filter(x=>x===6).reduce((a,b)=>a+b,0)},
-  {id:'dp2',n:'Double paires',f:d=>{const c=cm(d);const p=Object.entries(c).filter(([,v])=>v>=2);return p.length>=2?p.slice(0,2).reduce((a,[k])=>a+Number(k)*2,0):0;}},
-  {id:'brl',n:'Brelan',   f:d=>cv(d).some(c=>c>=3)?ds(d):0},
-  {id:'car',n:'Carré',    f:d=>cv(d).some(c=>c>=4)?40:0},
+  {id:'dp2',n:'Double paires',f:d=>{const c=cm(d);const p=Object.entries(c).filter(([,v])=>v>=2);if(p.length>=2)return p.slice(0,2).reduce((a,[k])=>a+Number(k)*2,0);if(p.length===1&&p[0][1]>=4)return Number(p[0][0])*4;return 0;}},
+  {id:'brl',n:'Brelan',    f:d=>cv(d).some(c=>c>=3)?ds(d):0},
   {id:'ful',n:'Full House',f:d=>isFH(d)?25:0},
   {id:'pst',n:'Pte Suite',f:d=>isSS(d)?30:0},
   {id:'gst',n:'Gde Suite',f:d=>isLS(d)?40:0},
+  {id:'car',n:'Carré',    f:d=>cv(d).some(c=>c>=4)?40:0},
   {id:'cha',n:'Chance',   f:d=>ds(d)},
   {id:'yam',n:'YAMS !',   f:d=>cv(d).some(c=>c>=5)?50+ds(d):0},
 ];
@@ -442,15 +409,23 @@ function dlmCanFill(col,ri){
 function rcardDLM(){
   const el=document.getElementById('ycard');
   if(!G.dlmSheet){el.innerHTML='';return;}
-  const s=G.dlmSheet;
+  // Joueur affiché : VIEW_PLAYER si actif, sinon joueur courant
+  const vp=VIEW_PLAYER>=0?VIEW_PLAYER:CURRENT_PLAYER;
+  const vPlayer=PLAYERS[vp];
+  const s=vPlayer.dlmSheet||{d:{},l:{},u:{},s:{}};
+  const viewing=VIEW_PLAYER>=0&&VIEW_PLAYER!==CURRENT_PLAYER;
   let h='';
   if(NUM_PLAYERS>1){
-    const row=PLAYERS.map((p,i)=>{
+    const chips=PLAYERS.map((p,i)=>{
       const tot=dlmPlayerTotal(p),done=dlmPlayerFilled(p)>=56;
-      const active=i===CURRENT_PLAYER;
-      return`<span style="font-size:10px;${active?'font-weight:600;color:#BA7517':'color:var(--color-text-tertiary)'}">${p.name}${done?' ✓':''}&nbsp;${tot}</span>`;
-    }).join('<span style="color:var(--color-border-secondary);margin:0 4px">·</span>');
-    h+=`<div style="padding:5px 9px;background:var(--color-background-secondary);border-bottom:.5px solid var(--color-border-tertiary);display:flex;gap:4px;flex-wrap:wrap">${row}</div>`;
+      const active=i===CURRENT_PLAYER,viewed=i===VIEW_PLAYER;
+      const style=viewed?'font-weight:700;color:#2563eb':active?'font-weight:600;color:#BA7517':'color:var(--color-text-tertiary)';
+      return`<span onclick="viewPlayer(${i})" style="cursor:pointer;font-size:10px;padding:2px 4px;border-radius:4px;${style}">${p.name}${done?' ✓':''}&nbsp;${tot}</span>`;
+    }).join('<span style="color:var(--color-border-secondary);margin:0 2px">·</span>');
+    h+=`<div style="padding:5px 9px;background:var(--color-background-secondary);border-bottom:.5px solid var(--color-border-tertiary);display:flex;gap:2px;flex-wrap:wrap;align-items:center">${chips}</div>`;
+  }
+  if(viewing){
+    h+=`<div style="padding:3px 9px;background:#eff6ff;border-bottom:.5px solid #bfdbfe;font-size:10px;color:#2563eb;display:flex;justify-content:space-between;align-items:center"><span>👁 Table de ${vPlayer.name}</span><span onclick="viewPlayer(${VIEW_PLAYER})" style="cursor:pointer;font-size:14px;color:#94a3b8">×</span></div>`;
   }
   h+=`<table class="d12t" style="width:100%">`;
   h+=`<tr><th class="d12c" style="width:64px">Catégorie</th>`;
@@ -462,14 +437,14 @@ function rcardDLM(){
     DLM_COLS.forEach(col=>{
       const v=s[col][row.id];
       if(v!==undefined){h+=`<td class="d12sf">${v||'—'}</td>`;}
-      else if(dlmCanFill(col,ri)){h+=`<td class="d12av d12pr" onclick="yscoreDLM('${col}','${row.id}',${ri})">${row.f(G.dice)}</td>`;}
-      else if(col==='s'&&!G.fresh&&!(row.id in s['s'])){h+=`<td class="dlm-barrer" onclick="yscoreDLM('s','${row.id}',${ri},1)">✕</td>`;}
+      else if(!viewing&&dlmCanFill(col,ri)){h+=`<td class="d12av d12pr" onclick="yscoreDLM('${col}','${row.id}',${ri})">${row.f(G.dice)}</td>`;}
+      else if(!viewing&&col==='s'&&!G.fresh&&!(row.id in s['s'])){h+=`<td class="dlm-barrer" onclick="yscoreDLM('s','${row.id}',${ri},1)">✕</td>`;}
       else{h+=`<td></td>`;}
     });
     h+=`</tr>`;
   }
   h+=`<tr class="d12bn d12sep"><td class="d12c">Bonus +35</td>`;
-  DLM_COLS.forEach(col=>{const b=dlmBonus(col);h+=`<td>${b||''}</td>`;});
+  DLM_COLS.forEach(col=>{const b=dlmBonus(col,s);h+=`<td>${b||''}</td>`;});
   h+=`</tr>`;
   for(let ri=6;ri<14;ri++){
     const row=DLM_ROWS[ri];
@@ -477,14 +452,14 @@ function rcardDLM(){
     DLM_COLS.forEach(col=>{
       const v=s[col][row.id];
       if(v!==undefined){h+=`<td class="d12sf">${v||'—'}</td>`;}
-      else if(dlmCanFill(col,ri)){h+=`<td class="d12av d12pr" onclick="yscoreDLM('${col}','${row.id}',${ri})">${row.f(G.dice)}</td>`;}
-      else if(col==='s'&&!G.fresh&&!(row.id in s['s'])){h+=`<td class="dlm-barrer" onclick="yscoreDLM('s','${row.id}',${ri},1)">✕</td>`;}
+      else if(!viewing&&dlmCanFill(col,ri)){h+=`<td class="d12av d12pr" onclick="yscoreDLM('${col}','${row.id}',${ri})">${row.f(G.dice)}</td>`;}
+      else if(!viewing&&col==='s'&&!G.fresh&&!(row.id in s['s'])){h+=`<td class="dlm-barrer" onclick="yscoreDLM('s','${row.id}',${ri},1)">✕</td>`;}
       else{h+=`<td></td>`;}
     });
     h+=`</tr>`;
   }
   h+=`<tr class="d12bn d12sep" style="font-weight:800"><td class="d12c">TOTAL</td>`;
-  DLM_COLS.forEach(col=>{const tf=dlmSub(col);h+=`<td style="color:#BA7517">${tf||''}</td>`;});
+  DLM_COLS.forEach(col=>{const tf=dlmSub(col,s);h+=`<td style="color:#BA7517">${tf||''}</td>`;});
   h+=`</tr></table>`;
   el.innerHTML=h;
 }
@@ -505,9 +480,8 @@ function yscoreDLM(col,catId,ri,barrer){
   CURRENT_PLAYER=(CURRENT_PLAYER+1)%NUM_PLAYERS;
   G=PLAYERS[CURRENT_PLAYER];
   G.dice=[1,1,1,1,1];G.kept=[false,false,false,false,false];
-  G.pos=[0,1,2,3,4].map(()=>({...C0}));
-  G.rollsLeft=3;G.rollsUsed=0;G.phase='roll';G.fresh=true;G.busy=false;G.atTop=[false,false,false,false,false];
-  rdice();rcard();uctrl();updTi();
+  G.rollsLeft=3;G.rollsUsed=0;G.phase='roll';G.fresh=true;G.busy=false;
+  VIEW_PLAYER=-1;rdice();rcard();uctrl();updTi();
   if(ONLINE)netPush();
   msg((NUM_PLAYERS>1?G.name+' — ':'')+'Lancez les dés !');
 }
@@ -524,44 +498,10 @@ function endGameDLM(){
   document.getElementById('yend').style.display='';
 }
 
-const DSIZE=30,CX=160,CY=160,TABLE_R=122,HDW=96,HDH=67;
-const TX=252,TY=CY-DSIZE/2;
-const C0={x:CX-DSIZE/2,y:CY-DSIZE/2};
-
-/* Position la plus haute disponible dans le cercle, sans chevauchement.
-   Scan y de haut en bas (cercle complet), à chaque y essaie x depuis le centre vers les bords. */
-function highestPos(existing){
-  const R=TABLE_R-1;
-  function inCircle(x,y){
-    return[[x,y],[x+DSIZE,y],[x,y+DSIZE],[x+DSIZE,y+DSIZE]]
-      .every(([cx,cy])=>(cx-CX)*(cx-CX)+(cy-CY)*(cy-CY)<=R*R);
-  }
-  function noOvlp(x,y){
-    return existing.every(p=>Math.abs(x-p.x)>=DSIZE+6||Math.abs(y-p.y)>=DSIZE+4);
-  }
-  const cx0=Math.round(CX-DSIZE/2);
-  for(let y=Math.round(CY-R+2);y<=Math.round(CY+R-DSIZE);y+=DSIZE){
-    for(let dx=0;dx<=R;dx++){
-      for(const x of[cx0+dx,cx0-dx]){
-        if(inCircle(x,y)&&noOvlp(x,y))return{x,y};
-      }
-    }
-  }
-  return randomPos(existing);
-}
-
-function randomPos(ex){
-  for(let t=0;t<55;t++){
-    const a=(Math.PI*7/18)+Math.random()*(Math.PI*12/9);
-    const r=(0.18+Math.random()*0.82)*TABLE_R;
-    const x=Math.round(CX+r*Math.cos(a)-DSIZE/2);
-    const y=Math.round(CY+r*Math.sin(a)-DSIZE/2);
-    if(ex.every(p=>Math.abs(x-p.x)>=DSIZE||Math.abs(y-p.y)>=DSIZE))return{x,y};
-  }
-  const a=Math.PI/2+Math.random()*Math.PI;
-  const r=(0.2+Math.random()*0.65)*TABLE_R;
-  return{x:Math.round(CX+r*Math.cos(a)-DSIZE/2),y:Math.round(CY+r*Math.sin(a)-DSIZE/2)};
-}
+const DSIZE=30,STRIP_PAD_X=10,STRIP_PAD_Y=10,DIE_GAP=8;
+const STRIP_W=DSIZE*5+DIE_GAP*4+STRIP_PAD_X*2; // 202px
+const STRIP_H=DSIZE+STRIP_PAD_Y*2;              // 50px
+function slotPos(i){return{x:STRIP_PAD_X+i*(DSIZE+DIE_GAP),y:STRIP_PAD_Y};}
 
 const ds=d=>d.reduce((a,b)=>a+b,0);
 const cv=d=>{const c={};d.forEach(x=>c[x]=(c[x]||0)+1);return Object.values(c)};
@@ -581,12 +521,14 @@ function combo(d){
 }
 
 // ── État multi-joueurs ──
-let NUM_PLAYERS=1,CURRENT_PLAYER=0,PLAYERS=[],G,GAME_MODE='standard';
+let NUM_PLAYERS=1,CURRENT_PLAYER=0,PLAYERS=[],G,GAME_MODE='standard',VIEW_PLAYER=-1;
+
+function viewPlayer(i){VIEW_PLAYER=(VIEW_PLAYER===i)?-1:i;rcard();}
 
 function mkPlayer(num){
   return{name:'Joueur '+num,dice:[1,1,1,1,1],kept:[false,false,false,false,false],
-         pos:[0,1,2,3,4].map(()=>({...C0})),rollsLeft:3,rollsUsed:0,scores:{},phase:'roll',fresh:true,busy:false,
-         atTop:[false,false,false,false,false],dlmSheet:null,dlmDI:0,dlmUI:13,
+         rollsLeft:3,rollsUsed:0,scores:{},phase:'roll',fresh:true,busy:false,
+         dlmSheet:null,dlmDI:0,dlmUI:13,
          d12Sheet:null,d12DI:0,d12UI:12};
 }
 
@@ -630,15 +572,12 @@ function startGame(){
   G=PLAYERS[0];
   if(GAME_MODE==='dlm'){
     PLAYERS.forEach(p=>{p.dlmSheet={d:{},l:{},u:{},s:{}};p.dlmDI=0;p.dlmUI=13;});
-    document.getElementById('ycard').style.width='222px';
     document.getElementById('yrbtn').style.display='none';
   } else if(GAME_MODE==='dlm12'){
     PLAYERS.forEach(p=>{p.d12Sheet={d:{},l:{},u:{},e1:{},e2:{}};p.d12DI=0;p.d12UI=12;});
     D12_REFS={d:{},l:{},u:{},e1:{},e2:{}};
-    document.getElementById('ycard').style.width='242px';
     document.getElementById('yrbtn').style.display='';
   } else {
-    document.getElementById('ycard').style.width='182px';
     document.getElementById('yrbtn').style.display='none';
   }
   document.getElementById('ystart').style.display='none';
@@ -679,12 +618,12 @@ function makeDots(faceEl,val){
 }
 
 function makeCube(i){
-  const v=G.dice[i],{x,y}=G.pos[i];
+  const v=G.dice[i],{x,y}=slotPos(i);
 
   const wrap=document.createElement('div');
   wrap.className='yw'+(G.kept[i]?' ywkept':'');
   wrap.id='yw'+i;
-  wrap.style.left=x+'px';wrap.style.top=y+'px';wrap.style.zIndex=y;
+  wrap.style.left=x+'px';wrap.style.top=y+'px';
   wrap.onclick=()=>tk(i);
 
   const cube=document.createElement('div');
@@ -713,33 +652,41 @@ function rcard(){
   if(GAME_MODE==='dlm'){rcardDLM();return;}
   if(GAME_MODE==='dlm12'){rcardDLM12();return;}
   const el=document.getElementById('ycard');
-  const usc=CATS.filter(c=>c.s==='u').reduce((a,c)=>a+(G.scores[c.id]||0),0);
-  const bon=usc>=63?35:0,tot=Object.values(G.scores).reduce((a,b)=>a+b,0)+bon;
+  const vp=VIEW_PLAYER>=0?VIEW_PLAYER:CURRENT_PLAYER;
+  const vPlayer=PLAYERS[vp];
+  const viewing=VIEW_PLAYER>=0&&VIEW_PLAYER!==CURRENT_PLAYER;
+  const sc=vPlayer.scores;
+  const usc=CATS.filter(c=>c.s==='u').reduce((a,c)=>a+(sc[c.id]||0),0);
+  const bon=usc>=63?35:0,tot=Object.values(sc).reduce((a,b)=>a+b,0)+bon;
   let h='';
 
   if(NUM_PLAYERS>1){
-    const row=PLAYERS.map((p,i)=>{
+    const chips=PLAYERS.map((p,i)=>{
       const pt=playerTotal(p),done=Object.keys(p.scores).length===13;
-      const active=i===CURRENT_PLAYER;
-      return`<span style="font-size:10px;${active?'font-weight:600;color:#BA7517':'color:var(--color-text-tertiary)'}">${p.name}${done?' ✓':''}&nbsp;${pt}</span>`;
-    }).join('<span style="color:var(--color-border-secondary);margin:0 4px">·</span>');
-    h+=`<div style="padding:5px 9px;background:var(--color-background-secondary);border-bottom:.5px solid var(--color-border-tertiary);display:flex;gap:4px;flex-wrap:wrap">${row}</div>`;
+      const active=i===CURRENT_PLAYER,viewed=i===VIEW_PLAYER;
+      const style=viewed?'font-weight:700;color:#2563eb':active?'font-weight:600;color:#BA7517':'color:var(--color-text-tertiary)';
+      return`<span onclick="viewPlayer(${i})" style="cursor:pointer;font-size:10px;padding:2px 4px;border-radius:4px;${style}">${p.name}${done?' ✓':''}&nbsp;${pt}</span>`;
+    }).join('<span style="color:var(--color-border-secondary);margin:0 2px">·</span>');
+    h+=`<div style="padding:5px 9px;background:var(--color-background-secondary);border-bottom:.5px solid var(--color-border-tertiary);display:flex;gap:2px;flex-wrap:wrap;align-items:center">${chips}</div>`;
+  }
+  if(viewing){
+    h+=`<div style="padding:3px 9px;background:#eff6ff;border-bottom:.5px solid #bfdbfe;font-size:10px;color:#2563eb;display:flex;justify-content:space-between;align-items:center"><span>👁 Table de ${vPlayer.name}</span><span onclick="viewPlayer(${VIEW_PLAYER})" style="cursor:pointer;font-size:14px;color:#94a3b8">×</span></div>`;
   }
 
   h+=`<div style="background:var(--color-background-secondary);padding:4px 9px;font-size:10px;font-weight:500;color:var(--color-text-secondary);letter-spacing:1px;border-bottom:.5px solid var(--color-border-tertiary)">SECTION HAUTE</div>`;
   CATS.filter(c=>c.s==='u').forEach(cat=>{
-    const fil=cat.id in G.scores,prev=!fil&&G.phase==='score'?cat.f(G.dice):null;
-    const val=fil?G.scores[cat.id]:(prev!==null?prev:'');
-    const cls=fil?'ysf'+(G.scores[cat.id]===0?' ysz':''):(prev!==null?'ysav':'');
-    h+=`<div class="ysr ${cls}" onclick="yscore('${cat.id}')"><span>${cat.n}</span><span class="ysv">${val}</span></div>`;
+    const fil=cat.id in sc,prev=!fil&&!viewing&&G.phase==='score'?cat.f(G.dice):null;
+    const val=fil?sc[cat.id]:(prev!==null?prev:'');
+    const cls=fil?'ysf'+(sc[cat.id]===0?' ysz':''):(prev!==null?'ysav':'');
+    h+=`<div class="ysr ${cls}" ${!viewing?`onclick="yscore('${cat.id}')"`:''}><span>${cat.n}</span><span class="ysv">${val}</span></div>`;
   });
   h+=`<div style="display:flex;justify-content:space-between;padding:3px 9px;font-size:10px;color:var(--color-text-secondary);border-bottom:.5px solid var(--color-border-tertiary)"><span>Bonus (≥63)</span><span style="color:${bon?'#BA7517':'var(--color-text-tertiary)'};font-weight:${bon?500:400}">${bon?'+35 ✓':usc+'/63'}</span></div>`;
   h+=`<div style="background:var(--color-background-secondary);padding:4px 9px;font-size:10px;font-weight:500;color:var(--color-text-secondary);letter-spacing:1px;border-bottom:.5px solid var(--color-border-tertiary)">SECTION BASSE</div>`;
   CATS.filter(c=>c.s==='l').forEach(cat=>{
-    const fil=cat.id in G.scores,prev=!fil&&G.phase==='score'?cat.f(G.dice):null;
-    const val=fil?G.scores[cat.id]:(prev!==null?prev:'');
-    const cls=fil?'ysf'+(G.scores[cat.id]===0?' ysz':''):(prev!==null?'ysav':'');
-    h+=`<div class="ysr ${cls}" onclick="yscore('${cat.id}')"><span>${cat.n}</span><span class="ysv">${val}</span></div>`;
+    const fil=cat.id in sc,prev=!fil&&!viewing&&G.phase==='score'?cat.f(G.dice):null;
+    const val=fil?sc[cat.id]:(prev!==null?prev:'');
+    const cls=fil?'ysf'+(sc[cat.id]===0?' ysz':''):(prev!==null?'ysav':'');
+    h+=`<div class="ysr ${cls}" ${!viewing?`onclick="yscore('${cat.id}')"`:''}><span>${cat.n}</span><span class="ysv">${val}</span></div>`;
   });
   h+=`<div style="display:flex;justify-content:space-between;padding:5px 9px;font-size:12px;font-weight:500;color:var(--color-text-primary);background:var(--color-background-secondary)"><span>TOTAL</span><span style="color:#BA7517">${tot}</span></div>`;
   el.innerHTML=h;
@@ -747,116 +694,39 @@ function rcard(){
 
 function tk(i){if(G.phase!=='roll'||G.fresh||G.rollsLeft<=0||G.busy)return;G.kept[i]=!G.kept[i];rdice()}
 
-// ── Animation 3D ──
+// ── Animation 3D linéaire (droite → gauche) ──
 async function throwDice(ids){
   let maxEnd=0;
   const cubeAnims=[];
-
-  // Pendant le vol, z-index élevé pour passer devant les dés gardés
-  ids.forEach(i=>{const el=document.getElementById('yw'+i);if(el)el.style.zIndex=500;});
-
-  ids.forEach((i,idx)=>{
-    const{x,y}=G.pos[i];
+  // Trier par slot décroissant : le dé le plus à droite arrive en premier
+  const sorted=[...ids].sort((a,b)=>b-a);
+  sorted.forEach((i,idx)=>{
+    const{x:fx}=slotPos(i);
     const wrapEl=document.getElementById('yw'+i);
     const cubeEl=document.getElementById('yd'+i);
-    const fx=TX-x,fy=TY-y;
-    const dist=Math.sqrt(fx*fx+fy*fy);
-    const lift=Math.max(28,Math.min(58,dist*0.28));
-    const dur=460+Math.round(dist*0.48),delay=idx*70;
+    const dx=STRIP_W+DSIZE+8-fx; // offset depuis slot jusqu'au bord droit
+    const dur=300+idx*55;
+    const delay=idx*65;
 
-    // Arc parabolique sur le wrapper (position + scale + opacité)
     wrapEl.animate([
-      {transform:`translate(${fx}px,${fy}px) scale(0.44)`,opacity:0.82},
-      {transform:`translate(${fx*.5}px,${fy*.5-lift}px) scale(1.05)`,offset:.40},
-      {transform:`translate(0px,-9px) scale(1.07)`,offset:.83},
-      {transform:`translate(0px,4px) scale(0.96)`,offset:.93},
-      {transform:`translate(0px,0px) scale(1)`,opacity:1}
+      {transform:`translateX(${dx}px)`,opacity:0},
+      {transform:`translateX(${dx*.15}px)`,opacity:1,offset:.35},
+      {transform:`translateX(-3px)`,offset:.90},
+      {transform:`translateX(0)`,opacity:1}
     ],{duration:dur,delay,easing:'ease-out',fill:'backwards'});
 
-    // Rotation 3D tumbling sur le cube
-    // Départ à (0,0), tumbling vers >720° + offset final, atterrissage sur faceCSS(v)
     const[ex,ey]=FACE_XY[G.dice[i]];
-    const spins=2;
-    const midX=spins*360+ex+Math.round((Math.random()-.5)*90);
-    const midY=spins*360+ey+Math.round((Math.random()-.5)*90);
     const finalT=`rotateX(${ex}deg) rotateY(${ey}deg)`;
     const anim=cubeEl.animate([
       {transform:'rotateX(0deg) rotateY(0deg)'},
-      {transform:`rotateX(${midX}deg) rotateY(${midY}deg)`,offset:.62},
+      {transform:`rotateX(${720+ex}deg) rotateY(${720+ey}deg)`,offset:.65},
       {transform:finalT}
     ],{duration:dur,delay,easing:'ease-out',fill:'both'});
     cubeAnims.push({el:cubeEl,anim,finalT});
-
     maxEnd=Math.max(maxEnd,delay+dur);
   });
-  await sl(maxEnd+90);
-  // Commit transform inline puis annule l'animation (pattern standard)
+  await sl(maxEnd+50);
   cubeAnims.forEach(({el,anim,finalT})=>{el.style.transform=finalT;anim.cancel()});
-  // Restaure z-index selon position finale
-  ids.forEach(i=>{const el=document.getElementById('yw'+i);if(el)el.style.zIndex=G.pos[i].y;});
-}
-
-async function animHd(keptIds,pickupIds){
-  const hd=document.getElementById('yhd');
-  hd.style.transition='none';
-  hd.style.left='334px';hd.style.top=(CY-HDH/2)+'px';hd.style.opacity='0';
-  await sl(30);
-  hd.style.transition='left .40s ease,top .38s ease,opacity .22s';
-  hd.style.opacity='1';await sl(80);
-
-  // ── Phase 1 : déposer uniquement les dés gardés pas encore en haut ──
-  const toMove=keptIds.filter(i=>!G.atTop[i]);
-  if(toMove.length>0){
-    // Bloqué = positions des dés ramassés + positions des dés déjà en haut (à respecter)
-    const blocked=[
-      ...pickupIds.map(j=>G.pos[j]),
-      ...keptIds.filter(i=>G.atTop[i]).map(i=>G.pos[i])
-    ];
-    const targets=[];
-    for(let idx=0;idx<toMove.length;idx++){
-      // Bloquer aussi les positions actuelles des dés pas encore ramassés (encore visibles)
-      const futurePos=toMove.slice(idx+1).map(j=>G.pos[j]);
-      const t=highestPos([...blocked,...targets,...futurePos]);
-      targets.push(t);
-    }
-    for(let idx=0;idx<toMove.length;idx++){
-      const i=toMove[idx];
-      const{x,y}=G.pos[i];
-      const hx=x+DSIZE+8,hy=y+DSIZE/2-HDH/2;
-      hd.style.left=hx+'px';hd.style.top=hy+'px';await sl(420);
-      hd.style.left=(x+2)+'px';await sl(130);
-      const el=document.getElementById('yw'+i);
-      if(el){el.style.transition='opacity .10s';el.style.opacity='0';el.style.pointerEvents='none';}
-      await sl(100);
-      hd.style.left=(hx-5)+'px';await sl(150);
-      const{x:nx,y:ny}=targets[idx];
-      const dhx=nx+DSIZE+8,dhy=ny+DSIZE/2-HDH/2;
-      hd.style.left=dhx+'px';hd.style.top=dhy+'px';await sl(420);
-      hd.style.left=(nx+2)+'px';await sl(100);
-      if(el){el.style.left=nx+'px';el.style.top=ny+'px';el.style.zIndex=500;el.style.opacity='1';}
-      G.pos[i]={x:nx,y:ny};
-      G.atTop[i]=true;
-      await sl(80);
-      if(el)el.style.zIndex=ny;
-      hd.style.left=(dhx-5)+'px';await sl(140);
-    }
-  }
-
-  // ── Phase 2 : ramasser les dés à relancer ──
-  for(const i of pickupIds){
-    G.atTop[i]=false;
-    const{x,y}=G.pos[i];
-    const hx=x+DSIZE+8,hy=y+DSIZE/2-HDH/2;
-    hd.style.left=hx+'px';hd.style.top=hy+'px';await sl(420);
-    hd.style.left=(x+2)+'px';await sl(130);
-    const el=document.getElementById('yw'+i);
-    if(el){el.style.transition='opacity .10s';el.style.opacity='0';el.style.pointerEvents='none';}
-    await sl(100);
-    hd.style.left=(hx-5)+'px';await sl(150);
-  }
-
-  hd.style.left='334px';hd.style.top=(CY-HDH/2)+'px';await sl(320);
-  hd.style.opacity='0';
 }
 
 // ── Logique de jeu ──
@@ -865,19 +735,11 @@ async function yRoll(){
   if(G.phase!=='roll'||G.rollsLeft<=0||G.busy)return;
   G.busy=true;document.getElementById('yrb').disabled=true;
 
-  if(!G.fresh){
-    const keptIds=G.kept.map((k,i)=>k?i:-1).filter(i=>i>=0);
-    const toPickup=G.kept.map((k,i)=>k?-1:i).filter(i=>i>=0);
-    if(toPickup.length>0)await animHd(keptIds,toPickup);
-  }
-
-  const fixed=G.pos.filter((_,i)=>G.kept[i]);
-  const newps=[],rolled=[];
+  const rolled=[];
   for(let i=0;i<5;i++){
     if(!G.kept[i]){
       G.dice[i]=Math.ceil(Math.random()*6);
-      G.pos[i]=randomPos([...fixed,...newps]);
-      newps.push(G.pos[i]);rolled.push(i);
+      rolled.push(i);
     }
   }
   G.rollsLeft--;G.rollsUsed++;G.fresh=false;
@@ -1027,9 +889,8 @@ function yscoreDLM12(col,catId,ri){
   CURRENT_PLAYER=(CURRENT_PLAYER+1)%NUM_PLAYERS;
   G=PLAYERS[CURRENT_PLAYER];
   G.dice=[1,1,1,1,1];G.kept=[false,false,false,false,false];
-  G.pos=[0,1,2,3,4].map(()=>({...C0}));
-  G.rollsLeft=3;G.rollsUsed=0;G.phase='roll';G.fresh=true;G.busy=false;G.atTop=[false,false,false,false,false];
-  rdice();rcard();uctrl();updTi();
+  G.rollsLeft=3;G.rollsUsed=0;G.phase='roll';G.fresh=true;G.busy=false;
+  VIEW_PLAYER=-1;rdice();rcard();uctrl();updTi();
   if(ONLINE)netPush();
   msg((NUM_PLAYERS>1?G.name+' — ':'')+'Lancez les dés !');
 }
@@ -1060,9 +921,8 @@ function yscore(id){
   CURRENT_PLAYER=(CURRENT_PLAYER+1)%NUM_PLAYERS;
   G=PLAYERS[CURRENT_PLAYER];
   G.dice=[1,1,1,1,1];G.kept=[false,false,false,false,false];
-  G.pos=[0,1,2,3,4].map(()=>({...C0}));
-  G.rollsLeft=3;G.phase='roll';G.fresh=true;G.busy=false;G.atTop=[false,false,false,false,false];
-  rdice();rcard();uctrl();updTi();
+  G.rollsLeft=3;G.rollsUsed=0;G.phase='roll';G.fresh=true;G.busy=false;
+  VIEW_PLAYER=-1;rdice();rcard();uctrl();updTi();
   if(ONLINE)netPush();
   msg((NUM_PLAYERS>1?G.name+' — ':'')+'Tour '+playerTurn()+'/13 — Lancez les dés !');
 }
@@ -1118,8 +978,7 @@ function sl(ms){return new Promise(r=>setTimeout(r,ms))}
 function scaleGame(){
   const el=document.getElementById('yg');
   if(!window.matchMedia('(pointer:fine)').matches){el.style.zoom='';return;}
-  const REF_W=GAME_MODE==='dlm12'?668:620,REF_H=570;
-  el.style.zoom=Math.min(window.innerWidth/REF_W,window.innerHeight/REF_H)*0.97;
+  el.style.zoom=Math.min(1,window.innerWidth/420)*0.97;
 }
 window.addEventListener('resize',scaleGame);
 scaleGame();
@@ -1198,19 +1057,15 @@ function applyNetState(data){
     p.dlmDI=pd.dlmDI||0;p.dlmUI=pd.dlmUI!==undefined?pd.dlmUI:13;
     p.d12Sheet=GAME_MODE==='dlm12'?normD12Sheet(pd.d12Sheet):null;
     p.d12DI=pd.d12DI||0;p.d12UI=pd.d12UI!==undefined?pd.d12UI:12;
-    if(!p.fresh){
-      const ps=[];
-      p.pos=[...Array(5)].map(()=>{const pos=randomPos(ps);ps.push(pos);return pos;});
-    }
     return p;
   });
   NUM_PLAYERS=PLAYERS.length;CURRENT_PLAYER=data.cp||0;G=PLAYERS[CURRENT_PLAYER];
   if(data.d12Refs)D12_REFS=normD12Refs(data.d12Refs);
   document.getElementById('ylobby').style.display='none';
   document.getElementById('ystart').style.display='none';
-  if(GAME_MODE==='dlm'){document.getElementById('ycard').style.width='222px';document.getElementById('yrbtn').style.display='none';}
-  else if(GAME_MODE==='dlm12'){document.getElementById('ycard').style.width='242px';document.getElementById('yrbtn').style.display='';}
-  else{document.getElementById('ycard').style.width='182px';document.getElementById('yrbtn').style.display='none';}
+  if(GAME_MODE==='dlm'){document.getElementById('yrbtn').style.display='none';}
+  else if(GAME_MODE==='dlm12'){document.getElementById('yrbtn').style.display='';}
+  else{document.getElementById('yrbtn').style.display='none';}
   document.getElementById('ygame').style.display='';
   chatListen();
   rdice();rcard();uctrl();updTi();
@@ -1300,9 +1155,9 @@ async function netStartGame(){
 function netShowGame(){
   document.getElementById('ylobby').style.display='none';
   document.getElementById('ystart').style.display='none';
-  if(GAME_MODE==='dlm'){document.getElementById('ycard').style.width='222px';document.getElementById('yrbtn').style.display='none';}
-  else if(GAME_MODE==='dlm12'){document.getElementById('ycard').style.width='242px';document.getElementById('yrbtn').style.display='';}
-  else{document.getElementById('ycard').style.width='182px';document.getElementById('yrbtn').style.display='none';}
+  if(GAME_MODE==='dlm'){document.getElementById('yrbtn').style.display='none';}
+  else if(GAME_MODE==='dlm12'){document.getElementById('yrbtn').style.display='';}
+  else{document.getElementById('yrbtn').style.display='none';}
   document.getElementById('ygame').style.display='';
   document.getElementById('ynetw').style.display='none';
   rdice();rcard();uctrl();updTi();
