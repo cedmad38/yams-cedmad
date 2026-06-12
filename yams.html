@@ -805,7 +805,7 @@ async function yRoll(){
     if(ONLINE)netPush();
     setBusy(false);return;
   }
-  const sug=aiSug(G.dice,G.scores);G.kept=sug;
+  const sug=aiSug(G.dice,G.scores);G.kept=G.kept.map((k,i)=>k||sug[i]);
   rdice();rcard();uctrl();
   const kc=sug.filter(Boolean).length;
   if(kc===5){
