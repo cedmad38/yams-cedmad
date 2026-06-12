@@ -407,7 +407,7 @@ const DLM_ROWS=[
   {id:'c4',n:'Quatre',f:d=>d.filter(x=>x===4).reduce((a,b)=>a+b,0)},
   {id:'c5',n:'Cinq', f:d=>d.filter(x=>x===5).reduce((a,b)=>a+b,0)},
   {id:'c6',n:'Six',  f:d=>d.filter(x=>x===6).reduce((a,b)=>a+b,0)},
-  {id:'dp2',n:'Double paires',f:d=>{const c=cm(d);const p=Object.entries(c).filter(([,v])=>v>=2);if(p.length>=2)return p.slice(0,2).reduce((a,[k])=>a+Number(k)*2,0);if(p.length===1&&p[0][1]>=4)return Number(p[0][0])*4;return 0;}},
+  {id:'dp2',n:'Double paires',f:d=>{const c=cm(d);const p=Object.entries(c).filter(([,v])=>v>=2);if(p.length>=2||( p.length===1&&p[0][1]>=4))return ds(d);return 0;}},
   {id:'brl',n:'Brelan',    f:d=>cv(d).some(c=>c>=3)?ds(d):0},
   {id:'ful',n:'Full House',f:d=>isFH(d)?25:0},
   {id:'pst',n:'Pte Suite',f:d=>isSS(d)?30:0},
