@@ -532,7 +532,7 @@ function rcardDLM(){
     h+=`<tr><td class="d12c"${!rowFilled&&!viewing?' style="font-weight:700"':''}>${row.n}</td>`;
     DLM_COLS.forEach(col=>{
       const v=s[col][row.id];
-      if(v!==undefined){const sf=v>0?'background:#30b0ce;color:#fff':'';h+=`<td class="d12sf" style="${sf}" data-sid="${row.id}-${col}">${v||'—'}</td>`;}
+      if(v!==undefined){const sf=v>0?'background:#30b0ce;color:#fff':'background:#f0f0f0;color:#999;text-decoration:line-through';h+=`<td class="d12sf" style="${sf}" data-sid="${row.id}-${col}">${v>0?v:'0'}</td>`;}
       else if(!viewing&&dlmCanFill(col,ri)){h+=`<td class="d12av d12pr" data-sid="${row.id}-${col}" onclick="yscoreDLM('${col}','${row.id}',${ri})">${row.f(G.dice)}</td>`;}
       else if(!viewing&&col==='s'&&!G.fresh&&!(row.id in s['s'])){h+=`<td class="dlm-barrer" data-sid="${row.id}-${col}" onclick="yscoreDLM('s','${row.id}',${ri},1)">✕</td>`;}
       else{h+=`<td></td>`;}
@@ -548,7 +548,7 @@ function rcardDLM(){
     h+=`<tr${ri===6?' class="d12sep"':''}><td class="d12c"${!rowFilled&&!viewing?' style="font-weight:700"':''}>${row.n}</td>`;
     DLM_COLS.forEach(col=>{
       const v=s[col][row.id];
-      if(v!==undefined){const sf=v>0?'background:#30b0ce;color:#fff':'';h+=`<td class="d12sf" style="${sf}" data-sid="${row.id}-${col}">${v||'—'}</td>`;}
+      if(v!==undefined){const sf=v>0?'background:#30b0ce;color:#fff':'background:#f0f0f0;color:#999;text-decoration:line-through';h+=`<td class="d12sf" style="${sf}" data-sid="${row.id}-${col}">${v>0?v:'0'}</td>`;}
       else if(!viewing&&dlmCanFill(col,ri)){h+=`<td class="d12av d12pr" data-sid="${row.id}-${col}" onclick="yscoreDLM('${col}','${row.id}',${ri})">${row.f(G.dice)}</td>`;}
       else if(!viewing&&col==='s'&&!G.fresh&&!(row.id in s['s'])){h+=`<td class="dlm-barrer" data-sid="${row.id}-${col}" onclick="yscoreDLM('s','${row.id}',${ri},1)">✕</td>`;}
       else{h+=`<td></td>`;}
