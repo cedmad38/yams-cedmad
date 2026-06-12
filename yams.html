@@ -1280,6 +1280,7 @@ async function netJoin(){
   GAME_MODE=snap.val().mode;
   const slots=snap.val().slots||{};
   const myIdx=Object.keys(slots).length;
+  if(myIdx>=10){netMsg('La partie est complète (10 joueurs max).',true);return;}
   MY_SLOT=myIdx;ROOM_CODE=code;ONLINE=true;
   await ref.child('slots/'+myIdx).set({name});
   showLobby(code,false);
