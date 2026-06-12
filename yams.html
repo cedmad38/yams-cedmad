@@ -821,15 +821,22 @@ function d12PlayerFilled(p){
 function rcardDLM12(){
   const el=document.getElementById('ycard');
   if(!G.d12Sheet){el.innerHTML='';return;}
-  const s=G.d12Sheet;
+  const vp=VIEW_PLAYER>=0?VIEW_PLAYER:CURRENT_PLAYER;
+  const vPlayer=PLAYERS[vp];
+  const s=vPlayer.d12Sheet||{d:{},l:{},u:{},s:{}};
+  const viewing=VIEW_PLAYER>=0&&VIEW_PLAYER!==CURRENT_PLAYER;
   let h='';
   if(NUM_PLAYERS>1){
-    const row=PLAYERS.map((p,i)=>{
+    const chips=PLAYERS.map((p,i)=>{
       const tot=d12PlayerTotal(p),done=d12PlayerFilled(p)>=65;
-      const active=i===CURRENT_PLAYER;
-      return`<span style="font-size:10px;${active?'font-weight:600;color:#BA7517':'color:var(--color-text-tertiary)'}">${p.name}${done?' ✓':''}&nbsp;${tot}</span>`;
-    }).join('<span style="color:var(--color-border-secondary);margin:0 4px">·</span>');
-    h+=`<div style="padding:5px 9px;background:var(--color-background-secondary);border-bottom:.5px solid var(--color-border-tertiary);display:flex;gap:4px;flex-wrap:wrap">${row}</div>`;
+      const active=i===CURRENT_PLAYER,viewed=i===VIEW_PLAYER;
+      const style=viewed?'font-weight:700;color:#2563eb':active?'font-weight:600;color:#BA7517':'color:var(--color-text-tertiary)';
+      return`<span onclick="viewPlayer(${i})" style="cursor:pointer;font-size:10px;padding:2px 4px;border-radius:4px;${style}">${p.name}${done?' ✓':''}&nbsp;${tot}</span>`;
+    }).join('<span style="color:var(--color-border-secondary);margin:0 2px">·</span>');
+    h+=`<div style="padding:5px 9px;background:var(--color-background-secondary);border-bottom:.5px solid var(--color-border-tertiary);display:flex;gap:2px;flex-wrap:wrap;align-items:center">${chips}</div>`;
+  }
+  if(viewing){
+    h+=`<div style="padding:3px 9px;background:#eff6ff;border-bottom:.5px solid #bfdbfe;font-size:10px;color:#2563eb;display:flex;justify-content:space-between;align-items:center"><span>👁 Table de ${vPlayer.name}</span><span onclick="viewPlayer(${VIEW_PLAYER})" style="cursor:pointer;font-size:14px;color:#94a3b8">×</span></div>`;
   }
   h+=`<table class="d12t" style="width:100%">`;
   h+=`<tr><th class="d12c" style="width:72px">Catégorie</th>`;
@@ -838,7 +845,7 @@ function rcardDLM12(){
   const cellHtml=(col,row,ri)=>{
     const v=s[col][row.id];
     if(v!==undefined)return`<td class="d12sf">${v}</td>`;
-    if(!d12CanFill(col,ri))return`<td></td>`;
+    if(viewing||!d12CanFill(col,ri))return`<td></td>`;
     const pv=row.f(G.dice);
     const ref=NUM_PLAYERS>1?D12_REFS[col][row.id]:undefined;
     if(ref!==undefined&&pv<ref)
