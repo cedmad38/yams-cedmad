@@ -76,8 +76,8 @@
     .yflash { animation:yscoreflash 1.8s ease-out forwards; }
 
     /* ── Feuille de score ── */
-    .ysr { display:flex;justify-content:space-between;align-items:center;padding:6px 9px;border-bottom:.5px solid var(--color-border-tertiary);cursor:pointer;transition:background .1s;font-size:15px;font-weight:500;color:var(--color-text-primary) }
-    .ysv { font-size:26px;font-weight:800;min-width:36px;text-align:right;line-height:1; }
+    .ysr { display:flex;justify-content:space-between;align-items:center;padding:6px 9px;border-bottom:.5px solid var(--color-border-tertiary);cursor:pointer;transition:background .1s;font-size:26px;font-weight:800;color:var(--color-text-primary) }
+    .ysv { font-size:34px;font-weight:800;min-width:40px;text-align:right;line-height:1; }
     .ysr:hover:not(.ysf) { background:var(--color-background-secondary) }
     .ysr.ysav { background:var(--color-background-success) }
     .ysr.ysr-l.ysav { background:#c6f2fa }
@@ -184,7 +184,7 @@
       border-left:1.5px solid #2d4f90;border-right:1.5px solid #2d4f90;
       border-top:1px solid #2d4f90;border-bottom:2px solid #2c2c2c
     }
-    .d12t .d12c{text-align:left;padding-left:5px;font-size:10px;font-weight:600}
+    .d12t .d12c{text-align:left;padding-left:5px;font-size:26px;font-weight:800;white-space:normal;word-break:break-word;line-height:1.2}
     .d12t .d12bn td{background:#a8e8f4;color:#005060;font-weight:700;font-size:14px}
     .d12t .d12sf{background:#e0f5f9;color:#85b0ba;font-size:16px;font-weight:800}
     .d12t .d12av{background:#d0f3fb;cursor:pointer;color:#005060;font-size:16px;font-weight:800}
@@ -205,7 +205,7 @@
     #ycard { overflow-x: hidden }
     .ymbtn { width: 85vw; max-width: 300px }
     .ypbtn { width: 68px; height: 68px; font-size: 24px }
-    .ysr { font-size: 12px; padding: 5px 9px }
+    .ysr { font-size: 18px; padding: 5px 9px }
   }
   </style>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -451,6 +451,7 @@ const D12_CN={d:'↓',l:'L',u:'↑',e1:'En 1',e2:'En 2'};
 const D12_MX={d:1,l:1,u:1,e1:3,e2:2};
 // D12 state est per-player (d12Sheet, d12DI, d12UI sur chaque objet joueur)
 let D12_REFS={d:{},l:{},u:{},e1:{},e2:{}};
+const D12_COMP_COLS=new Set(['d','u','e1','e2']); // colonnes compétitives : il faut battre le meilleur score adverse
 
 // ── DLM ──
 const DLM_ROWS=[
@@ -521,8 +522,8 @@ function rcardDLM(){
     h+=`<div style="padding:3px 9px;background:#eff6ff;border-bottom:.5px solid #bfdbfe;font-size:10px;color:#2563eb;display:flex;justify-content:space-between;align-items:center"><span>👁 Table de ${vPlayer.name}</span><span onclick="viewPlayer(${VIEW_PLAYER})" style="cursor:pointer;font-size:14px;color:#94a3b8">×</span></div>`;
   }
   h+=`<table class="d12t" style="width:100%">`;
-  h+=`<tr><th class="d12c" style="width:64px">Catégorie</th>`;
-  DLM_COLS.forEach(c=>h+=`<th style="width:30px">${DLM_CN[c]}</th>`);
+  h+=`<tr><th class="d12c" style="width:40%">Catégorie</th>`;
+  DLM_COLS.forEach(c=>h+=`<th>${DLM_CN[c]}</th>`);
   h+=`</tr>`;
   for(let ri=0;ri<6;ri++){
     const row=DLM_ROWS[ri];
@@ -946,17 +947,23 @@ function rcardDLM12(){
     h+=`<div style="padding:3px 9px;background:#eff6ff;border-bottom:.5px solid #bfdbfe;font-size:10px;color:#2563eb;display:flex;justify-content:space-between;align-items:center"><span>👁 Table de ${vPlayer.name}</span><span onclick="viewPlayer(${VIEW_PLAYER})" style="cursor:pointer;font-size:14px;color:#94a3b8">×</span></div>`;
   }
   h+=`<table class="d12t" style="width:100%">`;
-  h+=`<tr><th class="d12c" style="width:72px">Catégorie</th>`;
-  D12_COLS.forEach(c=>h+=`<th style="width:31px">${D12_CN[c]}</th>`);
+  h+=`<tr><th class="d12c" style="width:40%">Catégorie</th>`;
+  D12_COLS.forEach(c=>h+=`<th>${D12_CN[c]}</th>`);
   h+=`</tr>`;
   const cellHtml=(col,row,ri)=>{
     const v=s[col][row.id];
     if(v!==undefined)return`<td class="d12sf" style="${v>0?'background:#30b0ce;color:#fff':''}" data-sid="${row.id}-${col}">${v}</td>`;
-    if(viewing||!d12CanFill(col,ri))return`<td></td>`;
+    const isComp=D12_COMP_COLS.has(col)&&NUM_PLAYERS>1;
+    const ref=isComp?D12_REFS[col][row.id]:undefined;
+    if(viewing||!d12CanFill(col,ri)){
+      if(isComp&&ref!==undefined)return`<td style="color:#dc2626;font-weight:800;opacity:.45" data-sid="${row.id}-${col}">${ref}</td>`;
+      return`<td></td>`;
+    }
     const pv=row.f(G.dice);
-    const ref=NUM_PLAYERS>1?D12_REFS[col][row.id]:undefined;
-    if(ref!==undefined&&pv<ref)
-      return`<td style="background:#fff3e0;cursor:pointer;color:#c84b00;font-size:8px" data-sid="${row.id}-${col}" onclick="yscoreDLM12('${col}','${row.id}',${ri})">${pv}<br><span style="color:#bbb">≥${ref}</span></td>`;
+    if(isComp&&ref!==undefined){
+      if(pv>ref)return`<td class="d12av" style="padding:1px" data-sid="${row.id}-${col}" onclick="yscoreDLM12('${col}','${row.id}',${ri})"><div style="color:#dc2626;font-size:10px;line-height:1.1">${ref}✗</div><div style="color:#005060;font-weight:800;font-size:16px">${pv}</div></td>`;
+      return`<td style="background:#fff5f5;color:#dc2626;font-weight:800;font-size:16px" data-sid="${row.id}-${col}">${ref}</td>`;
+    }
     return`<td class="d12av d12pr" data-sid="${row.id}-${col}" onclick="yscoreDLM12('${col}','${row.id}',${ri})">${pv}</td>`;
   };
   for(let ri=0;ri<6;ri++){
@@ -995,10 +1002,10 @@ async function yscoreDLM12(col,catId,ri){
   if(!G.d12Sheet||G.fresh||G.busy)return;
   if(!d12CanFill(col,ri))return;
   const score=D12_ROWS[ri].f(G.dice);
-  if(NUM_PLAYERS>1){
+  if(NUM_PLAYERS>1&&D12_COMP_COLS.has(col)){
     const ref=D12_REFS[col][catId];
-    if(ref!==undefined&&score<ref){msg('Score insuffisant — il faut au moins '+ref+' pour cette case.');return;}
-    if(ref===undefined)D12_REFS[col][catId]=score;
+    if(ref!==undefined&&score<=ref){msg('Il faut battre le score adverse (>'+ref+') pour cette case.');return;}
+    if(ref===undefined||score>ref)D12_REFS[col][catId]=score;
   }
   G.d12Sheet[col][catId]=score;
   if(col==='d')G.d12DI++;
