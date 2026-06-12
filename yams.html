@@ -320,7 +320,7 @@
         <button id="yrb" onclick="yRoll()" style="padding:9px 24px;background:#BA7517;color:#FAE8C4;border:none;border-radius:var(--border-radius-md);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-sans)">Lancer</button>
         <span id="yrlc" style="font-size:12px;color:var(--color-text-secondary)"></span>
       </div>
-      <div id="ymsg" style="margin-top:8px;padding:7px 12px;border:.5px solid var(--color-border-tertiary);border-left:3px solid #BA7517;border-radius:var(--border-radius-md);font-size:12px;color:var(--color-text-primary);min-height:32px;background:var(--color-background-secondary)"></div>
+      <div id="ymsg_s" style="margin-top:8px;padding:7px 12px;border:.5px solid var(--color-border-tertiary);border-left:3px solid #BA7517;border-radius:var(--border-radius-md);font-size:12px;color:var(--color-text-primary);background:var(--color-background-secondary)"></div>
     </div>
     <!-- Chat en ligne (statique, bas de jeu) -->
     <div id="ychatarea" style="display:none;margin-top:10px;border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;background:var(--color-background-primary)">
@@ -516,8 +516,8 @@ function rcardDLM(){
       const offDot=ONLINE&&ONLINE_SLOTS[i]===false?'<span class="yoffline"></span>':'';
       return`<span onclick="viewPlayer(${i})" style="cursor:pointer;font-size:10px;padding:2px 4px;border-radius:4px;${style}">${p.name}${offDot}${done?' ✓':''}&nbsp;${tot}</span>`;
     }).join('<span style="color:var(--color-border-secondary);margin:0 2px">·</span>');
-    const waitSpan=ONLINE&&MY_SLOT>=0&&MY_SLOT!==CURRENT_PLAYER?'<span style="margin-left:auto;font-size:10px;color:var(--color-text-secondary);white-space:nowrap">⏳ '+G.name+'…</span>':'';
-    h+=`<div style="padding:5px 9px;background:var(--color-background-secondary);border-bottom:.5px solid var(--color-border-tertiary);display:flex;gap:2px;flex-wrap:wrap;align-items:center">${chips}${waitSpan}</div>`;
+    const statusTxt=ONLINE&&MY_SLOT>=0&&MY_SLOT!==CURRENT_PLAYER?'⏳ '+G.name+'…':LAST_MSG;
+    h+=`<div style="padding:5px 9px;background:var(--color-background-secondary);border-bottom:.5px solid var(--color-border-tertiary);display:flex;gap:2px;flex-wrap:wrap;align-items:center">${chips}<span id="ymsg" style="margin-left:auto;font-size:10px;color:var(--color-text-secondary);white-space:nowrap;font-style:italic">${statusTxt}</span></div>`;
   }
   if(viewing){
     h+=`<div style="padding:3px 9px;background:#eff6ff;border-bottom:.5px solid #bfdbfe;font-size:10px;color:#2563eb;display:flex;justify-content:space-between;align-items:center"><span>👁 Table de ${vPlayer.name}</span><span onclick="viewPlayer(${VIEW_PLAYER})" style="cursor:pointer;font-size:14px;color:#94a3b8">×</span></div>`;
@@ -631,6 +631,7 @@ let NUM_PLAYERS=1,CURRENT_PLAYER=0,PLAYERS=[],G,GAME_MODE='standard',VIEW_PLAYER
 let LAST_SCORE=null;
 let ONLINE_SLOTS={},PRESENCE_WATCHING=false;
 let CHAT_UNREAD=false;
+let LAST_MSG='';
 
 function viewPlayer(i){VIEW_PLAYER=(VIEW_PLAYER===i)?-1:i;rcard();}
 
@@ -784,8 +785,8 @@ function rcard(){
       const offDot=ONLINE&&ONLINE_SLOTS[i]===false?'<span class="yoffline"></span>':'';
       return`<span onclick="viewPlayer(${i})" style="cursor:pointer;font-size:10px;padding:2px 4px;border-radius:4px;${style}">${p.name}${offDot}${done?' ✓':''}&nbsp;${pt}</span>`;
     }).join('<span style="color:var(--color-border-secondary);margin:0 2px">·</span>');
-    const waitSpan=ONLINE&&MY_SLOT>=0&&MY_SLOT!==CURRENT_PLAYER?'<span style="margin-left:auto;font-size:10px;color:var(--color-text-secondary);white-space:nowrap">⏳ '+G.name+'…</span>':'';
-    h+=`<div style="padding:5px 9px;background:var(--color-background-secondary);border-bottom:.5px solid var(--color-border-tertiary);display:flex;gap:2px;flex-wrap:wrap;align-items:center">${chips}${waitSpan}</div>`;
+    const statusTxt=ONLINE&&MY_SLOT>=0&&MY_SLOT!==CURRENT_PLAYER?'⏳ '+G.name+'…':LAST_MSG;
+    h+=`<div style="padding:5px 9px;background:var(--color-background-secondary);border-bottom:.5px solid var(--color-border-tertiary);display:flex;gap:2px;flex-wrap:wrap;align-items:center">${chips}<span id="ymsg" style="margin-left:auto;font-size:10px;color:var(--color-text-secondary);white-space:nowrap;font-style:italic">${statusTxt}</span></div>`;
   }
   if(viewing){
     h+=`<div style="padding:3px 9px;background:#eff6ff;border-bottom:.5px solid #bfdbfe;font-size:10px;color:#2563eb;display:flex;justify-content:space-between;align-items:center"><span>👁 Table de ${vPlayer.name}</span><span onclick="viewPlayer(${VIEW_PLAYER})" style="cursor:pointer;font-size:14px;color:#94a3b8">×</span></div>`;
@@ -943,8 +944,8 @@ function rcardDLM12(){
       const offDot=ONLINE&&ONLINE_SLOTS[i]===false?'<span class="yoffline"></span>':'';
       return`<span onclick="viewPlayer(${i})" style="cursor:pointer;font-size:10px;padding:2px 4px;border-radius:4px;${style}">${p.name}${offDot}${done?' ✓':''}&nbsp;${tot}</span>`;
     }).join('<span style="color:var(--color-border-secondary);margin:0 2px">·</span>');
-    const waitSpan=ONLINE&&MY_SLOT>=0&&MY_SLOT!==CURRENT_PLAYER?'<span style="margin-left:auto;font-size:10px;color:var(--color-text-secondary);white-space:nowrap">⏳ '+G.name+'…</span>':'';
-    h+=`<div style="padding:5px 9px;background:var(--color-background-secondary);border-bottom:.5px solid var(--color-border-tertiary);display:flex;gap:2px;flex-wrap:wrap;align-items:center">${chips}${waitSpan}</div>`;
+    const statusTxt=ONLINE&&MY_SLOT>=0&&MY_SLOT!==CURRENT_PLAYER?'⏳ '+G.name+'…':LAST_MSG;
+    h+=`<div style="padding:5px 9px;background:var(--color-background-secondary);border-bottom:.5px solid var(--color-border-tertiary);display:flex;gap:2px;flex-wrap:wrap;align-items:center">${chips}<span id="ymsg" style="margin-left:auto;font-size:10px;color:var(--color-text-secondary);white-space:nowrap;font-style:italic">${statusTxt}</span></div>`;
   }
   if(viewing){
     h+=`<div style="padding:3px 9px;background:#eff6ff;border-bottom:.5px solid #bfdbfe;font-size:10px;color:#2563eb;display:flex;justify-content:space-between;align-items:center"><span>👁 Table de ${vPlayer.name}</span><span onclick="viewPlayer(${VIEW_PLAYER})" style="cursor:pointer;font-size:14px;color:#94a3b8">×</span></div>`;
@@ -1130,7 +1131,7 @@ function flashScoreCell(col,catId){
   if(!el)return;
   el.classList.remove('yflash');void el.offsetWidth;el.classList.add('yflash');
 }
-function msg(t){document.getElementById('ymsg').textContent=t}
+function msg(t){LAST_MSG=t;const el=document.getElementById('ymsg')||document.getElementById('ymsg_s');if(el)el.textContent=t;}
 function sl(ms){return new Promise(r=>setTimeout(r,ms))}
 
 // Mise à l'échelle desktop uniquement (écrans sans touch)
