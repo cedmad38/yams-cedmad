@@ -516,7 +516,8 @@ function rcardDLM(){
       const offDot=ONLINE&&ONLINE_SLOTS[i]===false?'<span class="yoffline"></span>':'';
       return`<span onclick="viewPlayer(${i})" style="cursor:pointer;font-size:10px;padding:2px 4px;border-radius:4px;${style}">${p.name}${offDot}${done?' ✓':''}&nbsp;${tot}</span>`;
     }).join('<span style="color:var(--color-border-secondary);margin:0 2px">·</span>');
-    h+=`<div style="padding:5px 9px;background:var(--color-background-secondary);border-bottom:.5px solid var(--color-border-tertiary);display:flex;gap:2px;flex-wrap:wrap;align-items:center">${chips}</div>`;
+    const waitSpan=ONLINE&&MY_SLOT>=0&&MY_SLOT!==CURRENT_PLAYER?'<span style="margin-left:auto;font-size:10px;color:var(--color-text-secondary);white-space:nowrap">⏳ '+G.name+'…</span>':'';
+    h+=`<div style="padding:5px 9px;background:var(--color-background-secondary);border-bottom:.5px solid var(--color-border-tertiary);display:flex;gap:2px;flex-wrap:wrap;align-items:center">${chips}${waitSpan}</div>`;
   }
   if(viewing){
     h+=`<div style="padding:3px 9px;background:#eff6ff;border-bottom:.5px solid #bfdbfe;font-size:10px;color:#2563eb;display:flex;justify-content:space-between;align-items:center"><span>👁 Table de ${vPlayer.name}</span><span onclick="viewPlayer(${VIEW_PLAYER})" style="cursor:pointer;font-size:14px;color:#94a3b8">×</span></div>`;
@@ -783,7 +784,8 @@ function rcard(){
       const offDot=ONLINE&&ONLINE_SLOTS[i]===false?'<span class="yoffline"></span>':'';
       return`<span onclick="viewPlayer(${i})" style="cursor:pointer;font-size:10px;padding:2px 4px;border-radius:4px;${style}">${p.name}${offDot}${done?' ✓':''}&nbsp;${pt}</span>`;
     }).join('<span style="color:var(--color-border-secondary);margin:0 2px">·</span>');
-    h+=`<div style="padding:5px 9px;background:var(--color-background-secondary);border-bottom:.5px solid var(--color-border-tertiary);display:flex;gap:2px;flex-wrap:wrap;align-items:center">${chips}</div>`;
+    const waitSpan=ONLINE&&MY_SLOT>=0&&MY_SLOT!==CURRENT_PLAYER?'<span style="margin-left:auto;font-size:10px;color:var(--color-text-secondary);white-space:nowrap">⏳ '+G.name+'…</span>':'';
+    h+=`<div style="padding:5px 9px;background:var(--color-background-secondary);border-bottom:.5px solid var(--color-border-tertiary);display:flex;gap:2px;flex-wrap:wrap;align-items:center">${chips}${waitSpan}</div>`;
   }
   if(viewing){
     h+=`<div style="padding:3px 9px;background:#eff6ff;border-bottom:.5px solid #bfdbfe;font-size:10px;color:#2563eb;display:flex;justify-content:space-between;align-items:center"><span>👁 Table de ${vPlayer.name}</span><span onclick="viewPlayer(${VIEW_PLAYER})" style="cursor:pointer;font-size:14px;color:#94a3b8">×</span></div>`;
@@ -941,7 +943,8 @@ function rcardDLM12(){
       const offDot=ONLINE&&ONLINE_SLOTS[i]===false?'<span class="yoffline"></span>':'';
       return`<span onclick="viewPlayer(${i})" style="cursor:pointer;font-size:10px;padding:2px 4px;border-radius:4px;${style}">${p.name}${offDot}${done?' ✓':''}&nbsp;${tot}</span>`;
     }).join('<span style="color:var(--color-border-secondary);margin:0 2px">·</span>');
-    h+=`<div style="padding:5px 9px;background:var(--color-background-secondary);border-bottom:.5px solid var(--color-border-tertiary);display:flex;gap:2px;flex-wrap:wrap;align-items:center">${chips}</div>`;
+    const waitSpan=ONLINE&&MY_SLOT>=0&&MY_SLOT!==CURRENT_PLAYER?'<span style="margin-left:auto;font-size:10px;color:var(--color-text-secondary);white-space:nowrap">⏳ '+G.name+'…</span>':'';
+    h+=`<div style="padding:5px 9px;background:var(--color-background-secondary);border-bottom:.5px solid var(--color-border-tertiary);display:flex;gap:2px;flex-wrap:wrap;align-items:center">${chips}${waitSpan}</div>`;
   }
   if(viewing){
     h+=`<div style="padding:3px 9px;background:#eff6ff;border-bottom:.5px solid #bfdbfe;font-size:10px;color:#2563eb;display:flex;justify-content:space-between;align-items:center"><span>👁 Table de ${vPlayer.name}</span><span onclick="viewPlayer(${VIEW_PLAYER})" style="cursor:pointer;font-size:14px;color:#94a3b8">×</span></div>`;
@@ -1245,7 +1248,7 @@ function applyNetState(data){
   const myTurn=(MY_SLOT<0||MY_SLOT===CURRENT_PLAYER);
   if(!myTurn){
     document.getElementById('yrb').disabled=true;
-    msg('⏳ En attente de '+G.name+' …');
+    msg('');
   }else{
     msg((NUM_PLAYERS>1?G.name+' — ':'')+(G.fresh?'Lancez les dés !':G.phase==='score'?'Choisissez une case !':'Relancez ou choisissez !'));
   }
@@ -1276,7 +1279,7 @@ async function netJoin(){
   const ref=FBDB.ref('rooms/'+code);
   const snap=await ref.once('value');
   if(!snap.val()){netMsg('Code introuvable : '+code,true);return;}
-  if(snap.val().status!=='lobby'){netMsg('Cette partie a déjà commencé.',true);return;}
+  if(snap.val().status!=='lobby'){showReconnect(code,snap.val().slots||{},snap.val().mode);return;}
   GAME_MODE=snap.val().mode;
   const slots=snap.val().slots||{};
   const myIdx=Object.keys(slots).length;
@@ -1293,6 +1296,26 @@ async function netJoin(){
   });
 }
 
+function showReconnect(code,slots,mode){
+  GAME_MODE=mode||GAME_MODE;
+  const names=Object.keys(slots).sort().map(k=>({idx:parseInt(k),name:slots[k].name}));
+  const el=document.getElementById('ystep_net');
+  el.style.display='';
+  el.innerHTML=`<div style="text-align:center;padding:24px 16px">
+    <div style="font-size:15px;font-weight:600;margin-bottom:6px;color:var(--color-text-primary)">Rejoindre la partie</div>
+    <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:18px">Code : <strong>${code}</strong> — Qui êtes-vous ?</div>
+    ${names.map(p=>`<button onclick="netReconnect('${code}',${p.idx})" style="display:block;width:100%;margin:6px 0;padding:10px 16px;background:var(--color-background-secondary);border:.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:14px;font-weight:500;cursor:pointer;font-family:var(--font-sans);color:var(--color-text-primary);text-align:left">${p.name}</button>`).join('')}
+    <button onclick="location.reload()" style="margin-top:14px;padding:6px 18px;background:transparent;color:var(--color-text-secondary);border:.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:12px;cursor:pointer;font-family:var(--font-sans)">← Annuler</button>
+  </div>`;
+}
+async function netReconnect(code,slotIdx){
+  if(!FBDB)return;
+  MY_SLOT=slotIdx;ROOM_CODE=code;ONLINE=true;
+  document.getElementById('ystep_net').style.display='none';
+  setupPresence();
+  netWatchState(FBDB.ref('rooms/'+code+'/state'));
+  chatListen();
+}
 function showLobby(code,isHost){
   document.getElementById('ystep_net').style.display='none';
   document.getElementById('ylobby').style.display='';
