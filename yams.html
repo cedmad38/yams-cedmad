@@ -64,6 +64,13 @@
       pointer-events:none;z-index:10;
       filter:drop-shadow(0 1px 2px rgba(0,0,0,.55));
     }
+    @keyframes yscoreflash {
+      0%   { background-color:rgba(250,200,50,0); }
+      10%  { background-color:rgba(250,200,50,0.88); }
+      40%  { background-color:rgba(250,200,50,0.45); }
+      100% { background-color:rgba(250,200,50,0); }
+    }
+    .yflash { animation:yscoreflash 1.8s ease-out forwards; }
 
     /* ── Feuille de score ── */
     .ysr { display:flex;justify-content:space-between;align-items:center;padding:4px 9px;border-bottom:.5px solid var(--color-border-tertiary);cursor:pointer;transition:background .1s;font-size:11px;color:var(--color-text-primary) }
@@ -474,9 +481,9 @@ function rcardDLM(){
     h+=`<tr><td class="d12c">${row.n}</td>`;
     DLM_COLS.forEach(col=>{
       const v=s[col][row.id];
-      if(v!==undefined){h+=`<td class="d12sf">${v||'—'}</td>`;}
-      else if(!viewing&&dlmCanFill(col,ri)){h+=`<td class="d12av d12pr" onclick="yscoreDLM('${col}','${row.id}',${ri})">${row.f(G.dice)}</td>`;}
-      else if(!viewing&&col==='s'&&!G.fresh&&!(row.id in s['s'])){h+=`<td class="dlm-barrer" onclick="yscoreDLM('s','${row.id}',${ri},1)">✕</td>`;}
+      if(v!==undefined){h+=`<td class="d12sf" data-sid="${row.id}-${col}">${v||'—'}</td>`;}
+      else if(!viewing&&dlmCanFill(col,ri)){h+=`<td class="d12av d12pr" data-sid="${row.id}-${col}" onclick="yscoreDLM('${col}','${row.id}',${ri})">${row.f(G.dice)}</td>`;}
+      else if(!viewing&&col==='s'&&!G.fresh&&!(row.id in s['s'])){h+=`<td class="dlm-barrer" data-sid="${row.id}-${col}" onclick="yscoreDLM('s','${row.id}',${ri},1)">✕</td>`;}
       else{h+=`<td></td>`;}
     });
     h+=`</tr>`;
@@ -489,9 +496,9 @@ function rcardDLM(){
     h+=`<tr${ri===6?' class="d12sep"':''}><td class="d12c">${row.n}</td>`;
     DLM_COLS.forEach(col=>{
       const v=s[col][row.id];
-      if(v!==undefined){h+=`<td class="d12sf">${v||'—'}</td>`;}
-      else if(!viewing&&dlmCanFill(col,ri)){h+=`<td class="d12av d12pr" onclick="yscoreDLM('${col}','${row.id}',${ri})">${row.f(G.dice)}</td>`;}
-      else if(!viewing&&col==='s'&&!G.fresh&&!(row.id in s['s'])){h+=`<td class="dlm-barrer" onclick="yscoreDLM('s','${row.id}',${ri},1)">✕</td>`;}
+      if(v!==undefined){h+=`<td class="d12sf" data-sid="${row.id}-${col}">${v||'—'}</td>`;}
+      else if(!viewing&&dlmCanFill(col,ri)){h+=`<td class="d12av d12pr" data-sid="${row.id}-${col}" onclick="yscoreDLM('${col}','${row.id}',${ri})">${row.f(G.dice)}</td>`;}
+      else if(!viewing&&col==='s'&&!G.fresh&&!(row.id in s['s'])){h+=`<td class="dlm-barrer" data-sid="${row.id}-${col}" onclick="yscoreDLM('s','${row.id}',${ri},1)">✕</td>`;}
       else{h+=`<td></td>`;}
     });
     h+=`</tr>`;
@@ -502,7 +509,7 @@ function rcardDLM(){
   el.innerHTML=h;
 }
 
-function yscoreDLM(col,catId,ri,barrer){
+async function yscoreDLM(col,catId,ri,barrer){
   if(ONLINE&&MY_SLOT!==CURRENT_PLAYER)return;
   if(!G.dlmSheet||G.fresh||G.busy)return;
   if(barrer){
@@ -514,7 +521,16 @@ function yscoreDLM(col,catId,ri,barrer){
     if(col==='d')G.dlmDI++;
     if(col==='u')G.dlmUI--;
   }
+  G.busy=true;
+  rcard();
+  flashScoreCell(col,catId);
+
   if(PLAYERS.every(p=>dlmPlayerFilled(p)>=56)){if(ONLINE)netPush('ended');endGameDLM();return;}
+
+  if(NUM_PLAYERS>1){
+    if(ONLINE){LAST_SCORE={col,catId,playerIdx:CURRENT_PLAYER};netPush();LAST_SCORE=null;}
+    await sl(2000);
+  }
   CURRENT_PLAYER=(CURRENT_PLAYER+1)%NUM_PLAYERS;
   G=PLAYERS[CURRENT_PLAYER];
   G.dice=[1,1,1,1,1];G.kept=[false,false,false,false,false];
@@ -560,6 +576,7 @@ function combo(d){
 
 // ── État multi-joueurs ──
 let NUM_PLAYERS=1,CURRENT_PLAYER=0,PLAYERS=[],G,GAME_MODE='standard',VIEW_PLAYER=-1;
+let LAST_SCORE=null;
 
 function viewPlayer(i){VIEW_PLAYER=(VIEW_PLAYER===i)?-1:i;rcard();}
 
@@ -723,7 +740,7 @@ function rcard(){
     const fil=cat.id in sc,prev=!fil&&!viewing&&G.phase==='score'?cat.f(G.dice):null;
     const val=fil?sc[cat.id]:(prev!==null?prev:'');
     const cls=fil?'ysf'+(sc[cat.id]===0?' ysz':''):(prev!==null?'ysav':'');
-    h+=`<div class="ysr ${cls}" ${!viewing?`onclick="yscore('${cat.id}')"`:''}><span>${cat.n}</span><span class="ysv">${val}</span></div>`;
+    h+=`<div class="ysr ${cls}" data-sid="${cat.id}" ${!viewing?`onclick="yscore('${cat.id}')"`:''}><span>${cat.n}</span><span class="ysv">${val}</span></div>`;
   });
   h+=`<div style="display:flex;justify-content:space-between;padding:3px 9px;font-size:10px;color:var(--color-text-secondary);border-bottom:.5px solid var(--color-border-tertiary)"><span>Bonus (≥63)</span><span style="color:${bon?'#BA7517':'var(--color-text-tertiary)'};font-weight:${bon?500:400}">${bon?'+35 ✓':usc+'/63'}</span></div>`;
   h+=`<div style="background:var(--color-background-secondary);padding:4px 9px;font-size:10px;font-weight:500;color:var(--color-text-secondary);letter-spacing:1px;border-bottom:.5px solid var(--color-border-tertiary)">SECTION BASSE</div>`;
@@ -731,7 +748,7 @@ function rcard(){
     const fil=cat.id in sc,prev=!fil&&!viewing&&G.phase==='score'?cat.f(G.dice):null;
     const val=fil?sc[cat.id]:(prev!==null?prev:'');
     const cls=fil?'ysf'+(sc[cat.id]===0?' ysz':''):(prev!==null?'ysav':'');
-    h+=`<div class="ysr ${cls}" ${!viewing?`onclick="yscore('${cat.id}')"`:''}><span>${cat.n}</span><span class="ysv">${val}</span></div>`;
+    h+=`<div class="ysr ${cls}" data-sid="${cat.id}" ${!viewing?`onclick="yscore('${cat.id}')"`:''}><span>${cat.n}</span><span class="ysv">${val}</span></div>`;
   });
   h+=`<div style="display:flex;justify-content:space-between;padding:5px 9px;font-size:12px;font-weight:500;color:var(--color-text-primary);background:var(--color-background-secondary)"><span>TOTAL</span><span style="color:#BA7517">${tot}</span></div>`;
   el.innerHTML=h;
@@ -880,13 +897,13 @@ function rcardDLM12(){
   h+=`</tr>`;
   const cellHtml=(col,row,ri)=>{
     const v=s[col][row.id];
-    if(v!==undefined)return`<td class="d12sf">${v}</td>`;
+    if(v!==undefined)return`<td class="d12sf" data-sid="${row.id}-${col}">${v}</td>`;
     if(viewing||!d12CanFill(col,ri))return`<td></td>`;
     const pv=row.f(G.dice);
     const ref=NUM_PLAYERS>1?D12_REFS[col][row.id]:undefined;
     if(ref!==undefined&&pv<ref)
-      return`<td style="background:#fff3e0;cursor:pointer;color:#c84b00;font-size:8px" onclick="yscoreDLM12('${col}','${row.id}',${ri})">${pv}<br><span style="color:#bbb">≥${ref}</span></td>`;
-    return`<td class="d12av d12pr" onclick="yscoreDLM12('${col}','${row.id}',${ri})">${pv}</td>`;
+      return`<td style="background:#fff3e0;cursor:pointer;color:#c84b00;font-size:8px" data-sid="${row.id}-${col}" onclick="yscoreDLM12('${col}','${row.id}',${ri})">${pv}<br><span style="color:#bbb">≥${ref}</span></td>`;
+    return`<td class="d12av d12pr" data-sid="${row.id}-${col}" onclick="yscoreDLM12('${col}','${row.id}',${ri})">${pv}</td>`;
   };
   for(let ri=0;ri<6;ri++){
     const row=D12_ROWS[ri];
@@ -917,7 +934,7 @@ function rcardDLM12(){
   el.innerHTML=h;
 }
 
-function yscoreDLM12(col,catId,ri){
+async function yscoreDLM12(col,catId,ri){
   if(ONLINE&&MY_SLOT!==CURRENT_PLAYER)return;
   if(!G.d12Sheet||G.fresh||G.busy)return;
   if(!d12CanFill(col,ri))return;
@@ -937,7 +954,16 @@ function yscoreDLM12(col,catId,ri){
       msg('Case − ≥ case + : les deux cases valent 0 point.');
     }
   }
+  G.busy=true;
+  rcard();
+  flashScoreCell(col,catId);
+
   if(PLAYERS.every(p=>d12PlayerFilled(p)>=65)){if(ONLINE)netPush('ended');endGameDLM12();return;}
+
+  if(NUM_PLAYERS>1){
+    if(ONLINE){LAST_SCORE={col,catId,playerIdx:CURRENT_PLAYER};netPush();LAST_SCORE=null;}
+    await sl(2000);
+  }
   CURRENT_PLAYER=(CURRENT_PLAYER+1)%NUM_PLAYERS;
   G=PLAYERS[CURRENT_PLAYER];
   G.dice=[1,1,1,1,1];G.kept=[false,false,false,false,false];
@@ -962,14 +988,21 @@ function endGameDLM12(){
 function showRules(){document.getElementById('yrmod').classList.add('vis');}
 function hideRules(){document.getElementById('yrmod').classList.remove('vis');}
 
-function yscore(id){
+async function yscore(id){
   if(ONLINE&&MY_SLOT!==CURRENT_PLAYER)return;
   if(G.phase!=='score'||id in G.scores)return;
   const cat=CATS.find(c=>c.id===id);if(!cat)return;
   G.scores[id]=cat.f(G.dice);
+  G.phase='scored';
+  rcard();uctrl();
+  flashScoreCell(null,id);
 
   if(PLAYERS.every(p=>Object.keys(p.scores).length===13)){if(ONLINE)netPush('ended');endGame();return;}
 
+  if(NUM_PLAYERS>1){
+    if(ONLINE){LAST_SCORE={col:null,catId:id,playerIdx:CURRENT_PLAYER};netPush();LAST_SCORE=null;}
+    await sl(2000);
+  }
   CURRENT_PLAYER=(CURRENT_PLAYER+1)%NUM_PLAYERS;
   G=PLAYERS[CURRENT_PLAYER];
   G.dice=[1,1,1,1,1];G.kept=[false,false,false,false,false];
@@ -1021,8 +1054,15 @@ function yNew(force){
 
 function uctrl(){
   const btn=document.getElementById('yrb'),rl=document.getElementById('yrlc');
-  if(G.phase==='score'||G.phase==='done'){btn.disabled=true;rl.textContent='Choisissez une case !'}
+  if(G.phase==='score'||G.phase==='done'||G.phase==='scored'){btn.disabled=true;rl.textContent='Choisissez une case !'}
   else{btn.disabled=false;rl.textContent=G.rollsLeft===1?'Dernier lancer !':G.rollsLeft+' lancers restants'}
+}
+
+function flashScoreCell(col,catId){
+  const key=col?`${catId}-${col}`:catId;
+  const el=document.querySelector(`[data-sid="${key}"]`);
+  if(!el)return;
+  el.classList.remove('yflash');void el.offsetWidth;el.classList.add('yflash');
 }
 function msg(t){document.getElementById('ymsg').textContent=t}
 function sl(ms){return new Promise(r=>setTimeout(r,ms))}
@@ -1077,7 +1117,7 @@ function normD12Refs(r){
 
 function netSerialize(phase){
   return{
-    seq:NET_SEQ,phase:phase||'playing',mode:GAME_MODE,cp:CURRENT_PLAYER,
+    seq:NET_SEQ,phase:phase||'playing',mode:GAME_MODE,cp:CURRENT_PLAYER,lastScore:LAST_SCORE||null,
     d12Refs:D12_REFS,
     players:PLAYERS.map(p=>({
       name:p.name,dice:p.dice,kept:p.kept,
@@ -1127,6 +1167,10 @@ function applyNetState(data){
   document.getElementById('ygame').style.display='';
   chatListen();
   rdice();rcard();uctrl();updTi();
+  // Flash sur la case scorée par un autre joueur
+  if(data.lastScore&&MY_SLOT!==data.lastScore.playerIdx){
+    setTimeout(()=>flashScoreCell(data.lastScore.col,data.lastScore.catId),40);
+  }
   // Animer le lancer d'un autre joueur
   const samePlayer=CURRENT_PLAYER===prevCP;
   const rollHappened=samePlayer&&!wasMyTurn&&((prevFresh&&!G.fresh)||(G.rollsLeft<prevRollsLeft));
