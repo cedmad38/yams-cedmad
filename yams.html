@@ -334,10 +334,9 @@
   </div>
 
   <!-- ── Résultats ── -->
-  <div id="yend" style="display:none;text-align:center;padding:40px 20px;min-width:320px">
-    <div style="font-size:20px;font-weight:500;letter-spacing:5px;color:var(--color-text-primary);margin-bottom:24px">R É S U L T A T S</div>
-    <div id="yranks" style="border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;background:var(--color-background-primary);margin-bottom:20px;text-align:left"></div>
-    <button onclick="yNew()" style="padding:9px 24px;background:#BA7517;color:#FAE8C4;border:none;border-radius:var(--border-radius-md);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-sans)">Nouvelle partie</button>
+  <div id="yend" style="display:none;text-align:center;padding:24px 16px 32px;min-width:320px">
+    <div id="yranks"></div>
+    <button onclick="yNew()" style="padding:9px 28px;background:#BA7517;color:#FAE8C4;border:none;border-radius:var(--border-radius-md);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-sans);margin-top:20px">Nouvelle partie</button>
   </div>
 
   <!-- ── Overlay attente multijoueur ── -->
@@ -592,16 +591,60 @@ async function yscoreDLM(col,catId,ri,barrer){
   msg((NUM_PLAYERS>1?G.name+' — ':'')+'Lancez les dés !');
 }
 
-function endGameDLM(){
+function showEndScreen(sorted){
   document.getElementById('ygame').style.display='none';
-  const sorted=PLAYERS.map(p=>({name:p.name,tot:dlmPlayerTotal(p)})).sort((a,b)=>b.tot-a.tot);
-  const medals=['🥇','🥈','🥉','4.'];
-  let h='';
-  sorted.forEach((r,i)=>{
-    h+=`<div class="yrow"><span style="font-size:18px;width:28px">${i<3?medals[i]:(i+1)+'.'}</span><span style="flex:1;font-size:13px;font-weight:${i===0?600:400};color:var(--color-text-primary)">${r.name}</span><span style="font-size:13px;color:#BA7517;font-weight:500">${r.tot} pts</span></div>`;
-  });
+  const trophySvg=`<svg viewBox="0 0 120 108" width="96" height="96" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="tg" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#D4881A"/><stop offset="45%" stop-color="#FFD966"/><stop offset="100%" stop-color="#D4881A"/></linearGradient>
+      <linearGradient id="tgv" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FFE066"/><stop offset="100%" stop-color="#C87010"/></linearGradient>
+    </defs>
+    <path d="M38,8 h44 l-7,48 q-5,17-15,21 q-10,-4-15,-21 Z" fill="url(#tg)"/>
+    <path d="M50,10 q5,-2 10,0 l-4,28 q-3,8-6,9 Z" fill="#FFF9C4" opacity="0.45"/>
+    <path d="M38,20 Q17,20 17,38 Q17,56 38,56" fill="none" stroke="url(#tg)" stroke-width="8" stroke-linecap="round"/>
+    <path d="M82,20 Q103,20 103,38 Q103,56 82,56" fill="none" stroke="url(#tg)" stroke-width="8" stroke-linecap="round"/>
+    <rect x="52" y="77" width="16" height="12" fill="url(#tgv)" rx="2"/>
+    <rect x="30" y="89" width="60" height="8" fill="#C87010" rx="4"/>
+    <rect x="34" y="96" width="52" height="5" fill="#A06000" rx="2.5"/>
+    <polygon points="60,20 64,31 76,31 67,38 70,49 60,43 50,49 53,38 44,31 56,31" fill="#FFF5AA" stroke="#E8C020" stroke-width="0.8"/>
+  </svg>`;
+  const winner=sorted[0];
+  const medal=['🥇','🥈','🥉'];
+  const podBg=['#BA7517','#8A8A8A','#8B5E3C'];
+  const podH=[72,50,36];
+  let h=`<div style="margin-bottom:10px">${trophySvg}</div>`;
+  h+=`<div style="font-size:18px;font-weight:700;color:var(--color-text-primary);margin-bottom:2px">${winner.name}</div>`;
+  h+=`<div style="font-size:13px;color:#BA7517;font-weight:600;letter-spacing:1px;margin-bottom:18px">🏆 Vainqueur · ${winner.tot} pts</div>`;
+  if(sorted.length>=3){
+    const order=[1,0,2];
+    h+=`<div style="display:flex;justify-content:center;align-items:flex-end;gap:6px;margin:0 auto 8px;max-width:300px">`;
+    order.forEach((si,pi)=>{
+      const p=sorted[si];
+      h+=`<div style="flex:1;text-align:center;min-width:0">
+        <div style="font-size:${si===0?26:20}px;line-height:1.2">${medal[si]}</div>
+        <div style="font-size:11px;font-weight:${si===0?700:600};color:var(--color-text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:2px 2px 0">${p.name}</div>
+        <div style="font-size:11px;color:#BA7517;font-weight:600;margin-bottom:4px">${p.tot} pts</div>
+        <div style="height:${podH[pi]}px;background:${podBg[pi]};border-radius:4px 4px 0 0;opacity:.85"></div>
+      </div>`;
+    });
+    h+=`</div><div style="height:4px;background:linear-gradient(90deg,#8A8A8A 33.3%,#BA7517 33.3% 66.6%,#8B5E3C 66.6%);opacity:.6;border-radius:0 0 4px 4px;margin:0 auto;max-width:300px"></div>`;
+  }else{
+    sorted.forEach((p,i)=>{
+      h+=`<div style="display:flex;align-items:center;gap:10px;padding:8px 16px;border-bottom:.5px solid var(--color-border-tertiary)"><span style="font-size:20px">${medal[i]||(i+1)+'.'}</span><span style="flex:1;font-size:13px;font-weight:${i===0?700:400}">${p.name}</span><span style="font-size:13px;color:#BA7517;font-weight:600">${p.tot} pts</span></div>`;
+    });
+  }
+  if(sorted.length>3){
+    h+=`<div style="margin-top:12px;border:.5px solid var(--color-border-tertiary);border-radius:8px;overflow:hidden;background:var(--color-background-primary)">`;
+    sorted.slice(3).forEach((p,i)=>{
+      h+=`<div style="display:flex;justify-content:space-between;padding:6px 14px;font-size:12px;color:var(--color-text-secondary);border-bottom:.5px solid var(--color-border-tertiary)"><span>${i+4}. ${p.name}</span><span>${p.tot} pts</span></div>`;
+    });
+    h+=`</div>`;
+  }
   document.getElementById('yranks').innerHTML=h;
   document.getElementById('yend').style.display='';
+}
+
+function endGameDLM(){
+  showEndScreen(PLAYERS.map(p=>({name:p.name,tot:dlmPlayerTotal(p)})).sort((a,b)=>b.tot-a.tot));
 }
 
 const DSIZE=30,STRIP_PAD_X=10,STRIP_PAD_Y=10,DIE_GAP=8;
@@ -1041,15 +1084,7 @@ async function yscoreDLM12(col,catId,ri){
 }
 
 function endGameDLM12(){
-  document.getElementById('ygame').style.display='none';
-  const sorted=PLAYERS.map(p=>({name:p.name,tot:d12PlayerTotal(p)})).sort((a,b)=>b.tot-a.tot);
-  const medals=['🥇','🥈','🥉','4.'];
-  let h='';
-  sorted.forEach((r,i)=>{
-    h+=`<div class="yrow"><span style="font-size:18px;width:28px">${i<3?medals[i]:(i+1)+'.'}</span><span style="flex:1;font-size:13px;font-weight:${i===0?600:400};color:var(--color-text-primary)">${r.name}</span><span style="font-size:13px;color:#BA7517;font-weight:500">${r.tot} pts</span></div>`;
-  });
-  document.getElementById('yranks').innerHTML=h;
-  document.getElementById('yend').style.display='';
+  showEndScreen(PLAYERS.map(p=>({name:p.name,tot:d12PlayerTotal(p)})).sort((a,b)=>b.tot-a.tot));
 }
 
 function showRules(){document.getElementById('yrmod').classList.add('vis');}
@@ -1080,22 +1115,7 @@ async function yscore(id){
 }
 
 function endGame(){
-  document.getElementById('ygame').style.display='none';
-  const sorted=PLAYERS.map(p=>({name:p.name,tot:playerTotal(p)})).sort((a,b)=>b.tot-a.tot);
-  const medals=['🥇','🥈','🥉','4.'];
-  let h='';
-  sorted.forEach((r,i)=>{
-    const medal=i<3?medals[i]:(i+1)+'.';
-    const comment=i===0?(r.tot>=300?'Exceptionnel !':r.tot>=200?'Bien joué !':''):'';
-    h+=`<div class="yrow">
-      <span style="font-size:18px;width:28px">${medal}</span>
-      <span style="flex:1;font-size:13px;font-weight:${i===0?600:400};color:var(--color-text-primary)">${r.name}</span>
-      <span style="font-size:13px;color:#BA7517;font-weight:500">${r.tot} pts</span>
-      ${comment?`<span style="font-size:11px;color:var(--color-text-secondary)">${comment}</span>`:''}
-    </div>`;
-  });
-  document.getElementById('yranks').innerHTML=h;
-  document.getElementById('yend').style.display='';
+  showEndScreen(PLAYERS.map(p=>({name:p.name,tot:playerTotal(p)})).sort((a,b)=>b.tot-a.tot));
 }
 
 function yNew(force){
