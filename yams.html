@@ -807,12 +807,6 @@ async function yRoll(){
   const sug=aiSug(G.dice,G.scores);G.kept=G.kept.map((k,i)=>k||sug[i]);
   rdice();rcard();uctrl();
   const kc=sug.filter(Boolean).length;
-  if(kc===5){
-    G.phase='score';rcard();uctrl();
-    msg((NUM_PLAYERS>1?G.name+' — ':'')+'Tout garder — choisissez une case !');
-    if(ONLINE)netPush();
-    setBusy(false);return;
-  }
   msg((NUM_PLAYERS>1?G.name+' — ':'')+'Garder '+kc+' dé'+(kc>1?'s':'')+' — modifiez si besoin, puis relancez.');
   if(ONLINE)netPush();
   setBusy(false);
