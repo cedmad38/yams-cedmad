@@ -1098,6 +1098,11 @@ function netPush(phase){
 function applyNetState(data){
   if(!data)return;
   if(data.seq!==undefined&&data.seq<=NET_SEQ)return;
+  // Snapshot état avant mise à jour pour détecter un lancer distant
+  const prevCP=CURRENT_PLAYER;
+  const prevRollsLeft=G?G.rollsLeft:3;
+  const prevFresh=G?G.fresh:true;
+  const wasMyTurn=MY_SLOT>=0&&MY_SLOT===prevCP;
   NET_SEQ=data.seq!==undefined?data.seq:NET_SEQ;
   GAME_MODE=data.mode||GAME_MODE;
   PLAYERS=data.players.map((pd,i)=>{
@@ -1122,6 +1127,13 @@ function applyNetState(data){
   document.getElementById('ygame').style.display='';
   chatListen();
   rdice();rcard();uctrl();updTi();
+  // Animer le lancer d'un autre joueur
+  const samePlayer=CURRENT_PLAYER===prevCP;
+  const rollHappened=samePlayer&&!wasMyTurn&&((prevFresh&&!G.fresh)||(G.rollsLeft<prevRollsLeft));
+  if(rollHappened){
+    const rolledIds=G.kept.map((k,i)=>k?-1:i).filter(i=>i>=0);
+    if(rolledIds.length)throwDice(rolledIds);
+  }
   if(data.phase==='ended')return;
   const myTurn=(MY_SLOT<0||MY_SLOT===CURRENT_PLAYER);
   if(!myTurn){
