@@ -688,6 +688,7 @@ function makeCube(i){
 function rdice(){
   const felt=document.getElementById('yfelt');
   felt.querySelectorAll('.yw').forEach(e=>e.remove());
+  felt.style.pointerEvents=G?.busy?'none':'';
   if(G.fresh){document.getElementById('yctr').textContent='';return;}
   G.dice.forEach((_,i)=>felt.appendChild(makeCube(i)));
   document.getElementById('yctr').textContent=(G.phase!=='done')?combo(G.dice):'';
@@ -737,7 +738,7 @@ function rcard(){
   el.innerHTML=h;
 }
 
-function tk(i){if(G.phase!=='roll'||G.fresh||G.rollsLeft<=0||G.busy)return;G.kept[i]=!G.kept[i];rdice()}
+function tk(i){if(ONLINE&&MY_SLOT!==CURRENT_PLAYER)return;if(G.phase!=='roll'||G.fresh||G.rollsLeft<=0||G.busy)return;G.kept[i]=!G.kept[i];rdice()}
 
 // ── Animation 3D linéaire (droite → gauche) ──
 async function throwDice(ids){
@@ -775,10 +776,16 @@ async function throwDice(ids){
 }
 
 // ── Logique de jeu ──
+function setBusy(val){
+  G.busy=val;
+  const rb=document.getElementById('yrb');if(rb)rb.disabled=val;
+  const fl=document.getElementById('yfelt');if(fl)fl.style.pointerEvents=val?'none':'';
+}
+
 async function yRoll(){
   if(ONLINE&&MY_SLOT!==CURRENT_PLAYER)return;
   if(G.phase!=='roll'||G.rollsLeft<=0||G.busy)return;
-  G.busy=true;document.getElementById('yrb').disabled=true;
+  setBusy(true);
 
   const rolled=[];
   for(let i=0;i<5;i++){
@@ -796,7 +803,7 @@ async function yRoll(){
     G.phase='score';rcard();uctrl();
     msg((NUM_PLAYERS>1?G.name+' — ':'')+'Choisissez une case pour marquer vos points !');
     if(ONLINE)netPush();
-    G.busy=false;document.getElementById('yrb').disabled=false;return;
+    setBusy(false);return;
   }
   const sug=aiSug(G.dice,G.scores);G.kept=sug;
   rdice();rcard();uctrl();
@@ -805,11 +812,11 @@ async function yRoll(){
     G.phase='score';rcard();uctrl();
     msg((NUM_PLAYERS>1?G.name+' — ':'')+'Tout garder — choisissez une case !');
     if(ONLINE)netPush();
-    G.busy=false;document.getElementById('yrb').disabled=false;return;
+    setBusy(false);return;
   }
   msg((NUM_PLAYERS>1?G.name+' — ':'')+'Garder '+kc+' dé'+(kc>1?'s':'')+' — modifiez si besoin, puis relancez.');
   if(ONLINE)netPush();
-  G.busy=false;document.getElementById('yrb').disabled=false;
+  setBusy(false);
 }
 
 function aiSug(d,sc){
