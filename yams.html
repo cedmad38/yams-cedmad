@@ -81,9 +81,13 @@
     .ysr.ysav { background:var(--color-background-success) }
     .ysr.ysr-l.ysav { background:#c6f2fa }
     .ysr.ysav .ysv { color:var(--color-text-success);font-weight:500 }
-    .ysr.ysf { cursor:default;opacity:.65 }
-    .ysr.ysf .ysv { color:#BA7517;font-weight:500 }
-    .ysr.ysz .ysv { color:var(--color-text-danger)!important }
+    .ysr.ysf { cursor:default; }
+    .ysr.ysf:not(.ysz) { background:#30b0ce; }
+    .ysr.ysf:not(.ysz) > span:first-child { color:rgba(255,255,255,.88)!important;font-weight:500!important; }
+    .ysr.ysf:not(.ysz) .ysv { color:#fff!important;font-weight:600; }
+    .ysr.ysf.ysz { background:#e0f5f9; }
+    .ysr.ysf.ysz > span:first-child { color:#85b0ba!important;font-weight:400!important; }
+    .ysr.ysf.ysz .ysv { color:#85b0ba!important; }
     .ysr:not(.ysf) > span:first-child { font-weight:600 }
 
     /* ── Écran de départ ── */
@@ -181,7 +185,7 @@
     }
     .d12t .d12c{text-align:left;padding-left:5px}
     .d12t .d12bn td{background:#a8e8f4;color:#005060;font-weight:600}
-    .d12t .d12sf{background:#f9f9f9;color:#aaa}
+    .d12t .d12sf{background:#e0f5f9;color:#85b0ba}
     .d12t .d12av{background:#d0f3fb;cursor:pointer;color:#005060}
     .d12t .d12av:hover{background:#BA7517;color:#FAE8C4}
     .d12t .d12pr{color:#BA7517}
@@ -525,7 +529,7 @@ function rcardDLM(){
     h+=`<tr><td class="d12c"${!rowFilled&&!viewing?' style="font-weight:700"':''}>${row.n}</td>`;
     DLM_COLS.forEach(col=>{
       const v=s[col][row.id];
-      if(v!==undefined){h+=`<td class="d12sf" data-sid="${row.id}-${col}">${v||'—'}</td>`;}
+      if(v!==undefined){const sf=v>0?'background:#30b0ce;color:#fff':'';h+=`<td class="d12sf" style="${sf}" data-sid="${row.id}-${col}">${v||'—'}</td>`;}
       else if(!viewing&&dlmCanFill(col,ri)){h+=`<td class="d12av d12pr" data-sid="${row.id}-${col}" onclick="yscoreDLM('${col}','${row.id}',${ri})">${row.f(G.dice)}</td>`;}
       else if(!viewing&&col==='s'&&!G.fresh&&!(row.id in s['s'])){h+=`<td class="dlm-barrer" data-sid="${row.id}-${col}" onclick="yscoreDLM('s','${row.id}',${ri},1)">✕</td>`;}
       else{h+=`<td></td>`;}
@@ -541,7 +545,7 @@ function rcardDLM(){
     h+=`<tr${ri===6?' class="d12sep"':''}><td class="d12c"${!rowFilled&&!viewing?' style="font-weight:700"':''}>${row.n}</td>`;
     DLM_COLS.forEach(col=>{
       const v=s[col][row.id];
-      if(v!==undefined){h+=`<td class="d12sf" data-sid="${row.id}-${col}">${v||'—'}</td>`;}
+      if(v!==undefined){const sf=v>0?'background:#30b0ce;color:#fff':'';h+=`<td class="d12sf" style="${sf}" data-sid="${row.id}-${col}">${v||'—'}</td>`;}
       else if(!viewing&&dlmCanFill(col,ri)){h+=`<td class="d12av d12pr" data-sid="${row.id}-${col}" onclick="yscoreDLM('${col}','${row.id}',${ri})">${row.f(G.dice)}</td>`;}
       else if(!viewing&&col==='s'&&!G.fresh&&!(row.id in s['s'])){h+=`<td class="dlm-barrer" data-sid="${row.id}-${col}" onclick="yscoreDLM('s','${row.id}',${ri},1)">✕</td>`;}
       else{h+=`<td></td>`;}
@@ -946,7 +950,7 @@ function rcardDLM12(){
   h+=`</tr>`;
   const cellHtml=(col,row,ri)=>{
     const v=s[col][row.id];
-    if(v!==undefined)return`<td class="d12sf" data-sid="${row.id}-${col}">${v}</td>`;
+    if(v!==undefined)return`<td class="d12sf" style="${v>0?'background:#30b0ce;color:#fff':''}" data-sid="${row.id}-${col}">${v}</td>`;
     if(viewing||!d12CanFill(col,ri))return`<td></td>`;
     const pv=row.f(G.dice);
     const ref=NUM_PLAYERS>1?D12_REFS[col][row.id]:undefined;
