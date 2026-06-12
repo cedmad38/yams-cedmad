@@ -184,13 +184,13 @@
       border-left:1.5px solid #2d4f90;border-right:1.5px solid #2d4f90;
       border-top:1px solid #2d4f90;border-bottom:2px solid #2c2c2c
     }
-    .d12t .d12c{text-align:left;padding-left:5px;font-size:14px;font-weight:700;white-space:normal;word-break:break-word;line-height:1.2}
+    .d12t .d12c{text-align:center;padding:3px 2px;font-size:14px;font-weight:700;white-space:normal;word-break:break-word;line-height:1.2}
     .d12t .d12bn td{background:#a8e8f4;color:#005060;font-weight:700;font-size:14px}
     .d12t .d12sf{background:#e0f5f9;color:#85b0ba;font-size:14px;font-weight:800}
     .d12t .d12av{background:#d0f3fb;cursor:pointer;color:#005060;font-size:14px;font-weight:800}
     .d12t .d12av:hover{background:#BA7517;color:#FAE8C4}
     .d12t .d12pr{color:#BA7517}
-    .d12t .dlm-barrer{cursor:pointer;color:#dc2626;background:#fff5f5;font-size:10px;text-align:center}
+    .d12t .dlm-barrer{cursor:pointer;color:#dc2626;background:#fff5f5;font-size:14px;text-align:center;font-weight:700}
     .d12t .dlm-barrer:hover{background:#fee2e2}
     .d12t .d12sep td{border-top:2px solid #2c2c2c}
     .d12t td:nth-child(5),.d12t th:nth-child(5){border-left:2.5px solid #2c2c2c!important}
@@ -956,12 +956,12 @@ function rcardDLM12(){
     const isComp=D12_COMP_COLS.has(col)&&NUM_PLAYERS>1;
     const ref=isComp?D12_REFS[col][row.id]:undefined;
     if(viewing||!d12CanFill(col,ri)){
-      if(isComp&&ref!==undefined)return`<td style="color:#dc2626;font-weight:800;opacity:.45" data-sid="${row.id}-${col}">${ref}</td>`;
+      if(isComp&&ref!==undefined)return`<td style="color:#dc2626;font-weight:800;font-size:14px;opacity:.45" data-sid="${row.id}-${col}">${ref}</td>`;
       return`<td></td>`;
     }
     const pv=row.f(G.dice);
     if(isComp&&ref!==undefined){
-      if(pv>ref)return`<td class="d12av" style="padding:1px" data-sid="${row.id}-${col}" onclick="yscoreDLM12('${col}','${row.id}',${ri})"><div style="color:#dc2626;font-size:10px;line-height:1.1">${ref}✗</div><div style="color:#005060;font-weight:800;font-size:14px">${pv}</div></td>`;
+      if(pv>ref)return`<td class="d12av" style="padding:1px" data-sid="${row.id}-${col}" onclick="yscoreDLM12('${col}','${row.id}',${ri})"><div style="color:#dc2626;font-size:14px;line-height:1.2;font-weight:800">${ref}✗</div><div style="color:#005060;font-weight:800;font-size:14px">${pv}✓</div></td>`;
       return`<td style="background:#fff5f5;color:#dc2626;font-weight:800;font-size:14px" data-sid="${row.id}-${col}">${ref}</td>`;
     }
     return`<td class="d12av d12pr" data-sid="${row.id}-${col}" onclick="yscoreDLM12('${col}','${row.id}',${ri})">${pv}</td>`;
