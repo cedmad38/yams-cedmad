@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Yams Par Cedmad</title>
   <style>
     :root {
@@ -998,7 +998,9 @@ function endGame(){
   document.getElementById('yend').style.display='';
 }
 
-function yNew(){
+function yNew(force){
+  const inGame=document.getElementById('ygame')?.style.display!=='none';
+  if(inGame&&!force&&!confirm('Quitter la partie en cours ?'))return;
   if(ONLINE&&FBDB&&ROOM_CODE){
     try{FBDB.ref('rooms/'+ROOM_CODE+'/state').off();}catch(e){}
     try{FBDB.ref('rooms/'+ROOM_CODE+'/chat').off();}catch(e){}
@@ -1280,6 +1282,13 @@ function toggleSkinPicker(){
   else hideSkinPicker();
 }
 
+window.addEventListener('beforeunload',e=>{
+  if(document.getElementById('ygame')?.style.display!=='none'){
+    e.preventDefault();e.returnValue='';
+  }
+});
+document.addEventListener('gesturestart',e=>e.preventDefault(),{passive:false});
+document.addEventListener('gesturechange',e=>e.preventDefault(),{passive:false});
 document.addEventListener('click',e=>{
   if(!e.target.closest('#yskinbtn')&&!e.target.closest('#yskpanel'))hideSkinPicker();
 });
