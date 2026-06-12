@@ -227,7 +227,7 @@
       <button id="yrbtn" onclick="showRules()" style="display:none;position:absolute;right:0;top:2px;padding:4px 10px;background:transparent;border:1px solid #BA7517;border-radius:6px;font-size:10px;color:#BA7517;cursor:pointer;font-family:var(--font-sans)">? Règles</button>
     </div>
     <!-- Tableau de score pleine largeur -->
-    <div id="ycard" style="border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;background:var(--color-background-primary);margin-bottom:8px"></div>
+    <div id="ycard" style="border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow-x:hidden;background:var(--color-background-primary);margin-bottom:8px"></div>
     <!-- Dés linéaires -->
     <div style="text-align:center">
       <div id="yfelt" style="background:#1a6b31;border:4px solid #0d3a1a;border-radius:10px;width:202px;height:50px;position:relative;display:inline-block;overflow:visible"></div>
@@ -238,6 +238,15 @@
       </div>
       <div id="ymsg" style="margin-top:8px;padding:7px 12px;border:.5px solid var(--color-border-tertiary);border-left:3px solid #BA7517;border-radius:var(--border-radius-md);font-size:12px;color:var(--color-text-primary);min-height:32px;background:var(--color-background-secondary)"></div>
       <button onclick="yNew()" style="margin-top:7px;padding:5px 13px;background:transparent;color:var(--color-text-secondary);border:.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:11px;cursor:pointer;font-family:var(--font-sans)">&#8635; Nouvelle partie</button>
+    </div>
+    <!-- Chat en ligne (statique, bas de jeu) -->
+    <div id="ychatarea" style="display:none;margin-top:10px;border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;background:var(--color-background-primary)">
+      <div style="padding:4px 12px;background:var(--color-background-secondary);border-bottom:.5px solid var(--color-border-tertiary);font-size:11px;font-weight:600;color:var(--color-text-secondary)">💬 Chat</div>
+      <div id="ychatmsgs" style="height:100px;overflow-y:auto;padding:5px 10px;display:flex;flex-direction:column;gap:2px"></div>
+      <div style="padding:5px 8px;border-top:.5px solid var(--color-border-tertiary);display:flex;gap:6px">
+        <input id="ychatin" class="yninput" type="text" placeholder="Message…" maxlength="100" style="flex:1;width:auto;text-align:left;padding:5px 8px;font-size:12px" onkeydown="if(event.key==='Enter')chatSend()">
+        <button onclick="chatSend()" style="padding:5px 12px;background:#BA7517;color:#FAE8C4;border:none;border-radius:var(--border-radius-md);font-size:11px;cursor:pointer;font-family:var(--font-sans);white-space:nowrap">Envoyer</button>
+      </div>
     </div>
   </div>
 
@@ -952,9 +961,8 @@ function yNew(){
     try{FBDB.ref('rooms/'+ROOM_CODE+'/chat').off();}catch(e){}
   }
   ONLINE=false;MY_SLOT=-1;NET_SEQ=-1;ROOM_CODE=null;
-  CHAT_OPEN=false;CHAT_LISTENING=false;
-  document.getElementById('ychat').style.display='none';
-  const cb=document.getElementById('ychatbtn');if(cb)cb.style.display='none';
+  CHAT_LISTENING=false;
+  const ca=document.getElementById('ychatarea');if(ca)ca.style.display='none';
   document.getElementById('ynetw').style.display='none';
   document.getElementById('ylobby').style.display='none';
   document.getElementById('ystep_net').style.display='none';
@@ -1166,20 +1174,7 @@ function netShowGame(){
 }
 
 // ── Chat en ligne ──
-let CHAT_OPEN=false,CHAT_LISTENING=false;
-
-function toggleChat(){
-  CHAT_OPEN=!CHAT_OPEN;
-  const panel=document.getElementById('ychat');
-  panel.style.display=CHAT_OPEN?'flex':'none';
-  const btn=document.getElementById('ychatbtn');
-  if(btn)btn.dataset.unread='0';
-  if(CHAT_OPEN){
-    document.getElementById('ychatin').focus();
-    const ml=document.getElementById('ychatmsgs');
-    ml.scrollTop=ml.scrollHeight;
-  }
-}
+let CHAT_LISTENING=false;
 
 function chatSend(){
   if(!FBDB||!ROOM_CODE)return;
@@ -1194,8 +1189,8 @@ function chatSend(){
 function chatListen(){
   if(!FBDB||!ROOM_CODE||CHAT_LISTENING)return;
   CHAT_LISTENING=true;
-  const btn=document.getElementById('ychatbtn');
-  if(btn)btn.style.display='flex';
+  const ca=document.getElementById('ychatarea');
+  if(ca)ca.style.display='';
   FBDB.ref('rooms/'+ROOM_CODE+'/chat').limitToLast(50).on('value',snap=>{
     const data=snap.val();
     const ml=document.getElementById('ychatmsgs');
@@ -1211,10 +1206,6 @@ function chatListen(){
       ml.appendChild(div);
     });
     ml.scrollTop=ml.scrollHeight;
-    if(!CHAT_OPEN&&btn){
-      const cur=parseInt(btn.dataset.unread||'0',10);
-      btn.dataset.unread=String(cur+1);
-    }
   });
 }
 
@@ -1235,18 +1226,5 @@ function chatListen(){
 })();
 </script>
 
-<!-- Chat en ligne -->
-<button id="ychatbtn" onclick="toggleChat()" data-unread="0" style="display:none;position:fixed;bottom:16px;right:16px;z-index:201;background:#BA7517;color:#FAE8C4;border:none;border-radius:50%;width:48px;height:48px;font-size:22px;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.35);align-items:center;justify-content:center">💬</button>
-<div id="ychat" style="display:none;position:fixed;bottom:0;left:0;right:0;height:240px;background:var(--color-background-primary);border-top:1.5px solid var(--color-border-secondary);z-index:200;flex-direction:column">
-  <div style="padding:5px 12px;background:var(--color-background-secondary);border-bottom:.5px solid var(--color-border-tertiary);display:flex;justify-content:space-between;align-items:center;flex-shrink:0">
-    <span style="font-size:12px;font-weight:600;color:var(--color-text-secondary)">💬 Chat</span>
-    <button onclick="toggleChat()" style="background:none;border:none;cursor:pointer;font-size:18px;line-height:1;color:var(--color-text-tertiary);padding:0 2px">×</button>
-  </div>
-  <div id="ychatmsgs" style="flex:1;overflow-y:auto;padding:6px 12px;display:flex;flex-direction:column;gap:2px"></div>
-  <div style="padding:6px 10px;border-top:.5px solid var(--color-border-tertiary);display:flex;gap:8px;flex-shrink:0">
-    <input id="ychatin" class="yninput" type="text" placeholder="Message…" maxlength="100" style="flex:1;width:auto;text-align:left;padding:6px 10px;font-size:13px" onkeydown="if(event.key==='Enter')chatSend()">
-    <button onclick="chatSend()" style="padding:7px 14px;background:#BA7517;color:#FAE8C4;border:none;border-radius:var(--border-radius-md);font-size:12px;cursor:pointer;font-family:var(--font-sans);white-space:nowrap">Envoyer</button>
-  </div>
-</div>
 </body>
 </html>
