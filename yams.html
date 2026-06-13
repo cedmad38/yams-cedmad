@@ -256,6 +256,9 @@
           </div>
         </button>
       </div>
+      <div style="margin-top:20px">
+        <button onclick="showSpectateStep()" style="padding:7px 16px;background:transparent;color:var(--color-text-secondary);border:none;font-size:12px;cursor:pointer;font-family:var(--font-sans)">👁 Regarder une partie en cours</button>
+      </div>
     </div>
 
     <div id="ystep1" style="display:none">
@@ -300,6 +303,17 @@
       </div>
     </div>
 
+    <!-- ── Spectateur ── -->
+    <div id="ystep_spectate" style="display:none">
+      <div style="font-size:13px;color:var(--color-text-secondary);margin:24px 0 18px">👁 Regarder une partie</div>
+      <div style="display:flex;flex-direction:column;gap:12px;align-items:center">
+        <input id="yspectcode" class="yninput" type="text" placeholder="Code (ex: ROSE-42)" maxlength="8" style="text-transform:uppercase">
+        <button onclick="netSpectate()" style="padding:10px 28px;background:#BA7517;color:#FAE8C4;border:none;border-radius:var(--border-radius-md);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-sans)">👁 Regarder</button>
+        <div id="yspectmsg" style="font-size:12px;color:var(--color-text-secondary);min-height:18px"></div>
+        <button onclick="backToMode()" style="padding:9px 18px;background:transparent;color:var(--color-text-secondary);border:1.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:13px;cursor:pointer;font-family:var(--font-sans)">← Retour</button>
+      </div>
+    </div>
+
     <!-- ── Lobby ── -->
     <div id="ylobby" style="display:none">
       <div style="font-size:13px;color:var(--color-text-secondary);margin:24px 0 10px">Code de la partie</div>
@@ -317,6 +331,7 @@
       <div style="font-size:16px;font-weight:500;letter-spacing:1px;color:var(--color-text-primary)">Yams Par Cedmad</div>
       <button id="yrbtn" onclick="showRules()" style="display:none;position:absolute;right:0;top:2px;padding:4px 10px;background:transparent;border:1px solid #BA7517;border-radius:6px;font-size:10px;color:#BA7517;cursor:pointer;font-family:var(--font-sans)">? Règles</button>
     </div>
+    <div id="yspectbadge" style="display:none;text-align:center;font-size:11px;color:rgba(255,255,255,0.55);letter-spacing:1.5px;margin-bottom:4px">👁 MODE SPECTATEUR</div>
     <!-- Tableau de score pleine largeur -->
     <div id="ycard" style="border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow-x:hidden;background:var(--color-background-primary);margin-bottom:8px"></div>
     <!-- Dés linéaires -->
@@ -708,7 +723,13 @@ function selectMode(mode){
 
 function backToMode(){
   document.getElementById('ystep1').style.display='none';
+  document.getElementById('ystep_net').style.display='none';
+  document.getElementById('ystep_spectate').style.display='none';
   document.getElementById('ystep0').style.display='';
+}
+function showSpectateStep(){
+  document.getElementById('ystep0').style.display='none';
+  document.getElementById('ystep_spectate').style.display='';
 }
 
 function selectPlayers(n){
@@ -1140,12 +1161,14 @@ function yNew(force){
     try{FBDB.ref('rooms/'+ROOM_CODE+'/state').off();}catch(e){}
     try{FBDB.ref('rooms/'+ROOM_CODE+'/chat').off();}catch(e){}
   }
-  ONLINE=false;MY_SLOT=-1;NET_SEQ=-1;ROOM_CODE=null;
+  ONLINE=false;MY_SLOT=-1;NET_SEQ=-1;ROOM_CODE=null;SPECTATING=false;
   CHAT_LISTENING=false;PRESENCE_WATCHING=false;ONLINE_SLOTS={};CHAT_UNREAD=false;
   const ca=document.getElementById('ychatarea');if(ca)ca.style.display='none';
+  const sb=document.getElementById('yspectbadge');if(sb)sb.style.display='none';
   document.getElementById('ynetw').style.display='none';
   document.getElementById('ylobby').style.display='none';
   document.getElementById('ystep_net').style.display='none';
+  document.getElementById('ystep_spectate').style.display='none';
   document.getElementById('ygame').style.display='none';
   document.getElementById('yend').style.display='none';
   document.getElementById('ystep2').style.display='none';
@@ -1156,6 +1179,7 @@ function yNew(force){
 
 function uctrl(){
   const btn=document.getElementById('yrb'),rl=document.getElementById('yrlc');
+  if(SPECTATING){btn.disabled=true;rl.textContent='';return;}
   if(G.phase==='score'||G.phase==='done'||G.phase==='scored'){btn.disabled=true;rl.textContent='Choisissez une case !'}
   else{btn.disabled=false;rl.textContent=G.rollsLeft===1?'Dernier lancer !':G.rollsLeft+' lancers restants'}
 }
@@ -1180,7 +1204,7 @@ scaleGame();
 document.getElementById('yjsok').textContent='JS ✓';
 
 // ─── MULTIJOUEUR EN LIGNE ───
-let ONLINE=false,MY_SLOT=-1,NET_SEQ=-1,ROOM_CODE=null,FBDB=null;
+let ONLINE=false,MY_SLOT=-1,NET_SEQ=-1,ROOM_CODE=null,FBDB=null,SPECTATING=false;
 const FB_CFG={
   apiKey:'AIzaSyBpAG_EN7FK6pD7Lh-2AwNVjAUZJIgsg0s',
   authDomain:'yams-cedmad.firebaseapp.com',
@@ -1281,7 +1305,7 @@ function applyNetState(data){
     if(rolledIds.length)throwDice(rolledIds);
   }
   if(data.phase==='ended')return;
-  const myTurn=(MY_SLOT<0||MY_SLOT===CURRENT_PLAYER);
+  const myTurn=!SPECTATING&&(MY_SLOT<0||MY_SLOT===CURRENT_PLAYER);
   if(!myTurn){
     document.getElementById('yrb').disabled=true;
     msg('');
@@ -1330,6 +1354,47 @@ async function netJoin(){
       netWatchState(ref.child('state'));
     }
   });
+}
+
+async function netSpectate(){
+  if(!FBDB){spectMsg('Firebase indisponible.',true);return;}
+  const code=(document.getElementById('yspectcode').value.trim().toUpperCase());
+  if(!code){spectMsg('Entrez le code de la partie.',true);return;}
+  spectMsg('Connexion…');
+  const ref=FBDB.ref('rooms/'+code);
+  const snap=await ref.once('value');
+  const data=snap.val();
+  if(!data){spectMsg('Code introuvable : '+code,true);return;}
+  GAME_MODE=data.mode||'standard';
+  ROOM_CODE=code;ONLINE=true;SPECTATING=true;MY_SLOT=-1;
+  document.getElementById('ystep_spectate').style.display='none';
+  document.getElementById('yspectbadge').style.display='';
+  if(data.status==='playing'&&data.state){
+    netWatchState(ref.child('state'));
+    chatListen();
+    applyNetState(data.state);
+  }else if(data.status==='lobby'){
+    document.getElementById('ystart').style.display='none';
+    document.getElementById('ygame').style.display='';
+    msg('👁 En attente du début de la partie… ('+code+')');
+    ref.child('state').on('value',s=>{
+      const sd=s.val();
+      if(sd&&sd.seq!==undefined){
+        ref.child('state').off();
+        netWatchState(ref.child('state'));
+        chatListen();
+        applyNetState(sd);
+      }
+    });
+  }else{
+    spectMsg('Partie introuvable ou déjà terminée.',true);
+    ROOM_CODE=null;ONLINE=false;SPECTATING=false;
+    document.getElementById('yspectbadge').style.display='none';
+  }
+}
+function spectMsg(t,err){
+  const el=document.getElementById('yspectmsg');
+  if(el){el.textContent=t;el.style.color=err?'var(--color-text-danger)':'var(--color-text-secondary)';}
 }
 
 function showReconnect(code,slots,mode){
@@ -1483,7 +1548,7 @@ function chatSend(){
   const text=inp.value.trim();
   if(!text)return;
   inp.value='';
-  const name=(MY_SLOT>=0&&PLAYERS[MY_SLOT])?PLAYERS[MY_SLOT].name:'?';
+  const name=SPECTATING?'👁 Spectateur':(MY_SLOT>=0&&PLAYERS[MY_SLOT])?PLAYERS[MY_SLOT].name:'?';
   FBDB.ref('rooms/'+ROOM_CODE+'/chat').push({n:name,t:text,ts:Date.now()});
 }
 
