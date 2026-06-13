@@ -6,16 +6,16 @@
   <title>Yams Par Cedmad</title>
   <style>
     :root {
-      --color-background-primary: #ffffff;
-      --color-background-secondary: #f5f5f5;
-      --color-background-success: #ddf8fc;
-      --color-border-secondary: #cccccc;
-      --color-border-tertiary: #e0e0e0;
-      --color-text-primary: #111111;
-      --color-text-secondary: #666666;
-      --color-text-tertiary: #999999;
-      --color-text-success: #006272;
-      --color-text-danger: #c62828;
+      --color-background-primary: rgba(255,255,255,0.10);
+      --color-background-secondary: rgba(255,255,255,0.07);
+      --color-background-success: rgba(0,150,180,0.25);
+      --color-border-secondary: rgba(255,255,255,0.28);
+      --color-border-tertiary: rgba(255,255,255,0.14);
+      --color-text-primary: #ffffff;
+      --color-text-secondary: rgba(255,255,255,0.68);
+      --color-text-tertiary: rgba(255,255,255,0.40);
+      --color-text-success: #7dd8e6;
+      --color-text-danger: #ff7a7a;
       --border-radius-md: 8px;
       --border-radius-lg: 12px;
       --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -80,7 +80,7 @@
     .ysv { font-size:26px;font-weight:800;min-width:36px;text-align:right;line-height:1; }
     .ysr:hover:not(.ysf) { background:var(--color-background-secondary) }
     .ysr.ysav { background:var(--color-background-success) }
-    .ysr.ysr-l.ysav { background:#c6f2fa }
+    .ysr.ysr-l.ysav { background:rgba(0,100,150,0.32) }
     .ysr.ysav .ysv { color:var(--color-text-success);font-weight:500 }
     .ysr.ysf { cursor:default; }
     .ysr.ysf:not(.ysz) { background:#30b0ce; }
@@ -92,11 +92,12 @@
     .ysr:not(.ysf) > span:first-child { font-weight:600 }
 
     /* ── Écran de départ ── */
-    .ypbtn { width:60px;height:60px;font-size:22px;font-weight:500;background:var(--color-background-primary);border:1.5px solid var(--color-border-secondary);border-radius:var(--border-radius-lg);cursor:pointer;font-family:var(--font-sans);transition:background .12s,border-color .12s }
+    .ypbtn { width:60px;height:60px;font-size:22px;font-weight:500;background:rgba(255,255,255,0.13);border:1.5px solid rgba(255,255,255,0.28);border-radius:var(--border-radius-lg);cursor:pointer;font-family:var(--font-sans);transition:background .12s,border-color .12s;color:var(--color-text-primary);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px) }
     .ypbtn:hover { background:#BA7517;color:#FAE8C4;border-color:#BA7517 }
     .yninput { padding:8px 12px;border:1.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:13px;font-family:var(--font-sans);outline:none;width:160px;text-align:center;background:var(--color-background-primary);color:var(--color-text-primary) }
     .yninput:focus { border-color:#BA7517 }
-    .ymbtn { width:200px;padding:13px 18px;display:flex;align-items:center;gap:14px;background:var(--color-background-primary);border:1.5px solid var(--color-border-secondary);border-radius:var(--border-radius-lg);cursor:pointer;font-family:var(--font-sans);transition:background .12s,border-color .12s;text-align:left }
+    .yninput::placeholder { color:rgba(255,255,255,0.35) }
+    .ymbtn { width:200px;padding:13px 18px;display:flex;align-items:center;gap:14px;background:rgba(255,255,255,0.13);border:1.5px solid rgba(255,255,255,0.28);border-radius:var(--border-radius-lg);cursor:pointer;font-family:var(--font-sans);transition:background .15s,border-color .15s;text-align:left;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px) }
     .ymbtn:hover { background:#BA7517;border-color:#BA7517 }
     .ymbtn:hover .ymbn,.ymbtn:hover .ymbs { color:#FAE8C4 }
     .ymbn { font-size:14px;font-weight:500;color:var(--color-text-primary) }
@@ -212,7 +213,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
-<div id="yg" style="padding:.5rem 0;width:100%;max-width:520px;min-height:100vh;background:rgba(255,255,255,0.90);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)">
+<div id="yg" style="padding:.5rem 0;width:100%;max-width:520px;min-height:100vh">
 
   <!-- ── Écran de départ ── -->
   <div id="ystart" style="text-align:center;padding:50px 30px">
