@@ -6,21 +6,21 @@
   <title>Yams Par Cedmad</title>
   <style>
     :root {
-      --color-background-primary: #ffffff;
-      --color-background-secondary: #f5f5f5;
-      --color-background-success: #ddf8fc;
-      --color-border-secondary: #cccccc;
-      --color-border-tertiary: #e0e0e0;
-      --color-text-primary: #111111;
-      --color-text-secondary: #666666;
-      --color-text-tertiary: #999999;
-      --color-text-success: #006272;
-      --color-text-danger: #c62828;
+      --color-background-primary: rgba(255,255,255,0.10);
+      --color-background-secondary: rgba(255,255,255,0.07);
+      --color-background-success: rgba(0,150,180,0.25);
+      --color-border-secondary: rgba(255,255,255,0.28);
+      --color-border-tertiary: rgba(255,255,255,0.14);
+      --color-text-primary: #ffffff;
+      --color-text-secondary: rgba(255,255,255,0.68);
+      --color-text-tertiary: rgba(255,255,255,0.40);
+      --color-text-success: #7dd8e6;
+      --color-text-danger: #ff7a7a;
       --border-radius-md: 8px;
       --border-radius-lg: 12px;
       --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     }
-    body { margin:0;padding:0;font-family:var(--font-sans);background:#f0f0f0;display:flex;justify-content:center;min-height:100vh }
+    body { margin:0;padding:0;font-family:var(--font-sans);background:#0d0d0d url('bg.jpg') center/cover fixed no-repeat;display:flex;justify-content:center;min-height:100vh }
     #yg { padding:16px 20px }
     #yfelt, .yw { user-select:none; -webkit-user-select:none; }
 
@@ -67,6 +67,8 @@
     @keyframes chatpulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.3)} }
     .ychatbadge{display:inline-block;width:8px;height:8px;background:#dc2626;border-radius:50%;margin-left:5px;vertical-align:middle;animation:chatpulse .9s ease-in-out infinite}
     .yoffline{display:inline-block;width:6px;height:6px;background:#dc2626;border-radius:50%;margin-left:3px;vertical-align:middle;opacity:.8}
+    @keyframes ypendingpulse{0%,100%{opacity:1}50%{opacity:.45}}
+    .ypending{background:#E8920A!important;color:#fff!important;animation:ypendingpulse .65s ease-in-out infinite;cursor:pointer!important}
     @keyframes yscoreflash {
       0%   { background-color:rgba(250,200,50,0); }
       10%  { background-color:rgba(250,200,50,0.88); }
@@ -76,7 +78,7 @@
     .yflash { animation:yscoreflash 1.8s ease-out forwards; }
 
     /* ── Feuille de score ── */
-    .ysr { display:flex;justify-content:space-between;align-items:center;padding:6px 9px;border-bottom:.5px solid var(--color-border-tertiary);cursor:pointer;transition:background .1s;font-size:15px;font-weight:500;color:var(--color-text-primary) }
+    .ysr { display:flex;justify-content:space-between;align-items:center;padding:6px 9px;border-bottom:.5px solid var(--color-border-tertiary);cursor:pointer;transition:background .1s;font-size:14px;font-weight:600;color:var(--color-text-primary) }
     .ysv { font-size:26px;font-weight:800;min-width:36px;text-align:right;line-height:1; }
     .ysr:hover:not(.ysf) { background:var(--color-background-secondary) }
     .ysr.ysav { background:var(--color-background-success) }
@@ -92,16 +94,32 @@
     .ysr:not(.ysf) > span:first-child { font-weight:600 }
 
     /* ── Écran de départ ── */
-    .ypbtn { width:60px;height:60px;font-size:22px;font-weight:500;background:var(--color-background-primary);border:1.5px solid var(--color-border-secondary);border-radius:var(--border-radius-lg);cursor:pointer;font-family:var(--font-sans);transition:background .12s,border-color .12s }
+    .ygcard { background:rgba(10,10,30,0.62);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1.5px solid rgba(255,255,255,0.30);border-radius:var(--border-radius-lg);padding:4px 20px 22px;margin:16px auto 0;max-width:300px }
+    .ypbtn { width:60px;height:60px;font-size:22px;font-weight:500;background:rgba(255,255,255,0.13);border:1.5px solid rgba(255,255,255,0.28);border-radius:var(--border-radius-lg);cursor:pointer;font-family:var(--font-sans);transition:background .12s,border-color .12s;color:var(--color-text-primary);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px) }
     .ypbtn:hover { background:#BA7517;color:#FAE8C4;border-color:#BA7517 }
     .yninput { padding:8px 12px;border:1.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:13px;font-family:var(--font-sans);outline:none;width:160px;text-align:center;background:var(--color-background-primary);color:var(--color-text-primary) }
     .yninput:focus { border-color:#BA7517 }
-    .ymbtn { width:200px;padding:13px 18px;display:flex;align-items:center;gap:14px;background:var(--color-background-primary);border:1.5px solid var(--color-border-secondary);border-radius:var(--border-radius-lg);cursor:pointer;font-family:var(--font-sans);transition:background .12s,border-color .12s;text-align:left }
+    .yninput::placeholder { color:rgba(255,255,255,0.35) }
+    .ymbtn { width:200px;padding:13px 18px;display:flex;align-items:center;gap:14px;background:rgba(255,255,255,0.13);border:1.5px solid rgba(255,255,255,0.28);border-radius:var(--border-radius-lg);cursor:pointer;font-family:var(--font-sans);transition:background .15s,border-color .15s;text-align:left;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px) }
     .ymbtn:hover { background:#BA7517;border-color:#BA7517 }
     .ymbtn:hover .ymbn,.ymbtn:hover .ymbs { color:#FAE8C4 }
     .ymbn { font-size:14px;font-weight:500;color:var(--color-text-primary) }
     .ymbs { font-size:11px;color:var(--color-text-tertiary);margin-top:2px }
 
+    /* ── Tableau de score + chat : fond blanc avec thème original ── */
+    #ycard, #ychatarea {
+      --color-background-primary: #ffffff;
+      --color-background-secondary: #f5f5f5;
+      --color-background-success: #ddf8fc;
+      --color-border-secondary: #cccccc;
+      --color-border-tertiary: #e0e0e0;
+      --color-text-primary: #111111;
+      --color-text-secondary: #666666;
+      --color-text-tertiary: #999999;
+      --color-text-success: #006272;
+      --color-text-danger: #c62828;
+      background: #ffffff;
+    }
     /* ── Résultats ── */
     .yrow { display:flex;align-items:center;gap:14px;padding:10px 18px;border-bottom:.5px solid var(--color-border-tertiary) }
     .yrow:last-child { border-bottom:none }
@@ -180,17 +198,17 @@
       border-left:1.5px solid #888;border-right:1.5px solid #888
     }
     .d12t th{
-      background:#3d5fa0;color:#fff;font-weight:600;padding:4px 1px;
+      background:#3d5fa0;color:#fff;font-weight:700;font-size:14px;padding:4px 1px;
       border-left:1.5px solid #2d4f90;border-right:1.5px solid #2d4f90;
       border-top:1px solid #2d4f90;border-bottom:2px solid #2c2c2c
     }
-    .d12t .d12c{text-align:left;padding-left:5px;font-size:10px;font-weight:600}
+    .d12t .d12c{text-align:center;padding:3px 2px;font-size:14px;font-weight:700;white-space:normal;word-break:break-word;line-height:1.2}
     .d12t .d12bn td{background:#a8e8f4;color:#005060;font-weight:700;font-size:14px}
-    .d12t .d12sf{background:#e0f5f9;color:#85b0ba;font-size:16px;font-weight:800}
-    .d12t .d12av{background:#d0f3fb;cursor:pointer;color:#005060;font-size:16px;font-weight:800}
+    .d12t .d12sf{background:#e0f5f9;color:#85b0ba;font-size:14px;font-weight:800}
+    .d12t .d12av{background:#d0f3fb;cursor:pointer;color:#005060;font-size:14px;font-weight:800}
     .d12t .d12av:hover{background:#BA7517;color:#FAE8C4}
     .d12t .d12pr{color:#BA7517}
-    .d12t .dlm-barrer{cursor:pointer;color:#dc2626;background:#fff5f5;font-size:10px;text-align:center}
+    .d12t .dlm-barrer{cursor:pointer;color:#dc2626;background:#fff5f5;font-size:14px;text-align:center;font-weight:700}
     .d12t .dlm-barrer:hover{background:#fee2e2}
     .d12t .d12sep td{border-top:2px solid #2c2c2c}
     .d12t td:nth-child(5),.d12t th:nth-child(5){border-left:2.5px solid #2c2c2c!important}
@@ -212,7 +230,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
-<div id="yg" style="padding:.5rem 0">
+<div id="yg" style="padding:.5rem 0;width:100%;max-width:520px;min-height:100vh">
 
   <!-- ── Écran de départ ── -->
   <div id="ystart" style="text-align:center;padding:50px 30px">
@@ -241,9 +259,12 @@
           </div>
         </button>
       </div>
+      <div style="margin-top:20px">
+        <button onclick="showSpectateStep()" style="padding:7px 16px;background:transparent;color:var(--color-text-secondary);border:none;font-size:12px;cursor:pointer;font-family:var(--font-sans)">👁 Regarder une partie en cours</button>
+      </div>
     </div>
 
-    <div id="ystep1" style="display:none">
+    <div id="ystep1" class="ygcard" style="display:none">
       <div style="font-size:13px;color:var(--color-text-secondary);margin:24px 0 18px">Nombre de joueurs</div>
       <div style="display:flex;gap:14px;justify-content:center">
         <button class="ypbtn" onclick="selectPlayers(1)">1</button>
@@ -258,7 +279,7 @@
       </div>
     </div>
 
-    <div id="ystep2" style="display:none">
+    <div id="ystep2" class="ygcard" style="display:none">
       <div style="font-size:13px;color:var(--color-text-secondary);margin:24px 0 16px">Noms des joueurs</div>
       <div id="ynames" style="display:flex;flex-direction:column;gap:10px;align-items:center;margin-bottom:22px"></div>
       <div style="display:flex;gap:10px;justify-content:center">
@@ -268,7 +289,7 @@
     </div>
 
     <!-- ── Écran online ── -->
-    <div id="ystep_net" style="display:none">
+    <div id="ystep_net" class="ygcard" style="display:none">
       <div style="font-size:13px;color:var(--color-text-secondary);margin:24px 0 16px">Multijoueur en ligne</div>
       <div style="display:flex;flex-direction:column;gap:12px;align-items:center">
         <input id="ynetname" class="yninput" type="text" placeholder="Votre prénom" maxlength="14" value="">
@@ -285,8 +306,19 @@
       </div>
     </div>
 
+    <!-- ── Spectateur ── -->
+    <div id="ystep_spectate" class="ygcard" style="display:none">
+      <div style="font-size:13px;color:var(--color-text-secondary);margin:24px 0 18px">👁 Regarder une partie</div>
+      <div style="display:flex;flex-direction:column;gap:12px;align-items:center">
+        <input id="yspectcode" class="yninput" type="text" placeholder="Code (ex: ROSE-42)" maxlength="8" style="text-transform:uppercase">
+        <button onclick="netSpectate()" style="padding:10px 28px;background:#BA7517;color:#FAE8C4;border:none;border-radius:var(--border-radius-md);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-sans)">👁 Regarder</button>
+        <div id="yspectmsg" style="font-size:12px;color:var(--color-text-secondary);min-height:18px"></div>
+        <button onclick="backToMode()" style="padding:9px 18px;background:transparent;color:var(--color-text-secondary);border:1.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:13px;cursor:pointer;font-family:var(--font-sans)">← Retour</button>
+      </div>
+    </div>
+
     <!-- ── Lobby ── -->
-    <div id="ylobby" style="display:none">
+    <div id="ylobby" class="ygcard" style="display:none">
       <div style="font-size:13px;color:var(--color-text-secondary);margin:24px 0 10px">Code de la partie</div>
       <div id="ynrcode" style="font-size:28px;font-weight:700;letter-spacing:4px;color:#BA7517;margin-bottom:18px"></div>
       <div style="font-size:11px;color:var(--color-text-tertiary);margin-bottom:14px">Partagez ce code avec vos amis</div>
@@ -299,10 +331,10 @@
   <!-- ── Jeu ── -->
   <div id="ygame" style="display:none">
     <div style="text-align:center;margin-bottom:8px;position:relative">
-      <div style="font-size:16px;font-weight:500;letter-spacing:1px;color:var(--color-text-primary)">Yams Par Cedmad</div>
-      <div id="yti" style="font-size:12px;color:var(--color-text-secondary);margin-top:2px"></div>
+      <div style="font-size:16px;font-weight:500;letter-spacing:1px;color:var(--color-text-primary)">Yams Par Cedmad<span id="ygamecode" style="font-size:11px;font-weight:400;opacity:0.55;margin-left:7px;letter-spacing:0.5px"></span></div>
       <button id="yrbtn" onclick="showRules()" style="display:none;position:absolute;right:0;top:2px;padding:4px 10px;background:transparent;border:1px solid #BA7517;border-radius:6px;font-size:10px;color:#BA7517;cursor:pointer;font-family:var(--font-sans)">? Règles</button>
     </div>
+    <div id="yspectbadge" style="display:none;text-align:center;font-size:11px;color:rgba(255,255,255,0.55);letter-spacing:1.5px;margin-bottom:4px">👁 MODE SPECTATEUR</div>
     <!-- Tableau de score pleine largeur -->
     <div id="ycard" style="border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow-x:hidden;background:var(--color-background-primary);margin-bottom:8px"></div>
     <!-- Dés linéaires -->
@@ -313,14 +345,15 @@
           <div id="yskpanel" style="display:none;position:absolute;left:0;top:calc(100% + 6px);z-index:50;background:var(--color-background-primary);border:.5px solid var(--color-border-secondary);border-radius:10px;padding:8px;flex-wrap:wrap;gap:6px;width:228px;box-shadow:0 4px 20px rgba(0,0,0,.18)"></div>
         </div>
         <div id="yfelt" style="background:#1a6b31;border:4px solid #0d3a1a;border-radius:10px;width:202px;height:50px;position:relative;display:inline-block;overflow:visible"></div>
+        <button onclick="yNew()" title="Nouvelle partie" style="width:34px;height:50px;border-radius:8px;background:var(--color-background-primary);border:1.5px solid var(--color-border-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;padding:0;flex-shrink:0;color:var(--color-text-secondary)">&#8635;</button>
       </div>
       <div id="yctr" style="font-size:11px;font-weight:500;color:#1a6b31;min-height:16px;margin-top:4px;letter-spacing:2px"></div>
       <div style="display:flex;align-items:center;gap:12px;margin-top:6px;justify-content:center">
+        <div id="yti" style="font-size:12px;color:var(--color-text-secondary);text-align:right"></div>
         <button id="yrb" onclick="yRoll()" style="padding:9px 24px;background:#BA7517;color:#FAE8C4;border:none;border-radius:var(--border-radius-md);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-sans)">Lancer</button>
         <span id="yrlc" style="font-size:12px;color:var(--color-text-secondary)"></span>
       </div>
-      <div id="ymsg" style="margin-top:8px;padding:7px 12px;border:.5px solid var(--color-border-tertiary);border-left:3px solid #BA7517;border-radius:var(--border-radius-md);font-size:12px;color:var(--color-text-primary);min-height:32px;background:var(--color-background-secondary)"></div>
-      <button onclick="yNew()" style="margin-top:7px;padding:5px 13px;background:transparent;color:var(--color-text-secondary);border:.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:11px;cursor:pointer;font-family:var(--font-sans)">&#8635; Nouvelle partie</button>
+      <div id="ymsg_s" style="margin-top:8px;padding:7px 12px;border:.5px solid var(--color-border-tertiary);border-left:3px solid #BA7517;border-radius:var(--border-radius-md);font-size:12px;color:var(--color-text-primary);background:var(--color-background-secondary)"></div>
     </div>
     <!-- Chat en ligne (statique, bas de jeu) -->
     <div id="ychatarea" style="display:none;margin-top:10px;border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;background:var(--color-background-primary)">
@@ -334,10 +367,9 @@
   </div>
 
   <!-- ── Résultats ── -->
-  <div id="yend" style="display:none;text-align:center;padding:40px 20px;min-width:320px">
-    <div style="font-size:20px;font-weight:500;letter-spacing:5px;color:var(--color-text-primary);margin-bottom:24px">R É S U L T A T S</div>
-    <div id="yranks" style="border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;background:var(--color-background-primary);margin-bottom:20px;text-align:left"></div>
-    <button onclick="yNew()" style="padding:9px 24px;background:#BA7517;color:#FAE8C4;border:none;border-radius:var(--border-radius-md);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-sans)">Nouvelle partie</button>
+  <div id="yend" style="display:none;text-align:center;padding:24px 16px 32px;min-width:320px">
+    <div id="yranks"></div>
+    <button onclick="yNew()" style="padding:9px 28px;background:#BA7517;color:#FAE8C4;border:none;border-radius:var(--border-radius-md);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-sans);margin-top:20px">Nouvelle partie</button>
   </div>
 
   <!-- ── Overlay attente multijoueur ── -->
@@ -447,10 +479,11 @@ const D12_ROWS=[
   {id:'dya',n:'Yams',f:d=>cv(d).some(c=>c>=5)?100:0},
 ];
 const D12_COLS=['d','l','u','e1','e2'];
-const D12_CN={d:'↓',l:'L',u:'↑',e1:'En 1',e2:'En 2'};
+const D12_CN={d:'↓',l:'Libre',u:'↑',e1:'En 1',e2:'En 2'};
 const D12_MX={d:1,l:1,u:1,e1:3,e2:2};
 // D12 state est per-player (d12Sheet, d12DI, d12UI sur chaque objet joueur)
 let D12_REFS={d:{},l:{},u:{},e1:{},e2:{}};
+const D12_COMP_COLS=new Set(['d','u','e1','e2']); // colonnes compétitives : il faut battre le meilleur score adverse
 
 // ── DLM ──
 const DLM_ROWS=[
@@ -470,7 +503,7 @@ const DLM_ROWS=[
   {id:'yam',n:'YAMS !',   f:d=>cv(d).some(c=>c>=5)?50+ds(d):0},
 ];
 const DLM_COLS=['d','l','u','s'];
-const DLM_CN={d:'↓',l:'L',u:'↑',s:'Sec'};
+const DLM_CN={d:'↓',l:'Libre',u:'↑',s:'Sec'};
 // DLM state est per-player (dlmSheet, dlmDI, dlmUI sur chaque objet joueur)
 
 function dlmBonus(col,sh){
@@ -515,14 +548,15 @@ function rcardDLM(){
       const offDot=ONLINE&&ONLINE_SLOTS[i]===false?'<span class="yoffline"></span>':'';
       return`<span onclick="viewPlayer(${i})" style="cursor:pointer;font-size:10px;padding:2px 4px;border-radius:4px;${style}">${p.name}${offDot}${done?' ✓':''}&nbsp;${tot}</span>`;
     }).join('<span style="color:var(--color-border-secondary);margin:0 2px">·</span>');
-    h+=`<div style="padding:5px 9px;background:var(--color-background-secondary);border-bottom:.5px solid var(--color-border-tertiary);display:flex;gap:2px;flex-wrap:wrap;align-items:center">${chips}</div>`;
+    const statusTxt=ONLINE&&MY_SLOT>=0&&MY_SLOT!==CURRENT_PLAYER?'⏳ '+G.name+'…':LAST_MSG;
+    h+=`<div style="padding:5px 9px;background:var(--color-background-secondary);border-bottom:.5px solid var(--color-border-tertiary);display:flex;gap:2px;flex-wrap:wrap;align-items:center">${chips}<span id="ymsg" style="margin-left:auto;font-size:10px;color:var(--color-text-secondary);white-space:nowrap;font-style:italic">${statusTxt}</span></div>`;
   }
   if(viewing){
     h+=`<div style="padding:3px 9px;background:#eff6ff;border-bottom:.5px solid #bfdbfe;font-size:10px;color:#2563eb;display:flex;justify-content:space-between;align-items:center"><span>👁 Table de ${vPlayer.name}</span><span onclick="viewPlayer(${VIEW_PLAYER})" style="cursor:pointer;font-size:14px;color:#94a3b8">×</span></div>`;
   }
   h+=`<table class="d12t" style="width:100%">`;
-  h+=`<tr><th class="d12c" style="width:64px">Catégorie</th>`;
-  DLM_COLS.forEach(c=>h+=`<th style="width:30px">${DLM_CN[c]}</th>`);
+  h+=`<tr><th class="d12c" style="width:40%">Catégorie</th>`;
+  DLM_COLS.forEach(c=>h+=`<th>${DLM_CN[c]}</th>`);
   h+=`</tr>`;
   for(let ri=0;ri<6;ri++){
     const row=DLM_ROWS[ri];
@@ -530,7 +564,7 @@ function rcardDLM(){
     h+=`<tr><td class="d12c"${!rowFilled&&!viewing?' style="font-weight:700"':''}>${row.n}</td>`;
     DLM_COLS.forEach(col=>{
       const v=s[col][row.id];
-      if(v!==undefined){const sf=v>0?'background:#30b0ce;color:#fff':'';h+=`<td class="d12sf" style="${sf}" data-sid="${row.id}-${col}">${v||'—'}</td>`;}
+      if(v!==undefined){const sf=v>0?'background:#30b0ce;color:#fff':'background:#f0f0f0;color:#999;text-decoration:line-through';h+=`<td class="d12sf" style="${sf}" data-sid="${row.id}-${col}">${v>0?v:'0'}</td>`;}
       else if(!viewing&&dlmCanFill(col,ri)){h+=`<td class="d12av d12pr" data-sid="${row.id}-${col}" onclick="yscoreDLM('${col}','${row.id}',${ri})">${row.f(G.dice)}</td>`;}
       else if(!viewing&&col==='s'&&!G.fresh&&!(row.id in s['s'])){h+=`<td class="dlm-barrer" data-sid="${row.id}-${col}" onclick="yscoreDLM('s','${row.id}',${ri},1)">✕</td>`;}
       else{h+=`<td></td>`;}
@@ -546,7 +580,7 @@ function rcardDLM(){
     h+=`<tr${ri===6?' class="d12sep"':''}><td class="d12c"${!rowFilled&&!viewing?' style="font-weight:700"':''}>${row.n}</td>`;
     DLM_COLS.forEach(col=>{
       const v=s[col][row.id];
-      if(v!==undefined){const sf=v>0?'background:#30b0ce;color:#fff':'';h+=`<td class="d12sf" style="${sf}" data-sid="${row.id}-${col}">${v||'—'}</td>`;}
+      if(v!==undefined){const sf=v>0?'background:#30b0ce;color:#fff':'background:#f0f0f0;color:#999;text-decoration:line-through';h+=`<td class="d12sf" style="${sf}" data-sid="${row.id}-${col}">${v>0?v:'0'}</td>`;}
       else if(!viewing&&dlmCanFill(col,ri)){h+=`<td class="d12av d12pr" data-sid="${row.id}-${col}" onclick="yscoreDLM('${col}','${row.id}',${ri})">${row.f(G.dice)}</td>`;}
       else if(!viewing&&col==='s'&&!G.fresh&&!(row.id in s['s'])){h+=`<td class="dlm-barrer" data-sid="${row.id}-${col}" onclick="yscoreDLM('s','${row.id}',${ri},1)">✕</td>`;}
       else{h+=`<td></td>`;}
@@ -561,22 +595,29 @@ function rcardDLM(){
 
 async function yscoreDLM(col,catId,ri,barrer){
   if(ONLINE&&MY_SLOT!==CURRENT_PLAYER)return;
+  const key=catId+'-'+col;
+  if(PENDING_SCORE&&PENDING_SCORE.key===key){clearPending();return;}
   if(!G.dlmSheet||G.fresh||G.busy)return;
   if(barrer){
     if(col!=='s'||G.rollsUsed===1||(catId in G.dlmSheet['s']))return;
-    G.dlmSheet['s'][catId]=0;
   }else{
     if(!dlmCanFill(col,ri))return;
-    G.dlmSheet[col][catId]=DLM_ROWS[ri].f(G.dice);
+  }
+  const scoreVal=barrer?0:DLM_ROWS[ri].f(G.dice);
+  setPending(key,()=>_commitDLM(col,catId,ri,barrer,scoreVal));
+}
+async function _commitDLM(col,catId,ri,barrer,scoreVal){
+  if(barrer){
+    G.dlmSheet['s'][catId]=0;
+  }else{
+    G.dlmSheet[col][catId]=scoreVal;
     if(col==='d')G.dlmDI++;
     if(col==='u')G.dlmUI--;
   }
   G.busy=true;
   rcard();
   flashScoreCell(col,catId);
-
   if(PLAYERS.every(p=>dlmPlayerFilled(p)>=56)){if(ONLINE)netPush('ended');endGameDLM();return;}
-
   if(NUM_PLAYERS>1){
     if(ONLINE){LAST_SCORE={col,catId,playerIdx:CURRENT_PLAYER};netPush();LAST_SCORE=null;}
     await sl(2000);
@@ -590,16 +631,60 @@ async function yscoreDLM(col,catId,ri,barrer){
   msg((NUM_PLAYERS>1?G.name+' — ':'')+'Lancez les dés !');
 }
 
-function endGameDLM(){
+function showEndScreen(sorted){
   document.getElementById('ygame').style.display='none';
-  const sorted=PLAYERS.map(p=>({name:p.name,tot:dlmPlayerTotal(p)})).sort((a,b)=>b.tot-a.tot);
-  const medals=['🥇','🥈','🥉','4.'];
-  let h='';
-  sorted.forEach((r,i)=>{
-    h+=`<div class="yrow"><span style="font-size:18px;width:28px">${i<3?medals[i]:(i+1)+'.'}</span><span style="flex:1;font-size:13px;font-weight:${i===0?600:400};color:var(--color-text-primary)">${r.name}</span><span style="font-size:13px;color:#BA7517;font-weight:500">${r.tot} pts</span></div>`;
-  });
+  const trophySvg=`<svg viewBox="0 0 120 108" width="96" height="96" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="tg" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#D4881A"/><stop offset="45%" stop-color="#FFD966"/><stop offset="100%" stop-color="#D4881A"/></linearGradient>
+      <linearGradient id="tgv" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FFE066"/><stop offset="100%" stop-color="#C87010"/></linearGradient>
+    </defs>
+    <path d="M38,8 h44 l-7,48 q-5,17-15,21 q-10,-4-15,-21 Z" fill="url(#tg)"/>
+    <path d="M50,10 q5,-2 10,0 l-4,28 q-3,8-6,9 Z" fill="#FFF9C4" opacity="0.45"/>
+    <path d="M38,20 Q17,20 17,38 Q17,56 38,56" fill="none" stroke="url(#tg)" stroke-width="8" stroke-linecap="round"/>
+    <path d="M82,20 Q103,20 103,38 Q103,56 82,56" fill="none" stroke="url(#tg)" stroke-width="8" stroke-linecap="round"/>
+    <rect x="52" y="77" width="16" height="12" fill="url(#tgv)" rx="2"/>
+    <rect x="30" y="89" width="60" height="8" fill="#C87010" rx="4"/>
+    <rect x="34" y="96" width="52" height="5" fill="#A06000" rx="2.5"/>
+    <polygon points="60,20 64,31 76,31 67,38 70,49 60,43 50,49 53,38 44,31 56,31" fill="#FFF5AA" stroke="#E8C020" stroke-width="0.8"/>
+  </svg>`;
+  const winner=sorted[0];
+  const medal=['🥇','🥈','🥉'];
+  const podBg=['#8A8A8A','#BA7517','#8B5E3C']; // gauche=argent, centre=or, droite=bronze
+  const podH=[50,72,36]; // gauche=50, centre=72 (le plus haut), droite=36
+  let h=`<div style="margin-bottom:10px">${trophySvg}</div>`;
+  h+=`<div style="font-size:18px;font-weight:700;color:var(--color-text-primary);margin-bottom:2px">${winner.name}</div>`;
+  h+=`<div style="font-size:13px;color:#BA7517;font-weight:600;letter-spacing:1px;margin-bottom:18px">🏆 Vainqueur · ${winner.tot} pts</div>`;
+  if(sorted.length>=3){
+    const order=[1,0,2];
+    h+=`<div style="display:flex;justify-content:center;align-items:flex-end;gap:6px;margin:0 auto 8px;max-width:300px">`;
+    order.forEach((si,pi)=>{
+      const p=sorted[si];
+      h+=`<div style="flex:1;text-align:center;min-width:0">
+        <div style="font-size:${si===0?26:20}px;line-height:1.2">${medal[si]}</div>
+        <div style="font-size:11px;font-weight:${si===0?700:600};color:var(--color-text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:2px 2px 0">${p.name}</div>
+        <div style="font-size:11px;color:#BA7517;font-weight:600;margin-bottom:4px">${p.tot} pts</div>
+        <div style="height:${podH[pi]}px;background:${podBg[pi]};border-radius:4px 4px 0 0;opacity:.85"></div>
+      </div>`;
+    });
+    h+=`</div><div style="height:4px;background:linear-gradient(90deg,#8A8A8A 33.3%,#BA7517 33.3% 66.6%,#8B5E3C 66.6%);opacity:.6;border-radius:0 0 4px 4px;margin:0 auto;max-width:300px"></div>`;
+  }else{
+    sorted.forEach((p,i)=>{
+      h+=`<div style="display:flex;align-items:center;gap:10px;padding:8px 16px;border-bottom:.5px solid var(--color-border-tertiary)"><span style="font-size:20px">${medal[i]||(i+1)+'.'}</span><span style="flex:1;font-size:13px;font-weight:${i===0?700:400}">${p.name}</span><span style="font-size:13px;color:#BA7517;font-weight:600">${p.tot} pts</span></div>`;
+    });
+  }
+  if(sorted.length>3){
+    h+=`<div style="margin-top:12px;border:.5px solid var(--color-border-tertiary);border-radius:8px;overflow:hidden;background:var(--color-background-primary)">`;
+    sorted.slice(3).forEach((p,i)=>{
+      h+=`<div style="display:flex;justify-content:space-between;padding:6px 14px;font-size:12px;color:var(--color-text-secondary);border-bottom:.5px solid var(--color-border-tertiary)"><span>${i+4}. ${p.name}</span><span>${p.tot} pts</span></div>`;
+    });
+    h+=`</div>`;
+  }
   document.getElementById('yranks').innerHTML=h;
   document.getElementById('yend').style.display='';
+}
+
+function endGameDLM(){
+  showEndScreen(PLAYERS.map(p=>({name:p.name,tot:dlmPlayerTotal(p)})).sort((a,b)=>b.tot-a.tot));
 }
 
 const DSIZE=30,STRIP_PAD_X=10,STRIP_PAD_Y=10,DIE_GAP=8;
@@ -629,6 +714,7 @@ let NUM_PLAYERS=1,CURRENT_PLAYER=0,PLAYERS=[],G,GAME_MODE='standard',VIEW_PLAYER
 let LAST_SCORE=null;
 let ONLINE_SLOTS={},PRESENCE_WATCHING=false;
 let CHAT_UNREAD=false;
+let LAST_MSG='';
 
 function viewPlayer(i){VIEW_PLAYER=(VIEW_PLAYER===i)?-1:i;rcard();}
 
@@ -647,7 +733,13 @@ function selectMode(mode){
 
 function backToMode(){
   document.getElementById('ystep1').style.display='none';
+  document.getElementById('ystep_net').style.display='none';
+  document.getElementById('ystep_spectate').style.display='none';
   document.getElementById('ystep0').style.display='';
+}
+function showSpectateStep(){
+  document.getElementById('ystep0').style.display='none';
+  document.getElementById('ystep_spectate').style.display='';
 }
 
 function selectPlayers(n){
@@ -690,6 +782,7 @@ function startGame(){
   document.getElementById('ystart').style.display='none';
   document.getElementById('yend').style.display='none';
   document.getElementById('ygame').style.display='';
+  const _gc=document.getElementById('ygamecode');if(_gc)_gc.textContent='';
   rdice();rcard();uctrl();updTi();
   msg((NUM_PLAYERS>1?G.name+' — ':'')+'Lancez les dés !');
 }
@@ -782,7 +875,8 @@ function rcard(){
       const offDot=ONLINE&&ONLINE_SLOTS[i]===false?'<span class="yoffline"></span>':'';
       return`<span onclick="viewPlayer(${i})" style="cursor:pointer;font-size:10px;padding:2px 4px;border-radius:4px;${style}">${p.name}${offDot}${done?' ✓':''}&nbsp;${pt}</span>`;
     }).join('<span style="color:var(--color-border-secondary);margin:0 2px">·</span>');
-    h+=`<div style="padding:5px 9px;background:var(--color-background-secondary);border-bottom:.5px solid var(--color-border-tertiary);display:flex;gap:2px;flex-wrap:wrap;align-items:center">${chips}</div>`;
+    const statusTxt=ONLINE&&MY_SLOT>=0&&MY_SLOT!==CURRENT_PLAYER?'⏳ '+G.name+'…':LAST_MSG;
+    h+=`<div style="padding:5px 9px;background:var(--color-background-secondary);border-bottom:.5px solid var(--color-border-tertiary);display:flex;gap:2px;flex-wrap:wrap;align-items:center">${chips}<span id="ymsg" style="margin-left:auto;font-size:10px;color:var(--color-text-secondary);white-space:nowrap;font-style:italic">${statusTxt}</span></div>`;
   }
   if(viewing){
     h+=`<div style="padding:3px 9px;background:#eff6ff;border-bottom:.5px solid #bfdbfe;font-size:10px;color:#2563eb;display:flex;justify-content:space-between;align-items:center"><span>👁 Table de ${vPlayer.name}</span><span onclick="viewPlayer(${VIEW_PLAYER})" style="cursor:pointer;font-size:14px;color:#94a3b8">×</span></div>`;
@@ -853,6 +947,7 @@ function setBusy(val){
 
 async function yRoll(){
   if(ONLINE&&MY_SLOT!==CURRENT_PLAYER)return;
+  clearPending();
   if(G.phase!=='roll'||G.rollsLeft<=0||G.busy)return;
   setBusy(true);
 
@@ -940,23 +1035,30 @@ function rcardDLM12(){
       const offDot=ONLINE&&ONLINE_SLOTS[i]===false?'<span class="yoffline"></span>':'';
       return`<span onclick="viewPlayer(${i})" style="cursor:pointer;font-size:10px;padding:2px 4px;border-radius:4px;${style}">${p.name}${offDot}${done?' ✓':''}&nbsp;${tot}</span>`;
     }).join('<span style="color:var(--color-border-secondary);margin:0 2px">·</span>');
-    h+=`<div style="padding:5px 9px;background:var(--color-background-secondary);border-bottom:.5px solid var(--color-border-tertiary);display:flex;gap:2px;flex-wrap:wrap;align-items:center">${chips}</div>`;
+    const statusTxt=ONLINE&&MY_SLOT>=0&&MY_SLOT!==CURRENT_PLAYER?'⏳ '+G.name+'…':LAST_MSG;
+    h+=`<div style="padding:5px 9px;background:var(--color-background-secondary);border-bottom:.5px solid var(--color-border-tertiary);display:flex;gap:2px;flex-wrap:wrap;align-items:center">${chips}<span id="ymsg" style="margin-left:auto;font-size:10px;color:var(--color-text-secondary);white-space:nowrap;font-style:italic">${statusTxt}</span></div>`;
   }
   if(viewing){
     h+=`<div style="padding:3px 9px;background:#eff6ff;border-bottom:.5px solid #bfdbfe;font-size:10px;color:#2563eb;display:flex;justify-content:space-between;align-items:center"><span>👁 Table de ${vPlayer.name}</span><span onclick="viewPlayer(${VIEW_PLAYER})" style="cursor:pointer;font-size:14px;color:#94a3b8">×</span></div>`;
   }
   h+=`<table class="d12t" style="width:100%">`;
-  h+=`<tr><th class="d12c" style="width:72px">Catégorie</th>`;
-  D12_COLS.forEach(c=>h+=`<th style="width:31px">${D12_CN[c]}</th>`);
+  h+=`<tr><th class="d12c" style="width:40%">Catégorie</th>`;
+  D12_COLS.forEach(c=>h+=`<th>${D12_CN[c]}</th>`);
   h+=`</tr>`;
   const cellHtml=(col,row,ri)=>{
     const v=s[col][row.id];
     if(v!==undefined)return`<td class="d12sf" style="${v>0?'background:#30b0ce;color:#fff':''}" data-sid="${row.id}-${col}">${v}</td>`;
-    if(viewing||!d12CanFill(col,ri))return`<td></td>`;
+    const isComp=D12_COMP_COLS.has(col)&&NUM_PLAYERS>1;
+    const ref=isComp?D12_REFS[col][row.id]:undefined;
+    if(viewing||!d12CanFill(col,ri)){
+      if(isComp&&ref!==undefined)return`<td style="color:#dc2626;font-weight:800;font-size:14px;opacity:.45" data-sid="${row.id}-${col}">${ref}</td>`;
+      return`<td></td>`;
+    }
     const pv=row.f(G.dice);
-    const ref=NUM_PLAYERS>1?D12_REFS[col][row.id]:undefined;
-    if(ref!==undefined&&pv<ref)
-      return`<td style="background:#fff3e0;cursor:pointer;color:#c84b00;font-size:8px" data-sid="${row.id}-${col}" onclick="yscoreDLM12('${col}','${row.id}',${ri})">${pv}<br><span style="color:#bbb">≥${ref}</span></td>`;
+    if(isComp&&ref!==undefined){
+      if(pv>ref)return`<td class="d12av" style="padding:1px" data-sid="${row.id}-${col}" onclick="yscoreDLM12('${col}','${row.id}',${ri})"><div style="color:#dc2626;font-size:14px;line-height:1.2;font-weight:800">${ref}✗</div><div style="color:#005060;font-weight:800;font-size:14px">${pv}✓</div></td>`;
+      return`<td style="background:#fff5f5;color:#dc2626;font-weight:800;font-size:14px" data-sid="${row.id}-${col}">${ref}</td>`;
+    }
     return`<td class="d12av d12pr" data-sid="${row.id}-${col}" onclick="yscoreDLM12('${col}','${row.id}',${ri})">${pv}</td>`;
   };
   for(let ri=0;ri<6;ri++){
@@ -992,13 +1094,21 @@ function rcardDLM12(){
 
 async function yscoreDLM12(col,catId,ri){
   if(ONLINE&&MY_SLOT!==CURRENT_PLAYER)return;
+  const key=catId+'-'+col;
+  if(PENDING_SCORE&&PENDING_SCORE.key===key){clearPending();return;}
   if(!G.d12Sheet||G.fresh||G.busy)return;
   if(!d12CanFill(col,ri))return;
   const score=D12_ROWS[ri].f(G.dice);
-  if(NUM_PLAYERS>1){
+  if(NUM_PLAYERS>1&&D12_COMP_COLS.has(col)){
     const ref=D12_REFS[col][catId];
-    if(ref!==undefined&&score<ref){msg('Score insuffisant — il faut au moins '+ref+' pour cette case.');return;}
-    if(ref===undefined)D12_REFS[col][catId]=score;
+    if(ref!==undefined&&score<=ref){msg('Il faut battre le score adverse (>'+ref+') pour cette case.');return;}
+  }
+  setPending(key,()=>_commitDLM12(col,catId,ri,score));
+}
+async function _commitDLM12(col,catId,ri,score){
+  if(NUM_PLAYERS>1&&D12_COMP_COLS.has(col)){
+    const ref=D12_REFS[col][catId];
+    if(ref===undefined||score>ref)D12_REFS[col][catId]=score;
   }
   G.d12Sheet[col][catId]=score;
   if(col==='d')G.d12DI++;
@@ -1013,9 +1123,7 @@ async function yscoreDLM12(col,catId,ri){
   G.busy=true;
   rcard();
   flashScoreCell(col,catId);
-
   if(PLAYERS.every(p=>d12PlayerFilled(p)>=65)){if(ONLINE)netPush('ended');endGameDLM12();return;}
-
   if(NUM_PLAYERS>1){
     if(ONLINE){LAST_SCORE={col,catId,playerIdx:CURRENT_PLAYER};netPush();LAST_SCORE=null;}
     await sl(2000);
@@ -1030,15 +1138,7 @@ async function yscoreDLM12(col,catId,ri){
 }
 
 function endGameDLM12(){
-  document.getElementById('ygame').style.display='none';
-  const sorted=PLAYERS.map(p=>({name:p.name,tot:d12PlayerTotal(p)})).sort((a,b)=>b.tot-a.tot);
-  const medals=['🥇','🥈','🥉','4.'];
-  let h='';
-  sorted.forEach((r,i)=>{
-    h+=`<div class="yrow"><span style="font-size:18px;width:28px">${i<3?medals[i]:(i+1)+'.'}</span><span style="flex:1;font-size:13px;font-weight:${i===0?600:400};color:var(--color-text-primary)">${r.name}</span><span style="font-size:13px;color:#BA7517;font-weight:500">${r.tot} pts</span></div>`;
-  });
-  document.getElementById('yranks').innerHTML=h;
-  document.getElementById('yend').style.display='';
+  showEndScreen(PLAYERS.map(p=>({name:p.name,tot:d12PlayerTotal(p)})).sort((a,b)=>b.tot-a.tot));
 }
 
 function showRules(){document.getElementById('yrmod').classList.add('vis');}
@@ -1046,15 +1146,18 @@ function hideRules(){document.getElementById('yrmod').classList.remove('vis');}
 
 async function yscore(id){
   if(ONLINE&&MY_SLOT!==CURRENT_PLAYER)return;
+  if(PENDING_SCORE&&PENDING_SCORE.key===id){clearPending();return;}
   if(G.phase!=='score'||id in G.scores)return;
   const cat=CATS.find(c=>c.id===id);if(!cat)return;
-  G.scores[id]=cat.f(G.dice);
+  const scoreVal=cat.f(G.dice);
+  setPending(id,()=>_commitStd(id,scoreVal));
+}
+async function _commitStd(id,scoreVal){
+  G.scores[id]=scoreVal;
   G.phase='scored';
   rcard();uctrl();
   flashScoreCell(null,id);
-
   if(PLAYERS.every(p=>Object.keys(p.scores).length===13)){if(ONLINE)netPush('ended');endGame();return;}
-
   if(NUM_PLAYERS>1){
     if(ONLINE){LAST_SCORE={col:null,catId:id,playerIdx:CURRENT_PLAYER};netPush();LAST_SCORE=null;}
     await sl(2000);
@@ -1069,22 +1172,7 @@ async function yscore(id){
 }
 
 function endGame(){
-  document.getElementById('ygame').style.display='none';
-  const sorted=PLAYERS.map(p=>({name:p.name,tot:playerTotal(p)})).sort((a,b)=>b.tot-a.tot);
-  const medals=['🥇','🥈','🥉','4.'];
-  let h='';
-  sorted.forEach((r,i)=>{
-    const medal=i<3?medals[i]:(i+1)+'.';
-    const comment=i===0?(r.tot>=300?'Exceptionnel !':r.tot>=200?'Bien joué !':''):'';
-    h+=`<div class="yrow">
-      <span style="font-size:18px;width:28px">${medal}</span>
-      <span style="flex:1;font-size:13px;font-weight:${i===0?600:400};color:var(--color-text-primary)">${r.name}</span>
-      <span style="font-size:13px;color:#BA7517;font-weight:500">${r.tot} pts</span>
-      ${comment?`<span style="font-size:11px;color:var(--color-text-secondary)">${comment}</span>`:''}
-    </div>`;
-  });
-  document.getElementById('yranks').innerHTML=h;
-  document.getElementById('yend').style.display='';
+  showEndScreen(PLAYERS.map(p=>({name:p.name,tot:playerTotal(p)})).sort((a,b)=>b.tot-a.tot));
 }
 
 function yNew(force){
@@ -1094,12 +1182,15 @@ function yNew(force){
     try{FBDB.ref('rooms/'+ROOM_CODE+'/state').off();}catch(e){}
     try{FBDB.ref('rooms/'+ROOM_CODE+'/chat').off();}catch(e){}
   }
-  ONLINE=false;MY_SLOT=-1;NET_SEQ=-1;ROOM_CODE=null;
+  clearPending();
+  ONLINE=false;MY_SLOT=-1;NET_SEQ=-1;ROOM_CODE=null;SPECTATING=false;
   CHAT_LISTENING=false;PRESENCE_WATCHING=false;ONLINE_SLOTS={};CHAT_UNREAD=false;
   const ca=document.getElementById('ychatarea');if(ca)ca.style.display='none';
+  const sb=document.getElementById('yspectbadge');if(sb)sb.style.display='none';
   document.getElementById('ynetw').style.display='none';
   document.getElementById('ylobby').style.display='none';
   document.getElementById('ystep_net').style.display='none';
+  document.getElementById('ystep_spectate').style.display='none';
   document.getElementById('ygame').style.display='none';
   document.getElementById('yend').style.display='none';
   document.getElementById('ystep2').style.display='none';
@@ -1110,6 +1201,7 @@ function yNew(force){
 
 function uctrl(){
   const btn=document.getElementById('yrb'),rl=document.getElementById('yrlc');
+  if(SPECTATING){btn.disabled=true;rl.textContent='';return;}
   if(G.phase==='score'||G.phase==='done'||G.phase==='scored'){btn.disabled=true;rl.textContent='Choisissez une case !'}
   else{btn.disabled=false;rl.textContent=G.rollsLeft===1?'Dernier lancer !':G.rollsLeft+' lancers restants'}
 }
@@ -1120,7 +1212,7 @@ function flashScoreCell(col,catId){
   if(!el)return;
   el.classList.remove('yflash');void el.offsetWidth;el.classList.add('yflash');
 }
-function msg(t){document.getElementById('ymsg').textContent=t}
+function msg(t){LAST_MSG=t;const el=document.getElementById('ymsg')||document.getElementById('ymsg_s');if(el)el.textContent=t;}
 function sl(ms){return new Promise(r=>setTimeout(r,ms))}
 
 // Mise à l'échelle desktop uniquement (écrans sans touch)
@@ -1134,7 +1226,31 @@ scaleGame();
 document.getElementById('yjsok').textContent='JS ✓';
 
 // ─── MULTIJOUEUR EN LIGNE ───
-let ONLINE=false,MY_SLOT=-1,NET_SEQ=-1,ROOM_CODE=null,FBDB=null;
+let ONLINE=false,MY_SLOT=-1,NET_SEQ=-1,ROOM_CODE=null,FBDB=null,SPECTATING=false;
+let PENDING_SCORE=null,PENDING_TIMER=null,PENDING_PREV_MSG='';
+function clearPending(){
+  if(PENDING_TIMER){clearTimeout(PENDING_TIMER);PENDING_TIMER=null;}
+  if(PENDING_SCORE){
+    const el=document.querySelector(`[data-sid="${PENDING_SCORE.key}"]`);
+    if(el)el.classList.remove('ypending');
+    PENDING_SCORE=null;
+    msg(PENDING_PREV_MSG);
+  }
+}
+function setPending(key,commitFn){
+  clearPending();
+  PENDING_PREV_MSG=LAST_MSG;
+  PENDING_SCORE={key};
+  const el=document.querySelector(`[data-sid="${key}"]`);
+  if(el)el.classList.add('ypending');
+  msg('⏳ Recliquez pour annuler (2s)');
+  PENDING_TIMER=setTimeout(()=>{
+    const pe=document.querySelector(`[data-sid="${key}"]`);
+    if(pe)pe.classList.remove('ypending');
+    PENDING_SCORE=null;PENDING_TIMER=null;
+    commitFn();
+  },2000);
+}
 const FB_CFG={
   apiKey:'AIzaSyBpAG_EN7FK6pD7Lh-2AwNVjAUZJIgsg0s',
   authDomain:'yams-cedmad.firebaseapp.com',
@@ -1221,6 +1337,7 @@ function applyNetState(data){
   else if(GAME_MODE==='dlm12'){document.getElementById('yrbtn').style.display='';}
   else{document.getElementById('yrbtn').style.display='none';}
   document.getElementById('ygame').style.display='';
+  const _gc2=document.getElementById('ygamecode');if(_gc2)_gc2.textContent=ROOM_CODE?'('+ROOM_CODE+')':'';
   chatListen();
   rdice();rcard();uctrl();updTi();
   // Flash sur la case scorée par un autre joueur
@@ -1235,10 +1352,10 @@ function applyNetState(data){
     if(rolledIds.length)throwDice(rolledIds);
   }
   if(data.phase==='ended')return;
-  const myTurn=(MY_SLOT<0||MY_SLOT===CURRENT_PLAYER);
+  const myTurn=!SPECTATING&&(MY_SLOT<0||MY_SLOT===CURRENT_PLAYER);
   if(!myTurn){
     document.getElementById('yrb').disabled=true;
-    msg('⏳ En attente de '+G.name+' …');
+    msg('');
   }else{
     msg((NUM_PLAYERS>1?G.name+' — ':'')+(G.fresh?'Lancez les dés !':G.phase==='score'?'Choisissez une case !':'Relancez ou choisissez !'));
   }
@@ -1269,10 +1386,11 @@ async function netJoin(){
   const ref=FBDB.ref('rooms/'+code);
   const snap=await ref.once('value');
   if(!snap.val()){netMsg('Code introuvable : '+code,true);return;}
-  if(snap.val().status!=='lobby'){netMsg('Cette partie a déjà commencé.',true);return;}
+  if(snap.val().status!=='lobby'){showReconnect(code,snap.val().slots||{},snap.val().mode);return;}
   GAME_MODE=snap.val().mode;
   const slots=snap.val().slots||{};
   const myIdx=Object.keys(slots).length;
+  if(myIdx>=10){netMsg('La partie est complète (10 joueurs max).',true);return;}
   MY_SLOT=myIdx;ROOM_CODE=code;ONLINE=true;
   await ref.child('slots/'+myIdx).set({name});
   showLobby(code,false);
@@ -1285,6 +1403,67 @@ async function netJoin(){
   });
 }
 
+async function netSpectate(){
+  if(!FBDB){spectMsg('Firebase indisponible.',true);return;}
+  const code=(document.getElementById('yspectcode').value.trim().toUpperCase());
+  if(!code){spectMsg('Entrez le code de la partie.',true);return;}
+  spectMsg('Connexion…');
+  const ref=FBDB.ref('rooms/'+code);
+  const snap=await ref.once('value');
+  const data=snap.val();
+  if(!data){spectMsg('Code introuvable : '+code,true);return;}
+  GAME_MODE=data.mode||'standard';
+  ROOM_CODE=code;ONLINE=true;SPECTATING=true;MY_SLOT=-1;
+  document.getElementById('ystep_spectate').style.display='none';
+  document.getElementById('yspectbadge').style.display='';
+  if(data.status==='playing'&&data.state){
+    netWatchState(ref.child('state'));
+    chatListen();
+    applyNetState(data.state);
+  }else if(data.status==='lobby'){
+    document.getElementById('ystart').style.display='none';
+    document.getElementById('ygame').style.display='';
+    msg('👁 En attente du début de la partie… ('+code+')');
+    ref.child('state').on('value',s=>{
+      const sd=s.val();
+      if(sd&&sd.seq!==undefined){
+        ref.child('state').off();
+        netWatchState(ref.child('state'));
+        chatListen();
+        applyNetState(sd);
+      }
+    });
+  }else{
+    spectMsg('Partie introuvable ou déjà terminée.',true);
+    ROOM_CODE=null;ONLINE=false;SPECTATING=false;
+    document.getElementById('yspectbadge').style.display='none';
+  }
+}
+function spectMsg(t,err){
+  const el=document.getElementById('yspectmsg');
+  if(el){el.textContent=t;el.style.color=err?'var(--color-text-danger)':'var(--color-text-secondary)';}
+}
+
+function showReconnect(code,slots,mode){
+  GAME_MODE=mode||GAME_MODE;
+  const names=Object.keys(slots).sort().map(k=>({idx:parseInt(k),name:slots[k].name}));
+  const el=document.getElementById('ystep_net');
+  el.style.display='';
+  el.innerHTML=`<div style="text-align:center;padding:24px 16px">
+    <div style="font-size:15px;font-weight:600;margin-bottom:6px;color:var(--color-text-primary)">Rejoindre la partie</div>
+    <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:18px">Code : <strong>${code}</strong> — Qui êtes-vous ?</div>
+    ${names.map(p=>`<button onclick="netReconnect('${code}',${p.idx})" style="display:block;width:100%;margin:6px 0;padding:10px 16px;background:var(--color-background-secondary);border:.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:14px;font-weight:500;cursor:pointer;font-family:var(--font-sans);color:var(--color-text-primary);text-align:left">${p.name}</button>`).join('')}
+    <button onclick="location.reload()" style="margin-top:14px;padding:6px 18px;background:transparent;color:var(--color-text-secondary);border:.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:12px;cursor:pointer;font-family:var(--font-sans)">← Annuler</button>
+  </div>`;
+}
+async function netReconnect(code,slotIdx){
+  if(!FBDB)return;
+  MY_SLOT=slotIdx;ROOM_CODE=code;ONLINE=true;
+  document.getElementById('ystep_net').style.display='none';
+  setupPresence();
+  netWatchState(FBDB.ref('rooms/'+code+'/state'));
+  chatListen();
+}
 function showLobby(code,isHost){
   document.getElementById('ystep_net').style.display='none';
   document.getElementById('ylobby').style.display='';
@@ -1416,7 +1595,7 @@ function chatSend(){
   const text=inp.value.trim();
   if(!text)return;
   inp.value='';
-  const name=(MY_SLOT>=0&&PLAYERS[MY_SLOT])?PLAYERS[MY_SLOT].name:'?';
+  const name=SPECTATING?'👁 Spectateur':(MY_SLOT>=0&&PLAYERS[MY_SLOT])?PLAYERS[MY_SLOT].name:'?';
   FBDB.ref('rooms/'+ROOM_CODE+'/chat').push({n:name,t:text,ts:Date.now()});
 }
 
