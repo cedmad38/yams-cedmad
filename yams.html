@@ -67,6 +67,8 @@
     @keyframes chatpulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.3)} }
     .ychatbadge{display:inline-block;width:8px;height:8px;background:#dc2626;border-radius:50%;margin-left:5px;vertical-align:middle;animation:chatpulse .9s ease-in-out infinite}
     .yoffline{display:inline-block;width:6px;height:6px;background:#dc2626;border-radius:50%;margin-left:3px;vertical-align:middle;opacity:.8}
+    @keyframes ypendingpulse{0%,100%{opacity:1}50%{opacity:.45}}
+    .ypending{background:#E8920A!important;color:#fff!important;animation:ypendingpulse .65s ease-in-out infinite;cursor:pointer!important}
     @keyframes yscoreflash {
       0%   { background-color:rgba(250,200,50,0); }
       10%  { background-color:rgba(250,200,50,0.88); }
@@ -593,22 +595,29 @@ function rcardDLM(){
 
 async function yscoreDLM(col,catId,ri,barrer){
   if(ONLINE&&MY_SLOT!==CURRENT_PLAYER)return;
+  const key=catId+'-'+col;
+  if(PENDING_SCORE&&PENDING_SCORE.key===key){clearPending();return;}
   if(!G.dlmSheet||G.fresh||G.busy)return;
   if(barrer){
     if(col!=='s'||G.rollsUsed===1||(catId in G.dlmSheet['s']))return;
-    G.dlmSheet['s'][catId]=0;
   }else{
     if(!dlmCanFill(col,ri))return;
-    G.dlmSheet[col][catId]=DLM_ROWS[ri].f(G.dice);
+  }
+  const scoreVal=barrer?0:DLM_ROWS[ri].f(G.dice);
+  setPending(key,()=>_commitDLM(col,catId,ri,barrer,scoreVal));
+}
+async function _commitDLM(col,catId,ri,barrer,scoreVal){
+  if(barrer){
+    G.dlmSheet['s'][catId]=0;
+  }else{
+    G.dlmSheet[col][catId]=scoreVal;
     if(col==='d')G.dlmDI++;
     if(col==='u')G.dlmUI--;
   }
   G.busy=true;
   rcard();
   flashScoreCell(col,catId);
-
   if(PLAYERS.every(p=>dlmPlayerFilled(p)>=56)){if(ONLINE)netPush('ended');endGameDLM();return;}
-
   if(NUM_PLAYERS>1){
     if(ONLINE){LAST_SCORE={col,catId,playerIdx:CURRENT_PLAYER};netPush();LAST_SCORE=null;}
     await sl(2000);
@@ -938,6 +947,7 @@ function setBusy(val){
 
 async function yRoll(){
   if(ONLINE&&MY_SLOT!==CURRENT_PLAYER)return;
+  clearPending();
   if(G.phase!=='roll'||G.rollsLeft<=0||G.busy)return;
   setBusy(true);
 
@@ -1084,12 +1094,20 @@ function rcardDLM12(){
 
 async function yscoreDLM12(col,catId,ri){
   if(ONLINE&&MY_SLOT!==CURRENT_PLAYER)return;
+  const key=catId+'-'+col;
+  if(PENDING_SCORE&&PENDING_SCORE.key===key){clearPending();return;}
   if(!G.d12Sheet||G.fresh||G.busy)return;
   if(!d12CanFill(col,ri))return;
   const score=D12_ROWS[ri].f(G.dice);
   if(NUM_PLAYERS>1&&D12_COMP_COLS.has(col)){
     const ref=D12_REFS[col][catId];
     if(ref!==undefined&&score<=ref){msg('Il faut battre le score adverse (>'+ref+') pour cette case.');return;}
+  }
+  setPending(key,()=>_commitDLM12(col,catId,ri,score));
+}
+async function _commitDLM12(col,catId,ri,score){
+  if(NUM_PLAYERS>1&&D12_COMP_COLS.has(col)){
+    const ref=D12_REFS[col][catId];
     if(ref===undefined||score>ref)D12_REFS[col][catId]=score;
   }
   G.d12Sheet[col][catId]=score;
@@ -1105,9 +1123,7 @@ async function yscoreDLM12(col,catId,ri){
   G.busy=true;
   rcard();
   flashScoreCell(col,catId);
-
   if(PLAYERS.every(p=>d12PlayerFilled(p)>=65)){if(ONLINE)netPush('ended');endGameDLM12();return;}
-
   if(NUM_PLAYERS>1){
     if(ONLINE){LAST_SCORE={col,catId,playerIdx:CURRENT_PLAYER};netPush();LAST_SCORE=null;}
     await sl(2000);
@@ -1130,15 +1146,18 @@ function hideRules(){document.getElementById('yrmod').classList.remove('vis');}
 
 async function yscore(id){
   if(ONLINE&&MY_SLOT!==CURRENT_PLAYER)return;
+  if(PENDING_SCORE&&PENDING_SCORE.key===id){clearPending();return;}
   if(G.phase!=='score'||id in G.scores)return;
   const cat=CATS.find(c=>c.id===id);if(!cat)return;
-  G.scores[id]=cat.f(G.dice);
+  const scoreVal=cat.f(G.dice);
+  setPending(id,()=>_commitStd(id,scoreVal));
+}
+async function _commitStd(id,scoreVal){
+  G.scores[id]=scoreVal;
   G.phase='scored';
   rcard();uctrl();
   flashScoreCell(null,id);
-
   if(PLAYERS.every(p=>Object.keys(p.scores).length===13)){if(ONLINE)netPush('ended');endGame();return;}
-
   if(NUM_PLAYERS>1){
     if(ONLINE){LAST_SCORE={col:null,catId:id,playerIdx:CURRENT_PLAYER};netPush();LAST_SCORE=null;}
     await sl(2000);
@@ -1163,6 +1182,7 @@ function yNew(force){
     try{FBDB.ref('rooms/'+ROOM_CODE+'/state').off();}catch(e){}
     try{FBDB.ref('rooms/'+ROOM_CODE+'/chat').off();}catch(e){}
   }
+  clearPending();
   ONLINE=false;MY_SLOT=-1;NET_SEQ=-1;ROOM_CODE=null;SPECTATING=false;
   CHAT_LISTENING=false;PRESENCE_WATCHING=false;ONLINE_SLOTS={};CHAT_UNREAD=false;
   const ca=document.getElementById('ychatarea');if(ca)ca.style.display='none';
@@ -1207,6 +1227,30 @@ document.getElementById('yjsok').textContent='JS ✓';
 
 // ─── MULTIJOUEUR EN LIGNE ───
 let ONLINE=false,MY_SLOT=-1,NET_SEQ=-1,ROOM_CODE=null,FBDB=null,SPECTATING=false;
+let PENDING_SCORE=null,PENDING_TIMER=null,PENDING_PREV_MSG='';
+function clearPending(){
+  if(PENDING_TIMER){clearTimeout(PENDING_TIMER);PENDING_TIMER=null;}
+  if(PENDING_SCORE){
+    const el=document.querySelector(`[data-sid="${PENDING_SCORE.key}"]`);
+    if(el)el.classList.remove('ypending');
+    PENDING_SCORE=null;
+    msg(PENDING_PREV_MSG);
+  }
+}
+function setPending(key,commitFn){
+  clearPending();
+  PENDING_PREV_MSG=LAST_MSG;
+  PENDING_SCORE={key};
+  const el=document.querySelector(`[data-sid="${key}"]`);
+  if(el)el.classList.add('ypending');
+  msg('⏳ Recliquez pour annuler (2s)');
+  PENDING_TIMER=setTimeout(()=>{
+    const pe=document.querySelector(`[data-sid="${key}"]`);
+    if(pe)pe.classList.remove('ypending');
+    PENDING_SCORE=null;PENDING_TIMER=null;
+    commitFn();
+  },2000);
+}
 const FB_CFG={
   apiKey:'AIzaSyBpAG_EN7FK6pD7Lh-2AwNVjAUZJIgsg0s',
   authDomain:'yams-cedmad.firebaseapp.com',
