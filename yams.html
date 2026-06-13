@@ -80,7 +80,7 @@
     .ysv { font-size:26px;font-weight:800;min-width:36px;text-align:right;line-height:1; }
     .ysr:hover:not(.ysf) { background:var(--color-background-secondary) }
     .ysr.ysav { background:var(--color-background-success) }
-    .ysr.ysr-l.ysav { background:rgba(0,100,150,0.32) }
+    .ysr.ysr-l.ysav { background:#c6f2fa }
     .ysr.ysav .ysv { color:var(--color-text-success);font-weight:500 }
     .ysr.ysf { cursor:default; }
     .ysr.ysf:not(.ysz) { background:#30b0ce; }
@@ -103,6 +103,20 @@
     .ymbn { font-size:14px;font-weight:500;color:var(--color-text-primary) }
     .ymbs { font-size:11px;color:var(--color-text-tertiary);margin-top:2px }
 
+    /* ── Tableau de score : fond blanc avec thème original ── */
+    #ycard {
+      --color-background-primary: #ffffff;
+      --color-background-secondary: #f5f5f5;
+      --color-background-success: #ddf8fc;
+      --color-border-secondary: #cccccc;
+      --color-border-tertiary: #e0e0e0;
+      --color-text-primary: #111111;
+      --color-text-secondary: #666666;
+      --color-text-tertiary: #999999;
+      --color-text-success: #006272;
+      --color-text-danger: #c62828;
+      background: #ffffff;
+    }
     /* ── Résultats ── */
     .yrow { display:flex;align-items:center;gap:14px;padding:10px 18px;border-bottom:.5px solid var(--color-border-tertiary) }
     .yrow:last-child { border-bottom:none }
