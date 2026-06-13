@@ -92,6 +92,7 @@
     .ysr:not(.ysf) > span:first-child { font-weight:600 }
 
     /* ── Écran de départ ── */
+    .ygcard { background:rgba(255,255,255,0.13);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1.5px solid rgba(255,255,255,0.25);border-radius:var(--border-radius-lg);padding:4px 20px 22px;margin:16px auto 0;max-width:300px }
     .ypbtn { width:60px;height:60px;font-size:22px;font-weight:500;background:rgba(255,255,255,0.13);border:1.5px solid rgba(255,255,255,0.28);border-radius:var(--border-radius-lg);cursor:pointer;font-family:var(--font-sans);transition:background .12s,border-color .12s;color:var(--color-text-primary);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px) }
     .ypbtn:hover { background:#BA7517;color:#FAE8C4;border-color:#BA7517 }
     .yninput { padding:8px 12px;border:1.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:13px;font-family:var(--font-sans);outline:none;width:160px;text-align:center;background:var(--color-background-primary);color:var(--color-text-primary) }
@@ -261,7 +262,7 @@
       </div>
     </div>
 
-    <div id="ystep1" style="display:none">
+    <div id="ystep1" class="ygcard" style="display:none">
       <div style="font-size:13px;color:var(--color-text-secondary);margin:24px 0 18px">Nombre de joueurs</div>
       <div style="display:flex;gap:14px;justify-content:center">
         <button class="ypbtn" onclick="selectPlayers(1)">1</button>
@@ -276,7 +277,7 @@
       </div>
     </div>
 
-    <div id="ystep2" style="display:none">
+    <div id="ystep2" class="ygcard" style="display:none">
       <div style="font-size:13px;color:var(--color-text-secondary);margin:24px 0 16px">Noms des joueurs</div>
       <div id="ynames" style="display:flex;flex-direction:column;gap:10px;align-items:center;margin-bottom:22px"></div>
       <div style="display:flex;gap:10px;justify-content:center">
@@ -286,7 +287,7 @@
     </div>
 
     <!-- ── Écran online ── -->
-    <div id="ystep_net" style="display:none">
+    <div id="ystep_net" class="ygcard" style="display:none">
       <div style="font-size:13px;color:var(--color-text-secondary);margin:24px 0 16px">Multijoueur en ligne</div>
       <div style="display:flex;flex-direction:column;gap:12px;align-items:center">
         <input id="ynetname" class="yninput" type="text" placeholder="Votre prénom" maxlength="14" value="">
@@ -304,7 +305,7 @@
     </div>
 
     <!-- ── Spectateur ── -->
-    <div id="ystep_spectate" style="display:none">
+    <div id="ystep_spectate" class="ygcard" style="display:none">
       <div style="font-size:13px;color:var(--color-text-secondary);margin:24px 0 18px">👁 Regarder une partie</div>
       <div style="display:flex;flex-direction:column;gap:12px;align-items:center">
         <input id="yspectcode" class="yninput" type="text" placeholder="Code (ex: ROSE-42)" maxlength="8" style="text-transform:uppercase">
@@ -315,7 +316,7 @@
     </div>
 
     <!-- ── Lobby ── -->
-    <div id="ylobby" style="display:none">
+    <div id="ylobby" class="ygcard" style="display:none">
       <div style="font-size:13px;color:var(--color-text-secondary);margin:24px 0 10px">Code de la partie</div>
       <div id="ynrcode" style="font-size:28px;font-weight:700;letter-spacing:4px;color:#BA7517;margin-bottom:18px"></div>
       <div style="font-size:11px;color:var(--color-text-tertiary);margin-bottom:14px">Partagez ce code avec vos amis</div>
