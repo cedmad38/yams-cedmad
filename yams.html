@@ -477,7 +477,7 @@ const D12_ROWS=[
   {id:'dya',n:'Yams',f:d=>cv(d).some(c=>c>=5)?100:0},
 ];
 const D12_COLS=['d','l','u','e1','e2'];
-const D12_CN={d:'↓',l:'L',u:'↑',e1:'En 1',e2:'En 2'};
+const D12_CN={d:'↓',l:'Libre',u:'↑',e1:'En 1',e2:'En 2'};
 const D12_MX={d:1,l:1,u:1,e1:3,e2:2};
 // D12 state est per-player (d12Sheet, d12DI, d12UI sur chaque objet joueur)
 let D12_REFS={d:{},l:{},u:{},e1:{},e2:{}};
@@ -501,7 +501,7 @@ const DLM_ROWS=[
   {id:'yam',n:'YAMS !',   f:d=>cv(d).some(c=>c>=5)?50+ds(d):0},
 ];
 const DLM_COLS=['d','l','u','s'];
-const DLM_CN={d:'↓',l:'L',u:'↑',s:'Sec'};
+const DLM_CN={d:'↓',l:'Libre',u:'↑',s:'Sec'};
 // DLM state est per-player (dlmSheet, dlmDI, dlmUI sur chaque objet joueur)
 
 function dlmBonus(col,sh){
