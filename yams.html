@@ -329,7 +329,7 @@
   <!-- ── Jeu ── -->
   <div id="ygame" style="display:none">
     <div style="text-align:center;margin-bottom:8px;position:relative">
-      <div style="font-size:16px;font-weight:500;letter-spacing:1px;color:var(--color-text-primary)">Yams Par Cedmad</div>
+      <div style="font-size:16px;font-weight:500;letter-spacing:1px;color:var(--color-text-primary)">Yams Par Cedmad<span id="ygamecode" style="font-size:11px;font-weight:400;opacity:0.55;margin-left:7px;letter-spacing:0.5px"></span></div>
       <button id="yrbtn" onclick="showRules()" style="display:none;position:absolute;right:0;top:2px;padding:4px 10px;background:transparent;border:1px solid #BA7517;border-radius:6px;font-size:10px;color:#BA7517;cursor:pointer;font-family:var(--font-sans)">? Règles</button>
     </div>
     <div id="yspectbadge" style="display:none;text-align:center;font-size:11px;color:rgba(255,255,255,0.55);letter-spacing:1.5px;margin-bottom:4px">👁 MODE SPECTATEUR</div>
@@ -773,6 +773,7 @@ function startGame(){
   document.getElementById('ystart').style.display='none';
   document.getElementById('yend').style.display='none';
   document.getElementById('ygame').style.display='';
+  const _gc=document.getElementById('ygamecode');if(_gc)_gc.textContent='';
   rdice();rcard();uctrl();updTi();
   msg((NUM_PLAYERS>1?G.name+' — ':'')+'Lancez les dés !');
 }
@@ -1292,6 +1293,7 @@ function applyNetState(data){
   else if(GAME_MODE==='dlm12'){document.getElementById('yrbtn').style.display='';}
   else{document.getElementById('yrbtn').style.display='none';}
   document.getElementById('ygame').style.display='';
+  const _gc2=document.getElementById('ygamecode');if(_gc2)_gc2.textContent=ROOM_CODE?'('+ROOM_CODE+')':'';
   chatListen();
   rdice();rcard();uctrl();updTi();
   // Flash sur la case scorée par un autre joueur
