@@ -23,41 +23,140 @@
     body { margin:0;padding:0;font-family:var(--font-sans);background:#0d0d0d url('bg.jpg') center/cover fixed no-repeat;display:flex;justify-content:center;min-height:100vh }
     #yg { padding:16px 20px }
     #yfelt, .yw { user-select:none; -webkit-user-select:none; }
+    #yfelt {
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,.20) 0, rgba(255,255,255,0) 22%),
+        radial-gradient(circle at 80% 78%, rgba(0,0,0,.28) 0, rgba(0,0,0,0) 32%),
+        radial-gradient(circle at 52% 48%, rgba(255,255,255,.04) 0, rgba(255,255,255,0) 50%),
+        repeating-linear-gradient(90deg, rgba(255,255,255,.02) 0 1px, rgba(0,0,0,.03) 1px 2px, transparent 2px 4px),
+        repeating-linear-gradient(0deg, rgba(255,255,255,.012) 0 2px, transparent 2px 4px),
+        linear-gradient(180deg,#2f9150 0%,#237441 38%,#16582f 100%);
+      border:4px solid #6a401d;
+      border-radius:12px;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.22),
+        inset 0 -12px 18px rgba(0,0,0,.30),
+        inset 0 0 0 1px rgba(255,243,213,.12),
+        0 12px 22px rgba(0,0,0,.38),
+        0 2px 0 rgba(0,0,0,.38);
+    }
+    #yfelt::before {
+      content:'';
+      position:absolute;
+      inset:2px;
+      border-radius:9px;
+      pointer-events:none;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.12) 0, rgba(255,255,255,0) 30%, rgba(0,0,0,.09) 100%);
+      border:1px solid rgba(255,238,205,.14);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.18),
+        inset 0 0 14px rgba(255,255,255,.04);
+    }
+    #yfelt::after {
+      content:'';
+      position:absolute;
+      inset:7px;
+      border-radius:6px;
+      pointer-events:none;
+      border:1px dashed rgba(255,255,255,.10);
+      opacity:.34;
+    }
 
     /* ── Dés 3D ── */
     .yw {
-      position:absolute;width:30px;height:30px;cursor:pointer;
-      perspective:400px;
-      box-shadow:2px 4px 7px rgba(0,0,0,.38);
-      transition:box-shadow .18s;
-      border-radius:5px;
+      position:absolute;
+      width:36px;
+      height:36px;
+      cursor:pointer;
+      perspective:700px;
+      filter:drop-shadow(0 9px 12px rgba(0,0,0,.30));
+      transition:transform .16s ease,filter .16s ease;
+      border-radius:9px;
+    }
+    .yw::after {
+      content:'';
+      position:absolute;
+      left:50%;
+      bottom:-4px;
+      width:72%;
+      height:18%;
+      transform:translateX(-50%);
+      border-radius:999px;
+      background:rgba(0,0,0,.34);
+      filter:blur(3px);
+      opacity:.58;
+      pointer-events:none;
+      z-index:-1;
     }
     .yw.ywkept {
-      box-shadow:0 0 0 3px rgba(220,38,38,.65),2px 4px 7px rgba(0,0,0,.38);
+      filter:drop-shadow(0 8px 10px rgba(0,0,0,.30));
+      box-shadow:0 0 0 2px rgba(186,20,20,.78), 0 0 0 4px rgba(247,205,86,.38);
     }
     .dcu {
-      position:relative;width:100%;height:100%;
+      position:relative;
+      width:100%;
+      height:100%;
       transform-style:preserve-3d;
+      will-change:transform;
     }
-    .yw:not(.ywkept):hover { box-shadow:3px 5px 10px rgba(0,0,0,.52); }
+    .yw:not(.ywkept):hover {
+      transform:translateY(-1px);
+      filter:drop-shadow(0 12px 16px rgba(0,0,0,.37));
+    }
     .dcf {
-      position:absolute;width:30px;height:30px;
-      border:1px solid rgba(0,0,0,.15);border-radius:5px;
-      box-sizing:border-box;backface-visibility:hidden;
+      position:absolute;
+      width:36px;
+      height:36px;
+      border:1px solid rgba(84,66,34,.18);
+      border-radius:9px;
+      box-sizing:border-box;
+      backface-visibility:hidden;
+      overflow:hidden;
+      background:
+        linear-gradient(145deg,#fffef8 0%,#f7f2e7 38%,#efe7d7 100%);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.94),
+        inset 0 -6px 8px rgba(94,70,32,.08),
+        inset 5px 0 8px rgba(255,255,255,.10),
+        inset -4px 0 8px rgba(0,0,0,.05);
     }
-    /* face positions — half size = 15px */
-    .dcf.front  { transform:translateZ(15px);                  background:#ffffff }
-    .dcf.back   { transform:rotateY(180deg)  translateZ(15px); background:#ffffff }
-    .dcf.right  { transform:rotateY(90deg)   translateZ(15px); background:#ffffff }
-    .dcf.left   { transform:rotateY(-90deg)  translateZ(15px); background:#ffffff }
-    .dcf.top    { transform:rotateX(90deg)   translateZ(15px); background:#ffffff }
-    .dcf.bottom { transform:rotateX(-90deg)  translateZ(15px); background:#ffffff }
-    .yw.ywkept .dcf { border-color:#dc2626 }
+    .dcf::before {
+      content:'';
+      position:absolute;
+      inset:0;
+      border-radius:inherit;
+      pointer-events:none;
+      background:
+        radial-gradient(circle at 28% 22%, rgba(255,255,255,.82) 0, rgba(255,255,255,.20) 22%, transparent 50%),
+        linear-gradient(160deg, rgba(255,255,255,.16) 0, rgba(255,255,255,0) 44%, rgba(0,0,0,.07) 100%);
+    }
+    .dcf::after {
+      content:'';
+      position:absolute;
+      inset:0;
+      border-radius:inherit;
+      pointer-events:none;
+      box-shadow:inset 0 0 0 1px rgba(255,248,232,.20);
+    }
+    .dcf.front  { transform:translateZ(18px); }
+    .dcf.back   { transform:rotateY(180deg)  translateZ(18px); }
+    .dcf.right  { transform:rotateY(90deg)   translateZ(18px); }
+    .dcf.left   { transform:rotateY(-90deg)  translateZ(18px); }
+    .dcf.top    { transform:rotateX(90deg)   translateZ(18px); }
+    .dcf.bottom { transform:rotateX(-90deg)  translateZ(18px); }
+    .yw.ywkept .dcf { border-color:#c61e1e }
     .ydot {
-      position:absolute;width:5px;height:5px;
-      background:#1c1c1c;border-radius:50%;
+      position:absolute;
+      width:6px;
+      height:6px;
+      border-radius:50%;
       transform:translate(-50%,-50%);
-      box-shadow:0 1px 2px rgba(0,0,0,.4);
+      background:radial-gradient(circle at 34% 30%, #3e3e3e 0, #171717 62%, #080808 100%);
+      box-shadow:
+        inset 0 1px 1px rgba(255,255,255,.08),
+        inset 0 -1px 1px rgba(0,0,0,.72),
+        0 0 0 1px rgba(0,0,0,.08);
     }
     .ylck {
       position:absolute;top:-12px;left:50%;transform:translateX(-50%);
@@ -135,12 +234,28 @@
     .yrmbx .rs li{font-size:11px;color:#333;line-height:1.6;margin-bottom:1px}
     .yrmbx .rscls{display:block;margin:14px auto;padding:7px 22px;background:#BA7517;color:#FAE8C4;border:none;border-radius:8px;font-size:12px;cursor:pointer;font-family:var(--font-sans)}
     /* ── Skins des dés ── */
-    /* Bois : grain naturel par couches de dégradés répétés */
+    /* Bois : bois noble verni, veinage profond, touches premium */
     .sk-bois .dcf{background:
-      repeating-linear-gradient(87deg,transparent 0,transparent 2px,rgba(50,18,2,.13) 2px,rgba(50,18,2,.13) 3px,transparent 3px,transparent 8px,rgba(50,18,2,.07) 8px,rgba(50,18,2,.07) 9px),
-      linear-gradient(150deg,#d9975f 0%,#a05c28 35%,#c4804a 60%,#7e4618 80%,#b56f38 100%)!important;
-      border-color:rgba(55,20,4,.42)!important}
-    .sk-bois .ydot{background:#2a0e04!important;box-shadow:0 1px 1px rgba(0,0,0,.5)!important}
+      radial-gradient(circle at 72% 30%, rgba(92,49,20,.46) 0 5%, rgba(183,126,80,.18) 6%, transparent 14%),
+      radial-gradient(circle at 28% 76%, rgba(83,43,18,.36) 0 4%, transparent 11%),
+      radial-gradient(circle at 24% 18%, rgba(255,238,214,.28) 0, transparent 26%),
+      repeating-linear-gradient(101deg,
+        rgba(76,40,16,.00) 0 2px,
+        rgba(103,58,26,.22) 2px 4px,
+        rgba(221,169,120,.08) 4px 7px,
+        rgba(86,46,20,.22) 7px 10px,
+        rgba(247,214,178,.07) 10px 12px),
+      linear-gradient(145deg,#e4b182 0%,#bf7e49 22%,#d59969 48%,#8e552b 76%,#693916 100%)!important;
+      border-color:rgba(74,41,17,.56)!important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,244,226,.44),
+        inset 0 -7px 8px rgba(56,24,4,.20),
+        inset -6px 0 9px rgba(84,44,19,.14),
+        inset 6px 0 9px rgba(255,228,198,.16)!important}
+    .sk-bois .dcf::before{background:
+      radial-gradient(circle at 26% 20%, rgba(255,255,255,.24) 0, rgba(255,255,255,.08) 18%, transparent 46%),
+      linear-gradient(160deg, rgba(255,255,255,.10) 0, rgba(255,255,255,0) 44%, rgba(0,0,0,.06) 100%)!important}
+    .sk-bois .ydot{background:radial-gradient(circle at 32% 28%, #552d15 0, #291308 72%, #140803 100%)!important;box-shadow:inset 0 1px 1px rgba(255,235,210,.08),inset 0 -1px 1px rgba(0,0,0,.58),0 0 0 1px rgba(60,25,8,.18)!important}
     /* Métal brossé : reflet en coin + texture horizontale subtile */
     .sk-metal .dcf{background:
       radial-gradient(ellipse at 28% 22%,rgba(255,255,255,.7) 0%,transparent 48%),
@@ -344,7 +459,7 @@
           <button id="yskinbtn" onclick="toggleSkinPicker()" title="Style des dés" style="width:34px;height:50px;border-radius:8px;background:var(--color-background-primary);border:1.5px solid var(--color-border-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;padding:0;flex-direction:column;gap:2px"></button>
           <div id="yskpanel" style="display:none;position:absolute;left:0;top:calc(100% + 6px);z-index:50;background:var(--color-background-primary);border:.5px solid var(--color-border-secondary);border-radius:10px;padding:8px;flex-wrap:wrap;gap:6px;width:228px;box-shadow:0 4px 20px rgba(0,0,0,.18)"></div>
         </div>
-        <div id="yfelt" style="background:#1a6b31;border:4px solid #0d3a1a;border-radius:10px;width:202px;height:50px;position:relative;display:inline-block;overflow:visible"></div>
+        <div id="yfelt" style="width:228px;height:60px;position:relative;display:inline-block;overflow:visible"></div>
         <button onclick="yNew()" title="Nouvelle partie" style="width:34px;height:50px;border-radius:8px;background:var(--color-background-primary);border:1.5px solid var(--color-border-secondary);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;padding:0;flex-shrink:0;color:var(--color-text-secondary)">&#8635;</button>
       </div>
       <div id="yctr" style="font-size:11px;font-weight:500;color:#1a6b31;min-height:16px;margin-top:4px;letter-spacing:2px"></div>
@@ -687,9 +802,9 @@ function endGameDLM(){
   showEndScreen(PLAYERS.map(p=>({name:p.name,tot:dlmPlayerTotal(p)})).sort((a,b)=>b.tot-a.tot));
 }
 
-const DSIZE=30,STRIP_PAD_X=10,STRIP_PAD_Y=10,DIE_GAP=8;
-const STRIP_W=DSIZE*5+DIE_GAP*4+STRIP_PAD_X*2; // 202px
-const STRIP_H=DSIZE+STRIP_PAD_Y*2;              // 50px
+const DSIZE=36,STRIP_PAD_X=8,STRIP_PAD_Y=10,DIE_GAP=7;
+const STRIP_W=DSIZE*5+DIE_GAP*4+STRIP_PAD_X*2; // 224px
+const STRIP_H=DSIZE+STRIP_PAD_Y*2;              // 56px
 function slotPos(i){return{x:STRIP_PAD_X+i*(DSIZE+DIE_GAP),y:STRIP_PAD_Y};}
 
 const ds=d=>d.reduce((a,b)=>a+b,0);
